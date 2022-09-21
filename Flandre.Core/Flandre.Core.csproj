@@ -5,6 +5,19 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Version>$(PackageVersion)</Version>
+        <Product>Flandre.Core</Product>
+        <Title>Flandre.Core</Title>
+        <Authors>b1acksoil</Authors>
+        <Description>跨平台，低耦合的聊天机器人框架，一次编写，多处运行。</Description>
+        <Copyright>b1acksoil (C) 2022-present</Copyright>
+        <PackageProjectUrl>https://github.com/FlandreDevs/Flandre</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/FlandreDevs/Flandre.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>bot</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
 </Project>

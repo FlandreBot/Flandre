@@ -4,6 +4,20 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Version>$(PackageVersion)</Version>
+        <Product>Flandre.Adapters.Konata</Product>
+        <Title>Flandre.Adapters.Konata</Title>
+        <Authors>b1acksoil</Authors>
+        <Description>Konata.Core (QQ Protocol) adapter for Flandre project.</Description>
+        <Copyright>b1acksoil (C) 2022-present</Copyright>
+        <PackageProjectUrl>https://github.com/FlandreDevs/Flandre</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/FlandreDevs/Flandre.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>bot</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
