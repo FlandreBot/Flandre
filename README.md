@@ -78,6 +78,13 @@ app
 
 （按字母排序）
 
+## 联系我们
+您可以加入我们的 QQ 群进行项目相关的交流：
+
+[![QQ](https://img.shields.io/badge/Flandre.Community-164189664-blue?style=flat-square&logo=tencent-qq&logoColor=white)](https://jq.qq.com/?_wv=1027&k=tTNVlDR6)
+
+**本群只交流程序开发，拒绝任何形式的伸手党或商业行为。提问前请确保已经阅读过[提问的智慧](https://github.com/tvvocold/How-To-Ask-Questions-The-Smart-Way)。**
+
 ## License
 
 本项目以 [MIT 许可证](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE) 开源 (′▽\`)╭(′▽\`)╯
