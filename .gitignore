@@ -1,0 +1,10 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.idea/
+
+# Temporarily hide for test
+Flandre.ExampleBot/
+*.json

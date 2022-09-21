@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core", "Flandre.Core\Flandre.Core.csproj", "{347EE5CE-CAB6-4FFA-AAF1-D7AA7BC6AFF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.ExampleBot", "Flandre.ExampleBot\Flandre.ExampleBot.csproj", "{49D31127-B126-4734-B6E4-C1A6A6A41A5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Konata", "Flandre.Adapters.Konata\Flandre.Adapters.Konata.csproj", "{723E8DD2-55F1-4095-93D7-E6AD600A63EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{347EE5CE-CAB6-4FFA-AAF1-D7AA7BC6AFF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{347EE5CE-CAB6-4FFA-AAF1-D7AA7BC6AFF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{347EE5CE-CAB6-4FFA-AAF1-D7AA7BC6AFF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{347EE5CE-CAB6-4FFA-AAF1-D7AA7BC6AFF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49D31127-B126-4734-B6E4-C1A6A6A41A5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49D31127-B126-4734-B6E4-C1A6A6A41A5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49D31127-B126-4734-B6E4-C1A6A6A41A5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49D31127-B126-4734-B6E4-C1A6A6A41A5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{723E8DD2-55F1-4095-93D7-E6AD600A63EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{723E8DD2-55F1-4095-93D7-E6AD600A63EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{723E8DD2-55F1-4095-93D7-E6AD600A63EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{723E8DD2-55F1-4095-93D7-E6AD600A63EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
