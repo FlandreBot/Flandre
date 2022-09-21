@@ -1,7 +1,3 @@
-<div align="center">
-
-<img src="https://raw.githubusercontent.com/FlandreDevs/Flandre/main/avatar.jpg" width="200" />
-
 # Flandre
 
 .NET 6 实现的跨平台，低耦合的聊天机器人框架  
@@ -12,8 +8,6 @@
 [![Contributors](https://img.shields.io/github/contributors/FlandreDevs/Flandre?label=Contributors&style=flat-square&color=ab47bc)](https://github.com/FlandreDevs/Flandre/graphs/contributors)
 
 本项目的名称来源于东方 Project 中的角色芙兰朵露 · 斯卡雷特 (Flandre Scarlet) ~~(番茄炒蛋)~~
-
-</div>
 
 ---
 

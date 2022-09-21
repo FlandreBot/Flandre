@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
-        <PackageVersion>0.1.0</PackageVersion>
+        <PackageVersion>0.1.0-alpha</PackageVersion>
         <Version>$(PackageVersion)</Version>
         <Product>Flandre.Adapters.Konata</Product>
         <Title>Flandre.Adapters.Konata</Title>
@@ -17,6 +17,8 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>bot</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>avatar.jpg</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
@@ -26,6 +28,11 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Flandre.Core\Flandre.Core.csproj"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="/"/>
+        <None Include="../avatar.jpg" Pack="true" PackagePath="/"/>
     </ItemGroup>
 
 </Project>
