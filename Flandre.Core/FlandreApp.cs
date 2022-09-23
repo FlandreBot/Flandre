@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Flandre.Core.Common;
+﻿using Flandre.Core.Common;
 using Flandre.Core.Events.App;
 using Flandre.Core.Utils;
 
@@ -17,7 +16,7 @@ public class FlandreApp
 
     private readonly List<Plugin> _plugins = new();
 
-    public Logger Logger { get; } = new("App");
+    internal static Logger Logger { get; } = new("App");
 
     public AppConfig Config { get; }
 
@@ -95,7 +94,7 @@ public class FlandreApp
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
             Logger.Error((Exception)args.ExceptionObject);
 
-        Process.GetCurrentProcess().WaitForExit();
+        Task.Delay(-1);
     }
 }
 
