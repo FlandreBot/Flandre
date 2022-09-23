@@ -6,8 +6,9 @@
 [![License](https://img.shields.io/github/license/FlandreDevs/Flandre?label=License&style=flat-square&color=42a5f5)](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE)
 [![Stars](https://img.shields.io/github/stars/FlandreDevs/Flandre?label=Stars&style=flat-square&color=1976d2)](https://github.com/FlandreDevs/Flandre/stargazers)
 [![Contributors](https://img.shields.io/github/contributors/FlandreDevs/Flandre?label=Contributors&style=flat-square&color=ab47bc)](https://github.com/FlandreDevs/Flandre/graphs/contributors)
-[![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat-square&label=NuGet&color=ec407a)](https://www.nuget.org/packages/Flandre.Core/)
+[![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat-square&label=NuGet&color=f06292)](https://www.nuget.org/packages/Flandre.Core/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Core?style=flat-square&label=Downloads&color=ffb300)](https://www.nuget.org/packages/Flandre.Core/)
+[![.NET Version](https://img.shields.io/badge/.NET-6-ffe57f?style=flat-square)](https://www.nuget.org/packages/Flandre.Core/)
 
 本项目的名称来源于东方 Project 中的角色芙兰朵露 · 斯卡雷特 (Flandre Scarlet) ~~(番茄炒蛋)~~
 
@@ -54,14 +55,84 @@ app
 
 运行程序，向我们 bot 的 QQ 号发送一条消息，bot 会将消息原封不动地发回来。 ~~复读不仅仅是人类的本质.jpg~~
 
-## 路线图
+### 基本指令解析
+
+来个高级点的例子，我们定义一条指令：
+
+```csharp
+class ExamplePlugin2 : Plugin
+{
+    [Command("example <foo> [bar]")]
+    public MessageContent OnExample(MessageContext ctx, ParsedArgs args)
+    {
+        var foo = args.GetArgument<string>("foo");
+        var bar = args.GetArgument<string>("bar");
+        var baz = args.GetArgumentOrDefault<string>("baz");
+
+        var mb = new MessageBuilder();
+
+        mb.Text($"Foo: {foo}, ")
+            .Text($"Bar: {bar}, ")
+            .Text("Baz: " + (baz ?? "no arg named baz!"));
+
+        return mb;
+    }
+}
+```
+
+这个插件包含一条有两个参数的指令，类型都为 `string`，其中 `foo` 为必选参数，`bar` 为可选参数。如果调用指令时未提供可选参数，参数将被初始化为类型默认值；如果为提供必选参数，bot 将向其发送一条提示信息并停止执行指令。
+
+向 bot 发送 `example qwq ovo`（~~随便什么~~），bot 会将参数的值发送回来。
+
+### 类型约束
+
+如果我们不对指令的参数进行类型约束，那么参数的类型将默认为 `string`。如要添加参数，可以在参数名称后添加 `:` 号和类型名称。类型名称支持 C# 中绝大多数的基本类型，如 `int`, `double`, `long`, `bool` 等等，在解析过程中会自动进行类型检查和转换。
+
+举个例子：
+
+```csharp
+[Command("example <foo:double> <bar:bool>")]
+public MessageContent? OnExample(MessageContext ctx, ParsedArgs args)
+{
+    var foo = args.GetArgument<double>("foo");
+    var bar = args.GetArgument<bool>("bar");
+
+    Logger.Info(foo.GetType().Name);   // Double
+    Logger.Info(bar.GetType().Name);   // Boolean
+
+    return null;
+}
+```
+
+### 参数默认值
+
+有时我们需要对参数指定默认值，可以在定义中使用 `=` 号：
+
+```csharp
+[Command("example [foo:int=1145] [bar:bool=true]")]
+```
+
+如果不人为指定默认值，参数将被初始化为 C# 中的类型默认值（即 `default(T)`）。`string` 比较特殊，在参数中它的默认值是空字符串，而不是 `null`。
+
+### 灵活的表现形式
+
+Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各种定义挤在一起乱糟糟的，可以适度空开：
+
+```csharp
+[Command("example [foo: int = 1145] [bar: bool = true]")]
+```
+
+这样写的缺点是可能导致指令定义过于冗长，可以结合实际情况选择。
+
+## 路线
 
 - [x] 基本框架搭建
 - [x] 消息段实现
 - [x] 消息相关工具链
 - [x] 甜甜的语法糖
 - [x] 事件系统
-- [ ] 指令系统
+- [x] 指令系统
+- [ ] 指令的选项系统
 - [ ] OneBot 协议适配
 
 ## 致谢
