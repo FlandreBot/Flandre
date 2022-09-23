@@ -87,14 +87,15 @@ public abstract class Plugin : IModule
         var parser = new StringParser(source);
 
         var argIndex = 0;
-        var optionIndex = 0;
+        var providedArgs = new List<string>();
 
         while (!parser.IsEnd())
         {
+            parser.SkipSpaces();
+
             if (parser.Peek(' ').StartsWith('-'))
             {
                 // option
-                optionIndex++;
             }
             else
             {
@@ -123,19 +124,18 @@ public abstract class Plugin : IModule
                     else return (args, $"参数 {param.Name} 类型错误，应为 {param.Type}。");
                 }
 
-                param.Provided = true;
+                providedArgs.Add(param.Name);
                 argIndex++;
             }
-
-            parser.SkipSpaces();
         }
 
         // 参数默认值
         foreach (var param in command.Info.Parameters)
         {
-            if (param.IsRequired && !param.Provided)
+            var provided = providedArgs.Contains(param.Name);
+            if (param.IsRequired && !provided)
                 return (args, $"参数 {param.Name} 缺失。");
-            if (param.IsRequired || param.Provided) continue;
+            if (param.IsRequired || provided) continue;
             args.Arguments.ArgumentList.Add(new KeyValuePair<string, object>(param.Name, param.DefaultValue));
         }
 

@@ -33,7 +33,7 @@ public class CommandAttribute : Attribute
         while (!parser.IsEnd())
         {
             var bracket = parser.Current();
-            if (bracket is not '<' or '[')
+            if (!"<[".Contains(bracket))
             {
                 parser.Read(' ');
                 parser.SkipSpaces();

@@ -24,8 +24,11 @@ internal class StringParser
     internal StringParser SkipSpaces()
     {
         while (!IsEnd())
-            if (_str[++_pos] != ' ')
-                break;
+        {
+            if (_str[_pos] != ' ') break;
+            _pos++;
+        }
+
         return this;
     }
 

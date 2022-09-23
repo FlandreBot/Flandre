@@ -1,4 +1,5 @@
-﻿using Flandre.Core.Common;
+﻿using System.Reflection;
+using Flandre.Core.Common;
 using Flandre.Core.Events.App;
 using Flandre.Core.Utils;
 
@@ -108,9 +109,13 @@ public class FlandreApp
                         b.SendMessage(e.Message.SourceType,
                             e.Message.GuildId, e.Message.ChannelId, e.Message.Sender.Id, content);
                 }
-                catch (Exception exception)
+                catch (TargetInvocationException exception)
                 {
-                    plugin.Logger.Error(exception);
+                    plugin.Logger.Error(exception.InnerException ?? exception);
+                }
+                catch (Exception ex)
+                {
+                    plugin.Logger.Error(ex);
                 }
             };
 
