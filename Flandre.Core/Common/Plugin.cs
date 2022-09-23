@@ -49,7 +49,7 @@ public abstract class Plugin : IModule
         }
     }
 
-    internal MessageContent? OnCommandParsing(Context ctx)
+    internal MessageContent? OnCommandParsing(MessageContext ctx)
     {
         var commandStr = ctx.Message.GetText();
         if (string.IsNullOrWhiteSpace(commandStr)) return null;
@@ -146,7 +146,7 @@ public abstract class Plugin : IModule
     ///     处理消息事件
     /// </summary>
     /// <param name="ctx">消息上下文</param>
-    public virtual void OnMessageReceived(Context ctx)
+    public virtual void OnMessageReceived(MessageContext ctx)
     {
     }
 }

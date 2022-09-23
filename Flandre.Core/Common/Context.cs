@@ -4,16 +4,24 @@ namespace Flandre.Core.Common;
 
 public class Context
 {
-    public FlandreApp App { get; internal init; }
+    public FlandreApp App { get; init; }
 
-    public IBot Bot { get; internal init; }
+    public IBot Bot { get; init; }
 
-    public Message Message { get; internal init; }
-
-    public Context(FlandreApp app, IBot bot, Message message)
+    public Context(FlandreApp app, IBot bot)
     {
         App = app;
         Bot = bot;
+    }
+}
+
+public class MessageContext : Context
+{
+    public Message Message { get; init; }
+    
+    public MessageContext(FlandreApp app, IBot bot, Message message)
+        : base(app, bot)
+    {
         Message = message;
     }
 }

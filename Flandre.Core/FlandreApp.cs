@@ -66,7 +66,7 @@ public class FlandreApp
         foreach (var plugin in _plugins)
             bot.OnMessageReceived += (b, e) =>
             {
-                var ctx = new Context(this, b, e.Message);
+                var ctx = new MessageContext(this, b, e.Message);
                 try
                 {
                     plugin.OnMessageReceived(ctx);
