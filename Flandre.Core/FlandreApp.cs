@@ -8,6 +8,9 @@ using Flandre.Core.Utils;
 
 namespace Flandre.Core;
 
+/// <summary>
+/// 应用基本框架
+/// </summary>
 public class FlandreApp
 {
     private readonly List<IAdapter<IBot>> _adapters = new();
@@ -18,23 +21,50 @@ public class FlandreApp
 
     internal static Logger Logger { get; } = new("App");
 
+    /// <summary>
+    /// App 配置
+    /// </summary>
     public AppConfig Config { get; }
 
     #region Events
 
+    /// <summary>
+    /// App 事件委托
+    /// </summary>
+    /// <typeparam name="TEvent"></typeparam>
     public delegate void AppEventHandler<in TEvent>(FlandreApp app, TEvent e);
 
+    /// <summary>
+    /// 应用准备启动事件
+    /// </summary>
     public event AppEventHandler<AppStartingEvent>? OnAppStarting;
+
+    /// <summary>
+    /// 应用退出事件
+    /// </summary>
     public event AppEventHandler<AppStoppedEvent>? OnAppStopped;
+
+    /// <summary>
+    /// 应用就绪事件
+    /// </summary>
     public event AppEventHandler<AppReadyEvent>? OnAppReady;
 
     #endregion
 
+    /// <summary>
+    /// 构造应用实例
+    /// </summary>
+    /// <param name="config">应用配置</param>
     public FlandreApp(AppConfig? config = null)
     {
         Config = config ?? new AppConfig();
     }
 
+    /// <summary>
+    /// 注册模块
+    /// </summary>
+    /// <param name="module">需要注册的模块</param>
+    /// <returns>应用实例本身</returns>
     public FlandreApp Use(IModule module)
     {
         switch (module)
@@ -52,6 +82,9 @@ public class FlandreApp
         return this;
     }
 
+    /// <summary>
+    /// 启动应用实例
+    /// </summary>
     public void Start()
     {
         Logger.Info("Starting App...");
@@ -98,7 +131,13 @@ public class FlandreApp
     }
 }
 
+/// <summary>
+/// 应用配置
+/// </summary>
 public class AppConfig
 {
+    /// <summary>
+    /// 全局指令前缀
+    /// </summary>
     public string CommandPrefix { get; set; } = "";
 }

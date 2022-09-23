@@ -6,27 +6,27 @@ using Flandre.Core.Utils;
 namespace Flandre.Core.Common;
 
 /// <summary>
-///     模块基类
+/// 模块基类
 /// </summary>
 public abstract class Plugin : IModule
 {
     /// <summary>
-    ///     插件 Logger，默认使用插件名称
+    /// 插件 Logger，默认使用插件名称
     /// </summary>
     public Logger Logger { get; }
 
     /// <summary>
-    ///     插件的指令
+    /// 插件的指令
     /// </summary>
     public List<Command> Commands { get; } = new();
 
     /// <summary>
-    ///     插件信息
+    /// 插件信息
     /// </summary>
     public PluginAttribute PluginInfo { get; }
 
     /// <summary>
-    ///     插件基类构造函数
+    /// 插件基类构造函数
     /// </summary>
     public Plugin()
     {
@@ -143,7 +143,7 @@ public abstract class Plugin : IModule
     }
 
     /// <summary>
-    ///     处理消息事件
+    /// 处理消息事件
     /// </summary>
     /// <param name="ctx">消息上下文</param>
     public virtual void OnMessageReceived(MessageContext ctx)

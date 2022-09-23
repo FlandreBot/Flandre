@@ -20,7 +20,8 @@ Flandre 对聊天平台的结构进行抽象化，采用适配器模式兼容各
 
 目前已经实现的适配器：
 
-- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/main/Flandre.Adapters.Konata/README.md) - QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
+- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/main/Flandre.Adapters.Konata/README.md) - QQ
+  协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
 
 ## 起步
 
@@ -76,5 +77,7 @@ app
 
 本项目以 [MIT 许可证](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE) 开源 (′▽\`)╭(′▽\`)╯
 
-项目头像来自画师 [yasuharasora](https://www.pixiv.net/users/65707917) 的作品（[PID 91739274](https://www.pixiv.net/artworks/91739274)），若有侵权请联系我删除。  
-The project avatar is from [this artwork \(PID 91739274\)](https://www.pixiv.net/artworks/91739274) by [yasuharasora](https://www.pixiv.net/users/65707917). Please contact me for deletion if it violates rights.
+项目头像来自画师 [yasuharasora](https://www.pixiv.net/users/65707917)
+的作品（[PID 91739274](https://www.pixiv.net/artworks/91739274)），若有侵权请联系我删除。  
+The project avatar is from [this artwork \(PID 91739274\)](https://www.pixiv.net/artworks/91739274)
+by [yasuharasora](https://www.pixiv.net/users/65707917). Please contact me for deletion if it violates rights.

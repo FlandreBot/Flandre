@@ -13,16 +13,37 @@ using BotConfig = Flandre.Core.Common.BotConfig;
 
 namespace Flandre.Adapters.Konata;
 
+/// <summary>
+/// Konata Bot
+/// </summary>
 public class KonataBot : IBot
 {
+    /// <summary>
+    /// Konata 内部 bot
+    /// </summary>
     public Bot InnerBot { get; }
 
     private readonly Logger _logger;
     private readonly KonataBotConfig _config;
 
+    /// <summary>
+    /// 消息接收事件
+    /// </summary>
     public event IBot.BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
+
+    /// <summary>
+    /// 邀请入群事件
+    /// </summary>
     public event IBot.BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
+
+    /// <summary>
+    /// 加群事件
+    /// </summary>
     public event IBot.BotEventHandler<BotGuildRequestedEvent>? OnGuildRequested;
+
+    /// <summary>
+    /// 好友申请事件
+    /// </summary>
     public event IBot.BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 
     internal KonataBot(KonataBotConfig config, Logger logger)
@@ -43,6 +64,9 @@ public class KonataBot : IBot
 
     #region 生命周期
 
+    /// <summary>
+    /// 启动 bot
+    /// </summary>
     public async Task Start()
     {
         _logger.Info("Starting Konata Bot...");
@@ -56,6 +80,9 @@ public class KonataBot : IBot
         _logger.Info("Konata Bot started.");
     }
 
+    /// <summary>
+    /// 停止 bot
+    /// </summary>
     public Task Stop()
     {
         return Task.Run(() => InnerBot.Dispose());
@@ -65,6 +92,14 @@ public class KonataBot : IBot
 
     #region 发送消息
 
+    /// <summary>
+    /// 发送消息
+    /// </summary>
+    /// <param name="sourceType">消息类型</param>
+    /// <param name="guildId">Guild ID，可提供任意值</param>
+    /// <param name="channelId">群号</param>
+    /// <param name="userId">用户 QQ 号</param>
+    /// <param name="content">消息内容</param>
     public Task SendMessage(MessageSourceType sourceType, string guildId, string channelId, string userId,
         MessageContent content)
     {
@@ -76,18 +111,32 @@ public class KonataBot : IBot
         };
     }
 
+    /// <summary>
+    /// 发送消息
+    /// </summary>
+    /// <param name="message">消息对象</param>
     public Task SendMessage(Message message)
     {
         return SendMessage(message.SourceType, message.GuildId, message.ChannelId, message.Sender.Id, message.Content);
     }
 
+    /// <summary>
+    /// 发送群消息
+    /// </summary>
+    /// <param name="guildId">Guild ID，无需提供</param>
+    /// <param name="channelId">群号</param>
+    /// <param name="content">消息内容</param>
     public async Task SendChannelMessage(string guildId, string channelId, MessageContent content)
     {
         await InnerBot.SendGroupMessage(
             uint.Parse(channelId), content.ToKonataMessageChain());
     }
 
-
+    /// <summary>
+    /// 发送私聊消息
+    /// </summary>
+    /// <param name="userId">用户 QQ 号</param>
+    /// <param name="content">消息内容</param>
     public async Task SendPrivateMessage(string userId, MessageContent content)
     {
         await InnerBot.SendFriendMessage(
@@ -98,6 +147,9 @@ public class KonataBot : IBot
 
     #region 用户相关
 
+    /// <summary>
+    /// 获取自身信息
+    /// </summary>
     public Task<User> GetSelf()
     {
         return Task.FromResult(new User
@@ -109,11 +161,18 @@ public class KonataBot : IBot
         });
     }
 
+    /// <summary>
+    /// 获取用户信息
+    /// </summary>
+    /// <param name="userId">用户 QQ 号</param>
     public async Task<User?> GetUser(string userId)
     {
         return (await GetFriendList()).FirstOrDefault(user => user.Id == userId);
     }
 
+    /// <summary>
+    /// 获取好友列表
+    /// </summary>
     public async Task<IEnumerable<User>> GetFriendList()
     {
         return (await InnerBot.GetFriendList(true)).Select(friend => new User
@@ -142,7 +201,7 @@ public class KonataBot : IBot
     }
 
     /// <summary>
-    ///     获取群成员信息
+    /// 获取群成员信息
     /// </summary>
     /// <param name="guildId">群号</param>
     /// <param name="userId">群成员 QQ</param>
@@ -152,7 +211,7 @@ public class KonataBot : IBot
     }
 
     /// <summary>
-    ///     获取群成员列表
+    /// 获取群成员列表
     /// </summary>
     /// <param name="guildId">群号</param>
     public async Task<IEnumerable<GuildMember>> GetGuildMemberList(string guildId)
@@ -172,11 +231,18 @@ public class KonataBot : IBot
 
     #region Channel 相关
 
+    /// <summary>
+    /// 获取群信息
+    /// </summary>
+    /// <param name="channelId">群号</param>
     public async Task<Channel?> GetChannel(string channelId)
     {
         return (await GetChannelList()).FirstOrDefault(channel => channel.Id == channelId);
     }
 
+    /// <summary>
+    /// 获取群列表
+    /// </summary>
     public async Task<IEnumerable<Channel>> GetChannelList()
     {
         return (await InnerBot.GetGroupList(true))
@@ -257,11 +323,23 @@ public class KonataBot : IBot
     #endregion 事件
 }
 
+/// <summary>
+/// Konata bot 配置
+/// </summary>
 public class KonataBotConfig : BotConfig
 {
+    /// <summary>
+    /// Konata 内部 bot 配置
+    /// </summary>
     public global::Konata.Core.Common.BotConfig Konata { get; set; } = global::Konata.Core.Common.BotConfig.Default();
 
+    /// <summary>
+    /// Konata 设备信息
+    /// </summary>
     public BotDevice Device { get; set; } = BotDevice.Default();
 
+    /// <summary>
+    /// Konata 密钥信息
+    /// </summary>
     public BotKeyStore KeyStore { get; set; } = new();
 }

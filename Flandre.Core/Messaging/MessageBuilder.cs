@@ -3,14 +3,14 @@
 namespace Flandre.Core.Messaging;
 
 /// <summary>
-///     消息构造器
+/// 消息构造器
 /// </summary>
 public class MessageBuilder
 {
     public List<MessageSegment> Segments = new();
 
     /// <summary>
-    ///     添加文本消息段
+    /// 添加文本消息段
     /// </summary>
     /// <param name="text">文本</param>
     public MessageBuilder Text(string text)
@@ -20,7 +20,7 @@ public class MessageBuilder
     }
 
     /// <summary>
-    ///     添加图片消息段
+    /// 添加图片消息段
     /// </summary>
     /// <param name="imageSegment">图片消息段</param>
     public MessageBuilder Image(ImageSegment imageSegment)
@@ -30,7 +30,7 @@ public class MessageBuilder
     }
 
     /// <summary>
-    ///     添加消息段
+    /// 添加消息段
     /// </summary>
     /// <param name="segment">消息段</param>
     public MessageBuilder Add(MessageSegment segment)
@@ -40,7 +40,7 @@ public class MessageBuilder
     }
 
     /// <summary>
-    ///     构造为 MessageContent
+    /// 构造为 MessageContent
     /// </summary>
     public MessageContent Build()
     {

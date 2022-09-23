@@ -3,33 +3,33 @@
 namespace Flandre.Core.Attributes;
 
 /// <summary>
-///     指令选项特性
+/// 指令选项特性
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class OptionAttribute : Attribute
 {
     /// <summary>
-    ///     选项名称
+    /// 选项名称
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    ///     选项别名
+    /// 选项别名
     /// </summary>
     public string? Alias { get; }
 
     /// <summary>
-    ///     选项类型
+    /// 选项类型
     /// </summary>
     internal string Type { get; }
 
     /// <summary>
-    ///     选项值是否为必选
+    /// 选项值是否为必选
     /// </summary>
     internal bool IsValueRequired { get; }
 
     /// <summary>
-    ///     注册指令选项
+    /// 注册指令选项
     /// </summary>
     /// <param name="name">选项名称</param>
     /// <param name="pattern">选项格式</param>

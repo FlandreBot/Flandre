@@ -1,14 +1,14 @@
 ﻿namespace Flandre.Core.Common;
 
 /// <summary>
-///     指令选项
+/// 指令选项
 /// </summary>
 public class OptionManager
 {
     private readonly Dictionary<string, object> _optionsDict = new();
 
     /// <summary>
-    ///     获取选项值
+    /// 获取选项值
     /// </summary>
     /// <param name="key">选项名称</param>
     /// <returns>若未提供该选项则返回 null</returns>
@@ -18,7 +18,7 @@ public class OptionManager
     }
 
     /// <summary>
-    ///     获取匹配类型的选项
+    /// 获取匹配类型的选项
     /// </summary>
     /// <param name="key">选项名称</param>
     /// <typeparam name="T">返回类型</typeparam>

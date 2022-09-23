@@ -6,5 +6,6 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Adapters.Konata?style=flat-square&label=Downloads&color=f06292)](https://www.nuget.org/packages/Flandre.Adapters.Konata/)
 
 ## 小贴士
+
 - 由于 Konata 机制，在接收到的消息中，图片消息段 (`ImageSegment`) 将固定只包含 `Url` 属性，为图片的链接，需要自行下载。
 - ~~想到什么再补~~

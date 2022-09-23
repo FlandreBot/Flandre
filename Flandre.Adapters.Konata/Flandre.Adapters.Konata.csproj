@@ -29,7 +29,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Flandre.Core\Flandre.Core.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="/"/>
         <None Include="../avatar.jpg" Pack="true" PackagePath="/"/>

@@ -3,14 +3,14 @@
 namespace Flandre.Core.Common;
 
 /// <summary>
-///     指令参数
+/// 指令参数
 /// </summary>
 public class ArgumentManager : IEnumerable<KeyValuePair<string, object>>
 {
     internal readonly List<KeyValuePair<string, object>> ArgumentList = new();
 
     /// <summary>
-    ///     获取参数列表的 Enumerator
+    /// 获取参数列表的 Enumerator
     /// </summary>
     public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
     {
@@ -23,13 +23,13 @@ public class ArgumentManager : IEnumerable<KeyValuePair<string, object>>
     }
 
     /// <summary>
-    ///     获取参数
+    /// 获取参数
     /// </summary>
     /// <param name="index">参数索引</param>
     public object this[int index] => ArgumentList[index].Value;
 
     /// <summary>
-    ///     根据索引获取参数，值将被强制转换为 T 类型
+    /// 根据索引获取参数，值将被强制转换为 T 类型
     /// </summary>
     /// <param name="index">参数索引</param>
     /// <typeparam name="T">返回类型</typeparam>
@@ -39,7 +39,7 @@ public class ArgumentManager : IEnumerable<KeyValuePair<string, object>>
     }
 
     /// <summary>
-    ///     根据名称获取参数，值将被强制转换为 T 类型
+    /// 根据名称获取参数，值将被强制转换为 T 类型
     /// </summary>
     /// <param name="name">参数名称</param>
     /// <typeparam name="T">返回类型</typeparam>
@@ -49,7 +49,7 @@ public class ArgumentManager : IEnumerable<KeyValuePair<string, object>>
     }
 
     /// <summary>
-    ///     根据索引获取参数
+    /// 根据索引获取参数
     /// </summary>
     /// <param name="index">参数索引</param>
     /// <typeparam name="T">返回类型</typeparam>
@@ -61,7 +61,7 @@ public class ArgumentManager : IEnumerable<KeyValuePair<string, object>>
     }
 
     /// <summary>
-    ///     根据名称获取参数
+    /// 根据名称获取参数
     /// </summary>
     /// <param name="name">参数名称</param>
     /// <typeparam name="T">返回类型</typeparam>
