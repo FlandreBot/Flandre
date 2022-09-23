@@ -17,12 +17,30 @@
 **项目仍在早期开发阶段，功能尚未完善，可能带来 API 的非兼容性变更。**  
 **如果您对项目的开发感兴趣，诚挚欢迎您的改进建议或 PR 贡献。**
 
-Flandre 对聊天平台的结构进行抽象化，采用适配器模式兼容各大聊天平台，同时提供了良好的开发体验。
+## 特性
+
+### 跨平台
+
+Flandre 自设计之初就是为了跨平台，对聊天平台的结构进行抽象化，采用适配器模式兼容各大聊天平台，同时提供了良好的开发体验。
 
 目前已经实现的适配器：
 
-- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/main/Flandre.Adapters.Konata/README.md) - QQ
-  协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
+- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/main/Flandre.Adapters.Konata/README.md) - QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
+
+### 指令系统
+
+得益于内置的指令解析系统，开发者可以方便地掌控指令的参数信息，包括但不限于参数数量检查，类型检查，参数默认值等等。而所有的定义可以在一个字符串内完成，例如：
+
+```csharp
+[Command("example <foo:string> [bar:double] [baz:int=114514]")]
+```
+
+### 事件驱动
+
+Flandre 内部采用各类事件控制，开发者可以轻松地通过订阅事件/重写相关方法的方式控制应用的运行流程。  
+_注：事件系统仍在完善当中_
+
+~~才发布没多久的项目再吹就吹过了~~
 
 ## 起步
 
@@ -157,8 +175,3 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 ## License
 
 本项目以 [MIT 许可证](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE) 开源 (′▽\`)╭(′▽\`)╯
-
-项目头像来自画师 [yasuharasora](https://www.pixiv.net/users/65707917)
-的作品（[PID 91739274](https://www.pixiv.net/artworks/91739274)），若有侵权请联系我删除。  
-The project avatar is from [this artwork \(PID 91739274\)](https://www.pixiv.net/artworks/91739274)
-by [yasuharasora](https://www.pixiv.net/users/65707917). Please contact me for deletion if it violates rights.
