@@ -20,7 +20,7 @@ jobs:
 
       - name: Publish on Version Change
         id: publish-nuget-core
-        uses: brandedoutcast/publish-nuget@v2
+        uses: alirezanet/publish-nuget@v3.0.4
         with:
           PROJECT_FILE_PATH: Flandre.Core/Flandre.Core.csproj
           PACKAGE_NAME: Flandre.Core
