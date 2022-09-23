@@ -1,0 +1,32 @@
+﻿name: Publish NuGet Packages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  publish-core:
+    name: Publish Flandre.Core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.x.x
+
+      - name: Publish on Version Change
+        id: publish-nuget-core
+        uses: brandedoutcast/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: Flandre.Core/Flandre.Core.csproj
+          PACKAGE_NAME: Flandre.Core
+          VERSION_FILE_PATH: Flandre.Core/Flandre.Core.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: true
+          TAG_FORMAT: v*
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          INCLUDE_SYMBOLS: false
