@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish-core:
-    name: Publish Flandre.Core
+    name: Publish NuGet Packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,8 +18,8 @@ jobs:
         with:
           dotnet-version: 6.x.x
 
-      - name: Publish on Version Change
-        id: publish-nuget-core
+      - name: Publish Core
+        id: publish-core
         uses: alirezanet/publish-nuget@v3.0.4
         with:
           PROJECT_FILE_PATH: Flandre.Core/Flandre.Core.csproj
@@ -28,5 +28,17 @@ jobs:
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
           TAG_COMMIT: true
           TAG_FORMAT: v*
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          INCLUDE_SYMBOLS: false
+
+      - name: Publish Adapters.Konata
+        id: publish-adapter-konata
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: Flandre.Adapters.Konata/Flandre.Adapters.Konata.csproj
+          PACKAGE_NAME: Flandre.Adapters.Konata
+          VERSION_FILE_PATH: Flandre.Adapters.Konata/Flandre.Adapters.Konata.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           INCLUDE_SYMBOLS: false
