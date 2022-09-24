@@ -46,6 +46,58 @@ public class KonataBot : IBot
     /// </summary>
     public event IBot.BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 
+    #region 事件处理
+
+    /// <summary>
+    /// 处理拉群邀请
+    /// </summary>
+    /// <param name="e">拉群邀请事件</param>
+    /// <param name="approve">是否同意</param>
+    /// <param name="comment">附加说明</param>
+    public async Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null)
+    {
+        if (approve)
+            await InnerBot.ApproveGroupInvitation(
+                uint.Parse(e.GuildId), uint.Parse(e.InviterId), (long)e.EventMessage!);
+        else
+            await InnerBot.DeclineGroupInvitation(
+                uint.Parse(e.GuildId), uint.Parse(e.InviterId), (long)e.EventMessage!, comment ?? "");
+    }
+
+    /// <summary>
+    /// 处理加群申请
+    /// </summary>
+    /// <param name="e">加群申请事件</param>
+    /// <param name="approve">是否同意</param>
+    /// <param name="comment">附加说明</param>
+    public async Task HandleGuildRequest(BotGuildRequestedEvent e, bool approve, string? comment = null)
+    {
+        if (approve)
+            await InnerBot.ApproveGroupRequestJoin(
+                uint.Parse(e.GuildId), uint.Parse(e.RequesterId), (long)e.EventMessage!);
+        else
+            await InnerBot.DeclineGroupRequestJoin(
+                uint.Parse(e.GuildId), uint.Parse(e.RequesterId), (long)e.EventMessage!, comment ?? "");
+    }
+
+    /// <summary>
+    /// 处理好友申请
+    /// </summary>
+    /// <param name="e">好友申请事件</param>
+    /// <param name="approve">是否同意</param>
+    /// <param name="comment">附加说明</param>
+    public async Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null)
+    {
+        if (approve)
+            await InnerBot.ApproveFriendRequest(
+                uint.Parse(e.RequesterId), (long)e.EventMessage!);
+        else
+            await InnerBot.DeclineFriendRequest(
+                uint.Parse(e.RequesterId), (long)e.EventMessage!);
+    }
+
+    #endregion
+
     internal KonataBot(KonataBotConfig config, Logger logger)
     {
         InnerBot = BotFather.Create(config.Konata, config.Device, config.KeyStore);
@@ -271,20 +323,29 @@ public class KonataBot : IBot
     {
         OnGuildInvited?.Invoke(this, new BotGuildInvitedEvent(
             e.GroupName, e.GroupUin.ToString(),
-            e.InviterNick, e.InviterUin.ToString(), e.InviterIsAdmin));
+            e.InviterNick, e.InviterUin.ToString(), e.InviterIsAdmin)
+        {
+            EventMessage = e.Token
+        });
     }
 
     private void InnerOnGroupRequestJoin(Bot bot, GroupRequestJoinEvent e)
     {
         OnGuildRequested?.Invoke(this, new BotGuildRequestedEvent(
             e.GroupName, e.GroupUin.ToString(),
-            e.ReqNick, e.ReqUin.ToString(), e.ReqComment));
+            e.ReqNick, e.ReqUin.ToString(), e.ReqComment)
+        {
+            EventMessage = e.Token
+        });
     }
 
     private void InnerOnFriendRequest(Bot bot, FriendRequestEvent e)
     {
         OnFriendRequested?.Invoke(this, new BotFriendRequestedEvent(
-            e.ReqNick, e.ReqUin.ToString(), e.ReqComment));
+            e.ReqNick, e.ReqUin.ToString(), e.ReqComment)
+        {
+            EventMessage = e.Token
+        });
     }
 
     private void InnerOnCaptcha(Bot bot, CaptchaEvent e)

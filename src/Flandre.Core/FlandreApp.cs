@@ -96,28 +96,7 @@ public class FlandreApp
         Task.WaitAll(_adapters.ConvertAll(adapter => adapter.Start()).ToArray());
 
         // 为所有模块注册消息事件
-        foreach (var bot in _bots)
-        foreach (var plugin in _plugins)
-            bot.OnMessageReceived += (b, e) =>
-            {
-                var ctx = new MessageContext(this, b, e.Message);
-                try
-                {
-                    plugin.OnMessageReceived(ctx);
-                    var content = plugin.OnCommandParsing(ctx);
-                    if (content is not null)
-                        b.SendMessage(e.Message.SourceType,
-                            e.Message.GuildId, e.Message.ChannelId, e.Message.Sender.Id, content);
-                }
-                catch (TargetInvocationException exception)
-                {
-                    plugin.Logger.Error(exception.InnerException ?? exception);
-                }
-                catch (Exception ex)
-                {
-                    plugin.Logger.Error(ex);
-                }
-            };
+        SubscribeEvents();
 
         OnAppReady?.Invoke(this, new AppReadyEvent());
 
@@ -133,6 +112,40 @@ public class FlandreApp
             Logger.Error((Exception)args.ExceptionObject);
 
         Task.Delay(-1);
+    }
+
+    private void SubscribeEvents()
+    {
+        foreach (var bot in _bots)
+        foreach (var plugin in _plugins)
+        {
+            bot.OnMessageReceived += (_, e) =>
+            {
+                var ctx = new MessageContext(this, bot, e.Message);
+                try
+                {
+                    plugin.OnMessageReceived(ctx);
+                    var content = plugin.OnCommandParsing(ctx);
+                    if (content is not null)
+                        bot.SendMessage(e.Message.SourceType,
+                            e.Message.GuildId, e.Message.ChannelId, e.Message.Sender.Id, content);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    plugin.Logger.Error(exception.InnerException ?? exception);
+                }
+                catch (Exception ex)
+                {
+                    plugin.Logger.Error(ex);
+                }
+            };
+
+            var ctx = new Context(this, bot);
+
+            bot.OnGuildInvited += (_, e) => plugin.OnGuildInvited(ctx, e);
+            bot.OnGuildRequested += (_, e) => plugin.OnGuildRequested(ctx, e);
+            bot.OnFriendRequested += (_, e) => plugin.OnFriendRequested(ctx, e);
+        }
     }
 }
 

@@ -8,7 +8,12 @@ public class BaseEvent : EventArgs
     /// <summary>
     /// 事件时间
     /// </summary>
-    public DateTime EventTime { get; }
+    public DateTime EventTime { get; init; }
+
+    /// <summary>
+    /// 事件附带消息
+    /// </summary>
+    public object? EventMessage { get; init; }
 
     internal BaseEvent()
     {

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Flandre.Core.Attributes;
+using Flandre.Core.Events.Bot;
 using Flandre.Core.Messaging;
 using Flandre.Core.Utils;
 
@@ -147,6 +148,33 @@ public abstract class Plugin : IModule
     /// </summary>
     /// <param name="ctx">消息上下文</param>
     public virtual void OnMessageReceived(MessageContext ctx)
+    {
+    }
+
+    /// <summary>
+    /// 收到拉群邀请
+    /// </summary>
+    /// <param name="ctx">当前上下文</param>
+    /// <param name="e">拉群邀请事件</param>
+    public virtual void OnGuildInvited(Context ctx, BotGuildInvitedEvent e)
+    {
+    }
+
+    /// <summary>
+    /// 收到入群申请
+    /// </summary>
+    /// <param name="ctx">当前上下文</param>
+    /// <param name="e">入群申请事件</param>
+    public virtual void OnGuildRequested(Context ctx, BotGuildRequestedEvent e)
+    {
+    }
+
+    /// <summary>
+    /// 收到好友申请
+    /// </summary>
+    /// <param name="ctx">当前上下文</param>
+    /// <param name="e">好友申请事件</param>
+    public virtual void OnFriendRequested(Context ctx, BotFriendRequestedEvent e)
     {
     }
 }

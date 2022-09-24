@@ -151,6 +151,34 @@ public interface IBot
     event BotEventHandler<BotFriendRequestedEvent> OnFriendRequested;
 
     #endregion 事件相关
+
+    #region 事件处理
+
+    /// <summary>
+    /// 处理拉群邀请
+    /// </summary>
+    /// <param name="e">拉群邀请事件</param>
+    /// <param name="approve">是否同意</param>
+    /// <param name="comment">附加说明</param>
+    Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null);
+
+    /// <summary>
+    /// 处理加群申请
+    /// </summary>
+    /// <param name="e">加群申请事件</param>
+    /// <param name="approve">是否同意</param>
+    /// <param name="comment">附加说明</param>
+    Task HandleGuildRequest(BotGuildRequestedEvent e, bool approve, string? comment = null);
+
+    /// <summary>
+    /// 处理好友申请
+    /// </summary>
+    /// <param name="e">好友申请事件</param>
+    /// <param name="approve">是否同意</param>
+    /// <param name="comment">附加说明</param>
+    Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null);
+
+    #endregion
 }
 
 /// <summary>
