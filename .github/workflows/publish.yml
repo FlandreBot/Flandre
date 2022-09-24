@@ -22,9 +22,9 @@ jobs:
         id: publish-core
         uses: alirezanet/publish-nuget@v3.0.4
         with:
-          PROJECT_FILE_PATH: Flandre.Core/Flandre.Core.csproj
+          PROJECT_FILE_PATH: src/Flandre.Core/Flandre.Core.csproj
           PACKAGE_NAME: Flandre.Core
-          VERSION_FILE_PATH: Flandre.Core/Flandre.Core.csproj
+          VERSION_FILE_PATH: src/Flandre.Core/Flandre.Core.csproj
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
           TAG_COMMIT: true
           TAG_FORMAT: v*
@@ -35,9 +35,9 @@ jobs:
         id: publish-adapter-konata
         uses: alirezanet/publish-nuget@v3.0.4
         with:
-          PROJECT_FILE_PATH: Flandre.Adapters.Konata/Flandre.Adapters.Konata.csproj
+          PROJECT_FILE_PATH: src/Flandre.Adapters.Konata/Flandre.Adapters.Konata.csproj
           PACKAGE_NAME: Flandre.Adapters.Konata
-          VERSION_FILE_PATH: Flandre.Adapters.Konata/Flandre.Adapters.Konata.csproj
+          VERSION_FILE_PATH: src/Flandre.Adapters.Konata/Flandre.Adapters.Konata.csproj
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}

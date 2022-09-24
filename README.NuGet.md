@@ -25,7 +25,7 @@ Flandre 自设计之初就是为了跨平台，对聊天平台的结构进行抽
 
 目前已经实现的适配器：
 
-- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/main/Flandre.Adapters.Konata/README.md) - QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
+- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.Konata/README.md) - QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
 
 ### 指令系统
 
