@@ -1,0 +1,78 @@
+﻿name: Bug Report
+description: 错误报告
+title: "Bug: "
+
+labels:
+  - bug
+
+body:
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: 请简明地描述 bug 的基本信息。
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: 请描述如何重现这个行为。
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: 请描述正常情况下期望的行为。
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Screenshots or logs
+      description: 请尽量详细提供相关截图或日志等信息。
+
+  - type: input
+    attributes:
+      label: OS
+      description: 运行项目使用的操作系统。
+      placeholder: e.g. Windows 10
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: .NET version
+      description: 运行项目使用的 .NET 版本。
+      placeholder: e.g. 6.0.301
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Platform
+      description: 项目运行的聊天平台。
+      placeholder: e.g. QQ (Konata)
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Flandre.Core version
+      description: 项目使用的 Flandre.Core 版本。
+      placeholder: e.g. 0.2.0-alpha
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Adapter or plugin version
+      description: 使用的适配器或插件版本。
+      placeholder: |
+        e.g.
+        Flandre.Adapters.Konata: v0.1.0-alpha
+
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: 请描述其他想要补充的信息。
