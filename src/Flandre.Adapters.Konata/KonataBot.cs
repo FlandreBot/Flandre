@@ -275,7 +275,7 @@ public class KonataBot : IBot
                 Nickname = member.NickName,
                 Id = member.Uin.ToString(),
                 AvatarUrl = CommonUtils.GetAvatarUrl(member.Uin),
-                Roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { member.Role.ToString() }
+                Roles = new List<string> { member.Role.ToString() }
             });
     }
 
