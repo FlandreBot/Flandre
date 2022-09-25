@@ -5,5 +5,8 @@
 /// </summary>
 public class GuildMember : User
 {
-    public IReadOnlySet<string> Roles { get; init; } = new HashSet<string>();
+    /// <summary>
+    /// 成员角色
+    /// </summary>
+    public List<string> Roles { get; init; } = new ();
 }

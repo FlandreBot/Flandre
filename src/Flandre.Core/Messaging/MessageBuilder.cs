@@ -7,6 +7,9 @@ namespace Flandre.Core.Messaging;
 /// </summary>
 public class MessageBuilder
 {
+    /// <summary>
+    /// 已包含消息段
+    /// </summary>
     public List<MessageSegment> Segments = new();
 
     /// <summary>
