@@ -24,9 +24,9 @@ public class OptionAttribute : Attribute
     internal string Type { get; }
 
     /// <summary>
-    /// 选项值是否为必选
+    /// 选项默认值
     /// </summary>
-    internal bool IsValueRequired { get; }
+    internal object DefaultValue { get; }
 
     /// <summary>
     /// 注册指令选项
@@ -35,36 +35,30 @@ public class OptionAttribute : Attribute
     /// <param name="pattern">选项格式</param>
     public OptionAttribute(string name, string? pattern = null)
     {
-        Name = name;
+        Name = name.Trim();
         Type = "bool";
+        DefaultValue = false;
 
         if (pattern == null) return;
 
-        var patterns = pattern.Split(' ',
-            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var parser = new StringParser(pattern);
+        if (parser.SkipSpaces().IsEnd()) return;
 
-        string? nameDef = null, paramDef = null;
+        var first = parser.Read(' ');
 
-        if (patterns.Length == 1)
+        if (first.StartsWith('-'))
         {
-            if (patterns[0].StartsWith('-'))
-                nameDef = patterns[0];
-            else paramDef = patterns[0];
+            Alias = first.TrimStart('-');
+            if (parser.SkipSpaces().IsEnd()) return;
+            var info = CommandUtils.ParseParameterSection(parser.ReadToEnd(), cmdName: Name);
+            Type = info.Type;
+            DefaultValue = info.DefaultValue;
         }
         else
         {
-            nameDef = patterns[0];
-            paramDef = patterns[1];
-        }
-
-        if (nameDef != null)
-            Alias = nameDef.TrimStart('-');
-
-        if (paramDef != null)
-        {
-            var info = CommandUtils.ParseParameterSection(paramDef);
+            var info = CommandUtils.ParseParameterSection(first, cmdName: Name);
             Type = info.Type;
-            IsValueRequired = info.IsRequired;
+            DefaultValue = info.DefaultValue;
         }
     }
 }

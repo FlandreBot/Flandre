@@ -11,7 +11,7 @@ public class Command
     /// <summary>
     /// 指令信息
     /// </summary>
-    public CommandAttribute Info { get; }
+    public CommandAttribute CommandInfo { get; }
 
     /// <summary>
     /// 指令依赖方法
@@ -25,7 +25,7 @@ public class Command
 
     internal Command(CommandAttribute info, MethodInfo innerMethod, List<OptionAttribute> options)
     {
-        Info = info;
+        CommandInfo = info;
         InnerMethod = innerMethod;
         Options = options;
     }

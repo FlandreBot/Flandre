@@ -1,21 +1,13 @@
-﻿namespace Flandre.Core.Common;
+﻿using System.Collections;
+
+namespace Flandre.Core.Common;
 
 /// <summary>
 /// 指令选项
 /// </summary>
-public class OptionManager
+public class OptionManager : IEnumerable<KeyValuePair<string, object>>
 {
-    private readonly Dictionary<string, object> _optionsDict = new();
-
-    /// <summary>
-    /// 获取选项值
-    /// </summary>
-    /// <param name="key">选项名称</param>
-    /// <returns>若未提供该选项则返回 null</returns>
-    public string? Get(string key)
-    {
-        return _optionsDict.GetValueOrDefault(key)?.ToString();
-    }
+    internal readonly Dictionary<string, object> OptionsDict = new();
 
     /// <summary>
     /// 获取匹配类型的选项
@@ -23,9 +15,24 @@ public class OptionManager
     /// <param name="key">选项名称</param>
     /// <typeparam name="T">返回类型</typeparam>
     /// <returns>若未提供该选项，或类型错误则返回类型默认值</returns>
-    public T? Get<T>(string key)
+    public T? GetOrDefault<T>(string key)
     {
-        var value = _optionsDict.GetValueOrDefault(key);
+        var value = OptionsDict.GetValueOrDefault(key);
         return value is not null ? (T)value : default;
+    }
+
+    /// <summary>
+    /// 获取 Enumerator
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+    {
+        return OptionsDict.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

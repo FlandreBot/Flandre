@@ -94,6 +94,4 @@ public class ParameterInfo
     /// 参数默认值
     /// </summary>
     public object DefaultValue { get; internal set; } = "";
-
-    internal bool Provided;
 }

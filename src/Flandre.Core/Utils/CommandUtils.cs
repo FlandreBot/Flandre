@@ -4,7 +4,8 @@ namespace Flandre.Core.Utils;
 
 internal static class CommandUtils
 {
-    internal static ParameterInfo ParseParameterSection(string section, string cmdName = "")
+    internal static ParameterInfo ParseParameterSection(string section, string defaultType = "string",
+        string cmdName = "")
     {
         var info = new ParameterInfo();
         if (section[0] == '<')
@@ -13,9 +14,9 @@ internal static class CommandUtils
         var innerRight = section[1..^1].Split('=');
         var innerLeft = innerRight[0].Split(':');
         info.Name = innerLeft[0].Trim();
-        info.Type = innerLeft.Length > 1 ? innerLeft[1].Trim().ToLower() : "string";
+        info.Type = innerLeft.Length > 1 ? innerLeft[1].Trim().ToLower() : defaultType;
 
-        info.DefaultValue = GetTypeDefaultValue(info.Type);
+        info.DefaultValue = GetTypeDefaultValue(info.Type, defaultType);
 
         // 默认值
         if (!info.IsRequired && innerRight.Length > 1)
@@ -29,7 +30,7 @@ internal static class CommandUtils
         return info;
     }
 
-    internal static object GetTypeDefaultValue(string type)
+    internal static object GetTypeDefaultValue(string type, string fallbackType = "string")
     {
         return type switch
         {
@@ -46,9 +47,10 @@ internal static class CommandUtils
             "uint" => default(uint),
             "ulong" => default(ulong),
             "ushort" => default(ushort),
+            "string" => "",
 
             // string or other
-            _ => ""
+            _ => GetTypeDefaultValue(fallbackType)
         };
     }
 
@@ -61,13 +63,7 @@ internal static class CommandUtils
             case "string":
                 if (!parseString) break;
                 var parser = new StringParser(section);
-                var quote = parser.Peek(1);
-                result = quote switch
-                {
-                    "\"" => parser.Read('\"', 1),
-                    "\'" => parser.Read('\'', 1),
-                    _ => parser.Read(' ')
-                };
+                result = parser.ReadQuoted();
                 break;
 
             case "bool":

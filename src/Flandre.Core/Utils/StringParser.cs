@@ -77,6 +77,17 @@ internal class StringParser
         return value;
     }
 
+    internal string ReadQuoted()
+    {
+        if (IsEnd()) return "";
+        return Peek(1) switch
+        {
+            "\"" => Read('\"', 1),
+            "\'" => Read('\'', 1),
+            _ => Read(' ')
+        };
+    }
+
     private int FixIndex(int index)
     {
         return index < 0 ? _str.Length : index;

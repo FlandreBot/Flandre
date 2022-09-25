@@ -59,7 +59,7 @@ public abstract class Plugin : IModule
         {
             var basePattern = ctx.App.Config.CommandPrefix +
                               (PluginInfo.BaseCommand + ' ' +
-                               command.Info.Command).TrimStart();
+                               command.CommandInfo.Command).TrimStart();
 
             var startsWithFlag = commandStr.StartsWith(basePattern);
 
@@ -92,30 +92,58 @@ public abstract class Plugin : IModule
 
         while (!parser.IsEnd())
         {
-            parser.SkipSpaces();
+            var peek = parser.SkipSpaces().Peek(' ');
 
-            if (parser.Peek(' ').StartsWith('-'))
+            if (peek.StartsWith('-'))
             {
                 // option
+                var optName = parser.Read(' ').TrimStart('-');
+                var optNo = false;
+
+                if (optName.Length > 3 && optName.StartsWith("no-"))
+                {
+                    optName = optName[3..];
+                    optNo = true;
+                }
+
+                var option = command.Options.FirstOrDefault(opt => opt.Alias == optName)
+                             ?? command.Options.FirstOrDefault(opt => opt.Name == optName);
+                if (option is null)
+                    return (args, $"未知选项：{optName}。");
+
+                parser.SkipSpaces();
+
+                switch (option.Type)
+                {
+                    case "bool":
+                        args.Options.OptionsDict[option.Name] = !optNo;
+                        break;
+
+                    case "string":
+                        args.Options.OptionsDict[option.Name] = parser.ReadQuoted();
+                        break;
+
+                    default:
+                        if (CommandUtils.TryParseType(parser.Read(' '),
+                                option.Type, out var result, false))
+                            args.Options.OptionsDict[option.Name] = result;
+                        else return (args, $"选项 {option.Name} 类型错误，应为 {option.Type}。");
+                        break;
+                }
             }
             else
             {
                 // argument
-                if (argIndex >= command.Info.Parameters.Count)
+                if (argIndex >= command.CommandInfo.Parameters.Count)
                     return (args, "参数过多，请检查指令格式。");
 
-                var param = command.Info.Parameters[argIndex];
+                var param = command.CommandInfo.Parameters[argIndex];
 
                 if (param.Type == "string")
                 {
                     var quote = parser.Peek(1);
                     args.Arguments.ArgumentList.Add(
-                        new KeyValuePair<string, object>(param.Name, quote switch
-                        {
-                            "\"" => parser.Read('\"', 1),
-                            "\'" => parser.Read('\'', 1),
-                            _ => parser.Read(' ')
-                        }));
+                        new KeyValuePair<string, object>(param.Name, parser.ReadQuoted()));
                 }
                 else
                 {
@@ -130,8 +158,8 @@ public abstract class Plugin : IModule
             }
         }
 
-        // 参数默认值
-        foreach (var param in command.Info.Parameters)
+        // 默认值
+        foreach (var param in command.CommandInfo.Parameters)
         {
             var provided = providedArgs.Contains(param.Name);
             if (param.IsRequired && !provided)
@@ -139,6 +167,10 @@ public abstract class Plugin : IModule
             if (param.IsRequired || provided) continue;
             args.Arguments.ArgumentList.Add(new KeyValuePair<string, object>(param.Name, param.DefaultValue));
         }
+
+        foreach (var opt in command.Options)
+            if (!args.Options.OptionsDict.ContainsKey(opt.Name))
+                args.Options.OptionsDict[opt.Name] = opt.DefaultValue;
 
         return (args, null);
     }
