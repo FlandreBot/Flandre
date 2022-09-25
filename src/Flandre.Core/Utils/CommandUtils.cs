@@ -8,6 +8,8 @@ internal static class CommandUtils
         string cmdName = "")
     {
         var info = new ParameterInfo();
+        section = section.Trim();
+        
         if (section[0] == '<')
             info.IsRequired = true;
 
@@ -37,7 +39,6 @@ internal static class CommandUtils
             "bool" => default(bool),
             "byte" => default(byte),
             "char" => default(char),
-            "decimal" => default(decimal),
             "double" => default(double),
             "float" => default(float),
             "int" => default(int),
@@ -78,11 +79,6 @@ internal static class CommandUtils
 
             case "char":
                 if (char.TryParse(section, out var charVal)) result = charVal;
-                else return false;
-                break;
-
-            case "decimal":
-                if (decimal.TryParse(section, out var decimalVal)) result = decimalVal;
                 else return false;
                 break;
 
