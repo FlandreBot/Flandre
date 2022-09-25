@@ -23,8 +23,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="../README.NuGet.md" Pack="true" PackagePath="/"/>
-        <None Include="../../assets/avatar.jpg" Pack="true" PackagePath="/"/>
+        <None Include="../README.NuGet.md" Pack="true" PackagePath="/" />
+        <None Include="../../assets/avatar.jpg" Pack="true" PackagePath="/" />
     </ItemGroup>
 
 </Project>

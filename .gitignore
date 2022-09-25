@@ -4,6 +4,11 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .idea/
+*.user
+
+# Code Coverage
+code-coverage/
+TestResults/
 
 # Temporarily hide for test
 Flandre.ExampleBot/

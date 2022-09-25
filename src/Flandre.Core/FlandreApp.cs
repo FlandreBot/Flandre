@@ -2,6 +2,9 @@
 using Flandre.Core.Common;
 using Flandre.Core.Events.App;
 using Flandre.Core.Utils;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Flandre.Core.Tests")]
 
 // ReSharper disable EventNeverSubscribedTo.Global
 // ReSharper disable MemberCanBePrivate.Global
