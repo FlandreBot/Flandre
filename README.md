@@ -13,6 +13,7 @@
 [![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat-square&label=NuGet&color=f06292)](https://www.nuget.org/packages/Flandre.Core/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Core?style=flat-square&label=Downloads&color=ffb300)](https://www.nuget.org/packages/Flandre.Core/)
 [![.NET Version](https://img.shields.io/badge/.NET-6-ffe57f?style=flat-square)](https://www.nuget.org/packages/Flandre.Core/)
+[![Codecov](https://img.shields.io/codecov/c/gh/FlandreDevs/Flandre/dev?style=flat-square&color=a5d6a7&label=Coverage)](https://app.codecov.io/gh/FlandreDevs/Flandre)
 
 · [使用文档](https://flandredevs.github.io/) ·
 
