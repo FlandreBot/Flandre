@@ -10,6 +10,8 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Core?style=flat-square&label=Downloads&color=ffb300)](https://www.nuget.org/packages/Flandre.Core/)
 [![.NET Version](https://img.shields.io/badge/.NET-6-ffe57f?style=flat-square)](https://www.nuget.org/packages/Flandre.Core/)
 
+· [使用文档](https://flandredevs.github.io/) ·
+
 本项目的名称来源于东方 Project 中的角色芙兰朵露 · 斯卡雷特 (Flandre Scarlet) ~~(番茄炒蛋)~~
 
 ---
@@ -61,7 +63,7 @@ config.Bots.Add(new KonataBotConfig
 
 class ExamplePlugin : Plugin
 {
-    public override void OnMessageReceived(Context ctx)
+    public override void OnMessageReceived(MessageContext ctx)
         => ctx.Bot.SendMessage(ctx.Message);
 }
 
