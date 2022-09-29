@@ -13,15 +13,15 @@ public class User
     /// <summary>
     /// 用户昵称
     /// </summary>
-    public string Nickname { get; set; } = "";
+    public string Nickname { get; init; } = "";
 
     /// <summary>
     /// 用户 ID
     /// </summary>
-    public string Id { get; set; } = "";
+    public string Id { get; init; } = "";
 
     /// <summary>
     /// 用户头像 URL
     /// </summary>
-    public string AvatarUrl { get; set; } = "";
+    public string? AvatarUrl { get; init; }
 }

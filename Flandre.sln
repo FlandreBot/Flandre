@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Konata", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core.Tests", "tests\Flandre.Core.Tests\Flandre.Core.Tests.csproj", "{22726A9B-8E54-4513-AB04-61B4A34DDC2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.TestKit", "src\Flandre.TestKit\Flandre.TestKit.csproj", "{18C926FE-1F45-421C-A19B-BB914DBD7437}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{22726A9B-8E54-4513-AB04-61B4A34DDC2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22726A9B-8E54-4513-AB04-61B4A34DDC2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22726A9B-8E54-4513-AB04-61B4A34DDC2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18C926FE-1F45-421C-A19B-BB914DBD7437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18C926FE-1F45-421C-A19B-BB914DBD7437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18C926FE-1F45-421C-A19B-BB914DBD7437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18C926FE-1F45-421C-A19B-BB914DBD7437}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -5,6 +5,7 @@ using Flandre.Core.Utils;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Flandre.Core.Tests")]
+[assembly: InternalsVisibleTo("Flandre.TestKit")]
 
 // ReSharper disable EventNeverSubscribedTo.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -19,9 +20,11 @@ public class FlandreApp
 {
     private readonly List<IAdapter<IBot>> _adapters = new();
 
-    private readonly List<IBot> _bots = new();
+    internal readonly List<IBot> Bots = new();
 
-    private readonly List<Plugin> _plugins = new();
+    internal readonly List<Plugin> Plugins = new();
+
+    private readonly CancellationTokenSource _appStopTokenSource = new();
 
     internal static Logger Logger { get; } = new("App");
 
@@ -75,11 +78,11 @@ public class FlandreApp
         {
             case IAdapter<IBot> adapter:
                 _adapters.Add(adapter);
-                _bots.AddRange(adapter.GetBots());
+                Bots.AddRange(adapter.GetBots());
                 break;
 
             case Plugin plugin:
-                _plugins.Add(plugin);
+                Plugins.Add(plugin);
                 break;
         }
 
@@ -104,23 +107,28 @@ public class FlandreApp
         OnAppReady?.Invoke(this, new AppReadyEvent());
 
         // Ctrl+C
-        Console.CancelKeyPress += (_, _) =>
-        {
-            Task.WaitAll(_adapters.ConvertAll(adapter => adapter.Stop()).ToArray());
-            OnAppStopped?.Invoke(this, new AppStoppedEvent());
-            Environment.Exit(0);
-        };
+        Console.CancelKeyPress += (_, _) => Stop();
 
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
             Logger.Error((Exception)args.ExceptionObject);
 
-        Task.Delay(-1);
+        Task.Delay(-1, _appStopTokenSource.Token);
+    }
+
+    /// <summary>
+    /// 停止应用实例
+    /// </summary>
+    public void Stop()
+    {
+        Task.WaitAll(_adapters.ConvertAll(adapter => adapter.Stop()).ToArray());
+        OnAppStopped?.Invoke(this, new AppStoppedEvent());
+        _appStopTokenSource.Cancel();
     }
 
     private void SubscribeEvents()
     {
-        foreach (var bot in _bots)
-        foreach (var plugin in _plugins)
+        foreach (var bot in Bots)
+        foreach (var plugin in Plugins)
         {
             bot.OnMessageReceived += (_, e) =>
             {
