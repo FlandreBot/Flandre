@@ -21,8 +21,11 @@ public class FlandreAppTests
             var content = await channelClient.SendForReply("114514");
             Assert.Equal("114514", content?.GetText());
             
-            content = await friendClient.SendForReply("test1 true");
-            Assert.Equal("arg1: True", content?.GetText());
+            content = await friendClient.SendForReply("test1 true --opt 114.514");
+            Assert.Equal("arg1: True opt: 114.514", content?.GetText());
+            
+            content = await friendClient.SendForReply("test1  -o 1919.810  false");
+            Assert.Equal("arg1: False opt: 1919.81", content?.GetText());
 
             app.Stop();
         };
@@ -40,9 +43,11 @@ public class TestPlugin : Plugin
     }
 
     [Command("test1 <arg1:bool>")]
+    [Option("opt", "-o <opt:double>")]
     public static MessageContent OnTest1(MessageContext ctx, ParsedArgs args)
     {
         var arg1 = args.GetArgument<bool>("arg1");
-        return $"arg1: {arg1}";
+        var opt = args.Options.GetOrDefault<double>("opt");
+        return $"arg1: {arg1} opt: {opt}";
     }
 }
