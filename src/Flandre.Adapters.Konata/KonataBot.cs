@@ -240,16 +240,26 @@ public class KonataBot : IBot
 
     #region Guild 相关
 
-    /// <remarks>由于 Konata 暂不支持 QQ 频道，该方法将固定返回 null。</remarks>
-    public Task<Guild?> GetGuild(string guildId)
+    /// <summary>
+    /// 获取群信息
+    /// </summary>
+    /// <param name="guildId">群号</param>    
+    public async Task<Guild?> GetGuild(string guildId)
     {
-        return Task.FromResult<Guild?>(null);
+        return (await GetGuildList()).FirstOrDefault(guild => guild.Id == guildId);
     }
 
-    /// <remarks>由于 Konata 暂不支持 QQ 频道，该方法将固定返回空数组。</remarks>
-    public Task<IEnumerable<Guild>> GetGuildList()
+    /// <summary>
+    /// 获取 Bot 加入的群列表
+    /// </summary>
+    public async Task<IEnumerable<Guild>> GetGuildList()
     {
-        return Task.FromResult<IEnumerable<Guild>>(Array.Empty<Guild>());
+        return (await InnerBot.GetGroupList(true))
+            .Select(group => new Guild
+            {
+                Id = group.Uin.ToString(),
+                Name = group.Name
+            });
     }
 
     /// <summary>
@@ -283,26 +293,16 @@ public class KonataBot : IBot
 
     #region Channel 相关
 
-    /// <summary>
-    /// 获取群信息
-    /// </summary>
-    /// <param name="channelId">群号</param>
-    public async Task<Channel?> GetChannel(string channelId)
+    /// <remarks>由于 Konata 暂不支持 QQ 频道，该方法将固定返回 null。</remarks>
+    public Task<Channel?> GetChannel(string channelId)
     {
-        return (await GetChannelList()).FirstOrDefault(channel => channel.Id == channelId);
+        return Task.FromResult<Channel?>(null);
     }
 
-    /// <summary>
-    /// 获取群列表
-    /// </summary>
-    public async Task<IEnumerable<Channel>> GetChannelList()
+    /// <remarks>由于 Konata 暂不支持 QQ 频道，该方法将固定返回空数组。</remarks>
+    public Task<IEnumerable<Channel>> GetChannelList()
     {
-        return (await InnerBot.GetGroupList(true))
-            .Select(group => new Channel
-            {
-                Id = group.Uin.ToString(),
-                Name = group.Name
-            });
+        return Task.FromResult<IEnumerable<Channel>>(Array.Empty<Channel>());
     }
 
     #endregion Channel 相关
