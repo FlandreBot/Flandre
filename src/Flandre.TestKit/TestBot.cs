@@ -60,7 +60,7 @@ public class TestBot : IBot
         {
             Name = "Test Bot",
             Nickname = "Test Bot",
-            Id = _selfId,
+            Id = _selfId
         };
     }
 

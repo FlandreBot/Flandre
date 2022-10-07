@@ -47,28 +47,4 @@ public class ArgumentManager : IEnumerable<KeyValuePair<string, object>>
     {
         return (T)ArgumentList.First(arg => arg.Key == name).Value;
     }
-
-    /// <summary>
-    /// 根据索引获取参数
-    /// </summary>
-    /// <param name="index">参数索引</param>
-    /// <typeparam name="T">返回类型</typeparam>
-    /// <returns>参数值，若索引越界或无法转换则返回 default(T)</returns>
-    public T? GetOrDefault<T>(int index)
-    {
-        var result = ArgumentList.ElementAtOrDefault(index).Value;
-        return result is T casted ? casted : default;
-    }
-
-    /// <summary>
-    /// 根据名称获取参数
-    /// </summary>
-    /// <param name="name">参数名称</param>
-    /// <typeparam name="T">返回类型</typeparam>
-    /// <returns>参数值，若未找到或无法转换则返回 default(T)</returns>
-    public T? GetOrDefault<T>(string name)
-    {
-        var result = ArgumentList.FirstOrDefault(arg => arg.Key == name).Value;
-        return result is T casted ? casted : default;
-    }
 }

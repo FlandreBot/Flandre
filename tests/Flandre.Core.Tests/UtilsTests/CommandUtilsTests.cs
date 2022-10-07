@@ -6,8 +6,8 @@ public class CommandUtilsTests
 {
     [Theory]
     [InlineData("<alpha:double>", true, "double", default(double))]
-    [InlineData("<beta=1234>", true, "string", "")] // string arg type defaults to empty, not null
-    [InlineData("[gamma]", false, "string", "")]
+    [InlineData("<beta=1234>", true, "string", "1234")] // for option, allow required arg have default value
+    [InlineData("[gamma]", false, "string", "")] // string arg type defaults to empty, not null
     [InlineData("[]", false, "string", "")]
     [InlineData(" [epsilon: bool = true]  ", false, "bool", true)]
     [InlineData("[f: bool = 12345678]  ", false, "bool", false)] // wrong default value type

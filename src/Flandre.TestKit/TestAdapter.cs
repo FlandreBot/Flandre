@@ -7,7 +7,7 @@ namespace Flandre.TestKit;
 public class TestAdapter : IAdapter<TestBot>
 {
     internal readonly TestBot Bot = new();
-    
+
     public async Task Start()
     {
     }

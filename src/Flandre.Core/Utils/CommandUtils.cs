@@ -9,7 +9,7 @@ internal static class CommandUtils
     {
         var info = new ParameterInfo();
         section = section.Trim();
-        
+
         if (section[0] == '<')
             info.IsRequired = true;
 
@@ -21,7 +21,7 @@ internal static class CommandUtils
         info.DefaultValue = GetTypeDefaultValue(info.Type, defaultType);
 
         // 默认值
-        if (!info.IsRequired && innerRight.Length > 1)
+        if (innerRight.Length > 1)
         {
             if (TryParseType(innerRight[1].Trim(), info.Type, out var result))
                 info.DefaultValue = result;
