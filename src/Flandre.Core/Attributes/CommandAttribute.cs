@@ -32,7 +32,7 @@ public class CommandAttribute : Attribute
 
         while (!parser.IsEnd())
         {
-            var bracket = parser.Current();
+            var bracket = parser.Current;
             if (!"<[".Contains(bracket))
             {
                 parser.Read(' ');

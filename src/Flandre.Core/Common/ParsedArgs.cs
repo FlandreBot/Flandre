@@ -36,24 +36,12 @@ public class ParsedArgs
     }
 
     /// <summary>
-    /// 根据索引获取参数
-    /// </summary>
-    /// <param name="index">参数索引</param>
-    /// <typeparam name="T">返回类型</typeparam>
-    /// <returns>参数值，若索引越界或无法转换则返回 default(T)</returns>
-    public T? GetArgumentOrDefault<T>(int index)
-    {
-        return Arguments.GetOrDefault<T>(index);
-    }
-
-    /// <summary>
-    /// 根据名称获取参数
+    /// 根据名称获取选项，值将被强制转换为 T 类型
     /// </summary>
     /// <param name="name">参数名称</param>
     /// <typeparam name="T">返回类型</typeparam>
-    /// <returns>参数值，若未找到或无法转换则返回 default(T)</returns>
-    public T? GetArgumentOrDefault<T>(string name)
+    public T GetOption<T>(string name)
     {
-        return Arguments.GetOrDefault<T>(name);
+        return Options.Get<T>(name);
     }
 }

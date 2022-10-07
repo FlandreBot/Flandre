@@ -5,6 +5,8 @@ internal class StringParser
     private readonly string _str;
     private int _pos;
 
+    internal char Current => _str[_pos];
+
     internal StringParser(string str)
     {
         _str = str;
@@ -30,11 +32,6 @@ internal class StringParser
         }
 
         return this;
-    }
-
-    internal char Current()
-    {
-        return _str[_pos];
     }
 
     internal string Peek(int length)

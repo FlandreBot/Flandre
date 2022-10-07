@@ -1,8 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Runtime.CompilerServices;
 using Flandre.Core.Common;
 using Flandre.Core.Events.App;
 using Flandre.Core.Utils;
-using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Flandre.Core.Tests")]
 [assembly: InternalsVisibleTo("Flandre.TestKit")]
@@ -25,6 +24,8 @@ public class FlandreApp
     internal readonly List<Plugin> Plugins = new();
 
     private readonly CancellationTokenSource _appStopTokenSource = new();
+
+    private readonly Dictionary<string, object> _commandMap = new();
 
     internal static Logger Logger { get; } = new("App");
 
@@ -83,6 +84,22 @@ public class FlandreApp
 
             case Plugin plugin:
                 Plugins.Add(plugin);
+
+                if (plugin.PluginInfo.BaseCommand is not null)
+                {
+                    _commandMap[plugin.PluginInfo.BaseCommand] = plugin;
+                    foreach (var command in plugin.Commands)
+                        if (plugin.PluginInfo.BaseCommand == command.CommandInfo.Command)
+                            _commandMap[command.CommandInfo.Command] = command;
+                        else
+                            _commandMap[$"{plugin.PluginInfo.BaseCommand}.{command.CommandInfo.Command}"] = command;
+                }
+                else
+                {
+                    foreach (var command in plugin.Commands)
+                        _commandMap[command.CommandInfo.Command] = command;
+                }
+
                 break;
         }
 
@@ -128,45 +145,89 @@ public class FlandreApp
     private void SubscribeEvents()
     {
         foreach (var bot in Bots)
-        foreach (var plugin in Plugins)
         {
-            bot.OnMessageReceived += (_, e) =>
+            foreach (var plugin in Plugins)
             {
-                var ctx = new MessageContext(this, bot, e.Message);
-                try
-                {
-                    plugin.OnMessageReceived(ctx);
-                    var content = plugin.OnCommandParsing(ctx);
-                    if (content is not null)
-                        bot.SendMessage(e.Message.SourceType,
-                            e.Message.GuildId, e.Message.ChannelId, e.Message.Sender.Id, content);
-                }
-                catch (TargetInvocationException exception)
-                {
-                    plugin.Logger.Error(exception.InnerException ?? exception);
-                }
-                catch (Exception ex)
-                {
-                    plugin.Logger.Error(ex);
-                }
-            };
+                var ctx = new Context(this, bot);
 
-            var ctx = new Context(this, bot);
+                bot.OnMessageReceived += (_, e) =>
+                    plugin.OnMessageReceived(new MessageContext(this, bot, e.Message));
+                bot.OnGuildInvited += (_, e) => plugin.OnGuildInvited(ctx, e);
+                bot.OnGuildRequested += (_, e) => plugin.OnGuildRequested(ctx, e);
+                bot.OnFriendRequested += (_, e) => plugin.OnFriendRequested(ctx, e);
+            }
 
-            bot.OnGuildInvited += (_, e) => plugin.OnGuildInvited(ctx, e);
-            bot.OnGuildRequested += (_, e) => plugin.OnGuildRequested(ctx, e);
-            bot.OnFriendRequested += (_, e) => plugin.OnFriendRequested(ctx, e);
+            bot.OnMessageReceived += (_, e) =>
+                OnCommandParsing(new MessageContext(this, bot, e.Message));
         }
     }
-}
 
-/// <summary>
-/// 应用配置
-/// </summary>
-public class AppConfig
-{
+    private void OnCommandParsing(MessageContext ctx)
+    {
+        var commandStr = ctx.Message.GetText().Trim();
+
+        if (commandStr.StartsWith(Config.CommandPrefix))
+        {
+            void DealCommand(Command cmd, StringParser p)
+            {
+                var content = cmd.ParseCommand(ctx, p);
+                if (content is null) return;
+                ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.GuildId, ctx.Message.ChannelId,
+                    ctx.Message.Sender.Id, content);
+            }
+
+            if (commandStr == Config.CommandPrefix) return;
+            var parser = new StringParser(commandStr.TrimStart(Config.CommandPrefix));
+            var root = parser.Read(' ');
+
+            var obj = _commandMap.GetValueOrDefault(root);
+
+            switch (obj)
+            {
+                case null:
+                    if (Config.CommandPrefix == "") return;
+                    ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.GuildId, ctx.Message.ChannelId,
+                        ctx.Message.Sender.Id, $"未找到指令：{root}。");
+                    return;
+
+                case Command command:
+                    DealCommand(command, parser);
+                    return;
+
+                case Plugin plugin:
+                {
+                    if (!parser.IsEnd())
+                    {
+                        root = $"{root}.{parser.Read(' ')}";
+                        obj = _commandMap.GetValueOrDefault(root);
+                        switch (obj)
+                        {
+                            case null:
+                                ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.GuildId, ctx.Message.ChannelId,
+                                    ctx.Message.Sender.Id, $"未找到指令：{root}。");
+                                return;
+                            case Command cmd:
+                                DealCommand(cmd, parser);
+                                return;
+                        }
+                    }
+
+                    ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.GuildId, ctx.Message.ChannelId,
+                        ctx.Message.Sender.Id, plugin.GetHelp());
+                    break;
+                }
+            }
+        }
+    }
+
     /// <summary>
-    /// 全局指令前缀
+    /// 应用配置
     /// </summary>
-    public string CommandPrefix { get; set; } = "";
+    public class AppConfig
+    {
+        /// <summary>
+        /// 全局指令前缀
+        /// </summary>
+        public string CommandPrefix { get; set; } = "";
+    }
 }

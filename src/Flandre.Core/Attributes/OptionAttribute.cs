@@ -14,6 +14,11 @@ public class OptionAttribute : Attribute
     public string Name { get; }
 
     /// <summary>
+    /// 短名称
+    /// </summary>
+    public char? ShortName { get; }
+
+    /// <summary>
     /// 选项别名
     /// </summary>
     public string? Alias { get; }
@@ -45,20 +50,27 @@ public class OptionAttribute : Attribute
         if (parser.SkipSpaces().IsEnd()) return;
 
         var first = parser.Read(' ');
+        ParameterInfo info;
 
-        if (first.StartsWith('-'))
+        if (first.StartsWith("--"))
         {
             Alias = first.TrimStart('-');
             if (parser.SkipSpaces().IsEnd()) return;
-            var info = CommandUtils.ParseParameterSection(parser.ReadToEnd(), cmdName: Name);
-            Type = info.Type;
-            DefaultValue = info.DefaultValue;
+            info = CommandUtils.ParseParameterSection(parser.ReadToEnd(), cmdName: Name);
+        }
+        else if (first.StartsWith('-'))
+        {
+            var trimmed = first.TrimStart('-');
+            ShortName = trimmed.Length > 0 ? trimmed[0] : null;
+            if (parser.SkipSpaces().IsEnd()) return;
+            info = CommandUtils.ParseParameterSection(parser.ReadToEnd(), cmdName: Name);
         }
         else
         {
-            var info = CommandUtils.ParseParameterSection(first, cmdName: Name);
-            Type = info.Type;
-            DefaultValue = info.DefaultValue;
+            info = CommandUtils.ParseParameterSection(first, cmdName: Name);
         }
+
+        Type = info.Type;
+        DefaultValue = info.DefaultValue;
     }
 }

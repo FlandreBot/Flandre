@@ -11,4 +11,12 @@ public class TextUtilsTests
     {
         Assert.Equal(result, source.RemoveString(removal));
     }
+
+    [Theory]
+    [InlineData("string", "ring", "st")]
+    [InlineData("string", "string", "")]
+    public void TestTrimStart(string source, string result, string trim)
+    {
+        Assert.Equal(result, source.TrimStart(trim));
+    }
 }

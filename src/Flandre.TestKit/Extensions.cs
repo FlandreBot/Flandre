@@ -17,8 +17,10 @@ public static class FlandreTestingExtensions
     }
 
     public static FlandreTestClient GenerateChannelClient(this TestAdapter adapter)
-        => GenerateChannelClient(adapter, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
+    {
+        return GenerateChannelClient(adapter, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString());
+    }
 
     public static FlandreTestClient GenerateFriendClient(this TestAdapter adapter, string userId)
     {
@@ -30,5 +32,7 @@ public static class FlandreTestingExtensions
     }
 
     public static FlandreTestClient GenerateFriendClient(this TestAdapter adapter)
-        => GenerateFriendClient(adapter, Guid.NewGuid().ToString());
+    {
+        return GenerateFriendClient(adapter, Guid.NewGuid().ToString());
+    }
 }

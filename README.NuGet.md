@@ -27,7 +27,8 @@ Flandre 自设计之初就是为了跨平台，对聊天平台的结构进行抽
 
 目前已经实现的适配器：
 
-- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.Konata/README.md) - QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
+- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.Konata/README.md) - QQ
+  协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
 
 ### 指令系统
 
@@ -100,13 +101,15 @@ class ExamplePlugin2 : Plugin
 }
 ```
 
-这个插件包含一条有两个参数的指令，类型都为 `string`，其中 `foo` 为必选参数，`bar` 为可选参数。如果调用指令时未提供可选参数，参数将被初始化为类型默认值；如果为提供必选参数，bot 将向其发送一条提示信息并停止执行指令。
+这个插件包含一条有两个参数的指令，类型都为 `string`，其中 `foo` 为必选参数，`bar`
+为可选参数。如果调用指令时未提供可选参数，参数将被初始化为类型默认值；如果为提供必选参数，bot 将向其发送一条提示信息并停止执行指令。
 
 向 bot 发送 `example qwq ovo`（~~随便什么~~），bot 会将参数的值发送回来。
 
 ### 类型约束
 
-如果我们不对指令的参数进行类型约束，那么参数的类型将默认为 `string`。如要添加参数，可以在参数名称后添加 `:` 号和类型名称。类型名称支持 C# 中绝大多数的基本类型，如 `int`, `double`, `long`, `bool` 等等，在解析过程中会自动进行类型检查和转换。
+如果我们不对指令的参数进行类型约束，那么参数的类型将默认为 `string`。如要添加参数，可以在参数名称后添加 `:` 号和类型名称。类型名称支持
+C# 中绝大多数的基本类型，如 `int`, `double`, `long`, `bool` 等等，在解析过程中会自动进行类型检查和转换。
 
 举个例子：
 
@@ -132,7 +135,8 @@ public MessageContent? OnExample(MessageContext ctx, ParsedArgs args)
 [Command("example [foo:int=1145] [bar:bool=true]")]
 ```
 
-如果不人为指定默认值，参数将被初始化为 C# 中的类型默认值（即 `default(T)`）。`string` 比较特殊，在参数中它的默认值是空字符串，而不是 `null`。
+如果不人为指定默认值，参数将被初始化为 C# 中的类型默认值（即 `default(T)`）。`string`
+比较特殊，在参数中它的默认值是空字符串，而不是 `null`。
 
 ### 灵活的表现形式
 

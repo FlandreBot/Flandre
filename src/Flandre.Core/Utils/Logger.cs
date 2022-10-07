@@ -18,7 +18,7 @@ public class Logger
     {
         Name = name;
     }
-    
+
     private static void Log(string message)
     {
         var logMessage = $"{DateTime.Now:HH:mm:ss} {message}";
