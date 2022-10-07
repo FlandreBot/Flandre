@@ -32,7 +32,7 @@ public class FlandreApp
     /// <summary>
     /// App 配置
     /// </summary>
-    public AppConfig Config { get; }
+    public FlandreAppConfig Config { get; }
 
     #region Events
 
@@ -63,9 +63,9 @@ public class FlandreApp
     /// 构造应用实例
     /// </summary>
     /// <param name="config">应用配置</param>
-    public FlandreApp(AppConfig? config = null)
+    public FlandreApp(FlandreAppConfig? config = null)
     {
-        Config = config ?? new AppConfig();
+        Config = config ?? new FlandreAppConfig();
     }
 
     /// <summary>
@@ -219,15 +219,15 @@ public class FlandreApp
             }
         }
     }
+}
 
+/// <summary>
+/// 应用配置
+/// </summary>
+public class FlandreAppConfig
+{
     /// <summary>
-    /// 应用配置
+    /// 全局指令前缀
     /// </summary>
-    public class AppConfig
-    {
-        /// <summary>
-        /// 全局指令前缀
-        /// </summary>
-        public string CommandPrefix { get; set; } = "";
-    }
+    public string CommandPrefix { get; set; } = "";
 }

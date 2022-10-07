@@ -42,7 +42,7 @@ public abstract class Plugin : IModule
 
             var options = method.GetCustomAttributes<OptionAttribute>().ToList();
 
-            Commands.Add(new Command(attr, method, options, Logger));
+            Commands.Add(new Command(this, attr, method, options));
         }
     }
 

@@ -25,14 +25,14 @@ public class Command
     /// </summary>
     public List<OptionAttribute> Options { get; }
 
-    private readonly Logger _pluginLogger;
+    private readonly Plugin _plugin;
 
-    internal Command(CommandAttribute info, MethodInfo innerMethod, List<OptionAttribute> options, Logger pluginLogger)
+    internal Command(Plugin plugin, CommandAttribute info, MethodInfo innerMethod, List<OptionAttribute> options)
     {
+        _plugin = plugin;
         CommandInfo = info;
         InnerMethod = innerMethod;
         Options = options;
-        _pluginLogger = pluginLogger;
     }
 
     internal MessageContent? ParseCommand(MessageContext ctx, StringParser parser)
@@ -158,18 +158,18 @@ public class Command
         try
         {
             var cmdResult = InnerMethod.Invoke(
-                this, new object[] { ctx, args }[..InnerMethod.GetParameters().Length]);
+                _plugin, new object[] { ctx, args }[..InnerMethod.GetParameters().Length]);
             var content = cmdResult as MessageContent ?? (cmdResult as Task<MessageContent>)?.Result ?? null;
 
             return content;
         }
         catch (TargetInvocationException te)
         {
-            _pluginLogger.Error(te.InnerException ?? te);
+            _plugin.Logger.Error(te.InnerException ?? te);
         }
         catch (Exception e)
         {
-            _pluginLogger.Error(e);
+            _plugin.Logger.Error(e);
         }
 
         return null;
