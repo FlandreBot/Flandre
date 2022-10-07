@@ -3,12 +3,13 @@
 .NET 6 实现的跨平台，低耦合的聊天机器人框架  
 一次编写，多处运行
 
-[![License](https://img.shields.io/github/license/FlandreDevs/Flandre?label=License&style=flat-square&color=42a5f5)](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE)
-[![Stars](https://img.shields.io/github/stars/FlandreDevs/Flandre?label=Stars&style=flat-square&color=1976d2)](https://github.com/FlandreDevs/Flandre/stargazers)
-[![Contributors](https://img.shields.io/github/contributors/FlandreDevs/Flandre?label=Contributors&style=flat-square&color=ab47bc)](https://github.com/FlandreDevs/Flandre/graphs/contributors)
-[![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat-square&label=NuGet&color=f06292)](https://www.nuget.org/packages/Flandre.Core/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Core?style=flat-square&label=Downloads&color=ffb300)](https://www.nuget.org/packages/Flandre.Core/)
-[![.NET Version](https://img.shields.io/badge/.NET-6-ffe57f?style=flat-square)](https://www.nuget.org/packages/Flandre.Core/)
+[![License](https://img.shields.io/github/license/FlandreDevs/Flandre?label=License&style=flat&color=42a5f5)](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/FlandreDevs/Flandre?label=Stars&style=flat&color=1976d2)](https://github.com/FlandreDevs/Flandre/stargazers)
+[![Contributors](https://img.shields.io/github/contributors/FlandreDevs/Flandre?label=Contributors&style=flat&color=ab47bc)](https://github.com/FlandreDevs/Flandre/graphs/contributors)
+[![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=NuGet&color=f06292)](https://www.nuget.org/packages/Flandre.Core/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Core?style=flat&label=Downloads&color=ffb300)](https://www.nuget.org/packages/Flandre.Core/)
+[![.NET Version](https://img.shields.io/badge/.NET-6-ffe57f?style=flat)](https://www.nuget.org/packages/Flandre.Core/)
+[![Codecov](https://img.shields.io/codecov/c/gh/FlandreDevs/Flandre/dev?style=flat&color=a5d6a7&label=Coverage)](https://app.codecov.io/gh/FlandreDevs/Flandre)
 
 · [使用文档](https://flandredevs.github.io/) ·
 
@@ -88,13 +89,14 @@ class ExamplePlugin2 : Plugin
     {
         var foo = args.GetArgument<string>("foo");
         var bar = args.GetArgument<string>("bar");
-        var baz = args.GetArgumentOrDefault<string>("baz");
+        
+        if (string.IsNullOrWhiteSpace(bar))
+            bar = "(empty)";
 
         var mb = new MessageBuilder();
 
         mb.Text($"Foo: {foo}, ")
-            .Text($"Bar: {bar}, ")
-            .Text("Baz: " + (baz ?? "no arg named baz!"));
+            .Text($"Bar: {bar}");
 
         return mb;
     }
