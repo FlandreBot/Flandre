@@ -13,19 +13,14 @@ public class FlandreTestClient
 
     public MessageSourceType EnvironmentType { get; internal init; }
 
-    internal MessageContent? CurrentMessage;
-
-    internal CancellationTokenSource? Cancellation;
-
     internal FlandreTestClient(TestAdapter adapter)
     {
         _adapter = adapter;
     }
 
-    public async Task<MessageContent?> SendForReply(string message, int waitSeconds = 10)
+    public Task<MessageContent?> SendForReply(string message)
     {
-        Cancellation = new CancellationTokenSource();
-        CurrentMessage = null;
+        var tcs = new TaskCompletionSource<MessageContent?>();
 
         var msg = new Message
         {
@@ -44,17 +39,8 @@ public class FlandreTestClient
             },
             Content = message
         };
-        _adapter.Bot.ReceiveMessage(msg, this);
-
-        try
-        {
-            await Task.Delay(waitSeconds * 1000, Cancellation.Token);
-        }
-        catch
-        {
-            // ignored
-        }
-
-        return CurrentMessage;
+        _adapter.Bot.ReceiveMessage(msg, tcs);
+        
+        return tcs.Task;
     }
 }

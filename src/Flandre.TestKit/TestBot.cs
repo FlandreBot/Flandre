@@ -11,11 +11,14 @@ public class TestBot : IBot
 {
     private readonly string _selfId = Guid.NewGuid().ToString();
 
-    private FlandreTestClient? _client;
+    private TaskCompletionSource<MessageContent?>? _tcs;
 
-    internal void ReceiveMessage(Message message, FlandreTestClient client)
+    private MessageSourceType _sourceType = MessageSourceType.Channel;
+
+    internal void ReceiveMessage(Message message, TaskCompletionSource<MessageContent?> tcs)
     {
-        _client = client;
+        _tcs = tcs;
+        _sourceType = message.SourceType;
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
     }
 
@@ -35,22 +38,20 @@ public class TestBot : IBot
 
     public async Task SendMessage(Message message)
     {
-        if (_client is null) return;
-        _client.CurrentMessage = message.Content;
-        _client.Cancellation?.Cancel();
+        _tcs?.SetResult(message.Content);
     }
 
     public async Task SendChannelMessage(string guildId, string channelId, MessageContent content)
     {
-        if (_client is null) return;
-        if (_client.EnvironmentType != MessageSourceType.Channel) return;
+        if (_tcs is null) return;
+        if (_sourceType != MessageSourceType.Channel) return;
         await SendMessage(new Message { Content = content });
     }
 
     public async Task SendPrivateMessage(string userId, MessageContent content)
     {
-        if (_client is null) return;
-        if (_client.EnvironmentType != MessageSourceType.Private) return;
+        if (_tcs is null) return;
+        if (_sourceType != MessageSourceType.Private) return;
         await SendMessage(new Message { Content = content });
     }
 
