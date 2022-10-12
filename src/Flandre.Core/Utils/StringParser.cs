@@ -39,20 +39,14 @@ internal class StringParser
         return _str.Substring(_pos, length);
     }
 
-    internal char PeekChar()
-    {
-        return _str[_pos + 1];
-    }
-
     internal string Peek(char terminator)
     {
         var end = FixIndex(_str.IndexOf(terminator, _pos));
         return _str.Substring(_pos, end - _pos);
     }
 
-    internal string Read(char terminator, int offset = 0, bool includeTerminator = false)
+    internal string Read(char terminator, bool includeTerminator = false)
     {
-        _pos += offset;
         var end = FixIndex(_str.IndexOf(terminator, _pos));
         var value = _str.Substring(_pos, end - _pos);
         _pos += end - _pos;
@@ -79,8 +73,8 @@ internal class StringParser
         if (IsEnd()) return "";
         return Peek(1) switch
         {
-            "\"" => Read('\"', 1),
-            "\'" => Read('\'', 1),
+            "\"" => Skip(1).Read('\"', true)[..^1],
+            "\'" => Skip(1).Read('\'', true)[..^1],
             _ => Read(' ')
         };
     }
