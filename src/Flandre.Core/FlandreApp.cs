@@ -23,7 +23,7 @@ public class FlandreApp
 
     internal readonly List<Plugin> Plugins = new();
 
-    private readonly CancellationTokenSource _appStopTokenSource = new();
+    private readonly ManualResetEvent _exitEvent = new(false);
 
     private readonly Dictionary<string, object> _commandMap = new();
 
@@ -66,6 +66,12 @@ public class FlandreApp
     public FlandreApp(FlandreAppConfig? config = null)
     {
         Config = config ?? new FlandreAppConfig();
+
+        // Ctrl+C
+        Console.CancelKeyPress += (_, _) => Stop();
+
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+            Logger.Error((Exception)args.ExceptionObject);
     }
 
     /// <summary>
@@ -118,18 +124,12 @@ public class FlandreApp
         // 启动所有适配器
         Task.WaitAll(_adapters.ConvertAll(adapter => adapter.Start()).ToArray());
 
-        // 为所有模块注册消息事件
+        // 为所有模块注册事件
         SubscribeEvents();
 
         OnAppReady?.Invoke(this, new AppReadyEvent());
 
-        // Ctrl+C
-        Console.CancelKeyPress += (_, _) => Stop();
-
-        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
-            Logger.Error((Exception)args.ExceptionObject);
-
-        Task.Delay(-1, _appStopTokenSource.Token);
+        _exitEvent.WaitOne();
     }
 
     /// <summary>
@@ -139,26 +139,45 @@ public class FlandreApp
     {
         Task.WaitAll(_adapters.ConvertAll(adapter => adapter.Stop()).ToArray());
         OnAppStopped?.Invoke(this, new AppStoppedEvent());
-        _appStopTokenSource.Cancel();
+        _exitEvent.Set();
     }
 
     private void SubscribeEvents()
     {
+        void CatchAndLog(Action action)
+        {
+            try
+            {
+                Task.Run(action);
+            }
+            catch (AggregateException e)
+            {
+                Logger.Error(e.InnerException ?? e);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+        }
+
         foreach (var bot in Bots)
         {
             foreach (var plugin in Plugins)
             {
                 var ctx = new Context(this, bot);
 
-                bot.OnMessageReceived += (_, e) =>
-                    plugin.OnMessageReceived(new MessageContext(this, bot, e.Message));
-                bot.OnGuildInvited += (_, e) => plugin.OnGuildInvited(ctx, e);
-                bot.OnGuildRequested += (_, e) => plugin.OnGuildRequested(ctx, e);
-                bot.OnFriendRequested += (_, e) => plugin.OnFriendRequested(ctx, e);
+                bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
+                    plugin.OnMessageReceived(new MessageContext(this, bot, e.Message)));
+                bot.OnGuildInvited += (_, e) => CatchAndLog(() =>
+                    plugin.OnGuildInvited(ctx, e));
+                bot.OnGuildRequested += (_, e) => CatchAndLog(() =>
+                    plugin.OnGuildRequested(ctx, e));
+                bot.OnFriendRequested += (_, e) => CatchAndLog(() =>
+                    plugin.OnFriendRequested(ctx, e));
             }
 
-            bot.OnMessageReceived += (_, e) =>
-                OnCommandParsing(new MessageContext(this, bot, e.Message));
+            bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
+                OnCommandParsing(new MessageContext(this, bot, e.Message)));
         }
     }
 
@@ -172,7 +191,7 @@ public class FlandreApp
             {
                 var content = cmd.ParseCommand(ctx, p);
                 if (content is null) return;
-                ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.GuildId, ctx.Message.ChannelId,
+                ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.ChannelId,
                     ctx.Message.Sender.Id, content);
             }
 
@@ -186,7 +205,7 @@ public class FlandreApp
             {
                 case null:
                     if (Config.CommandPrefix == "") return;
-                    ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.GuildId, ctx.Message.ChannelId,
+                    ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.ChannelId,
                         ctx.Message.Sender.Id, $"未找到指令：{root}。");
                     return;
 
@@ -203,7 +222,7 @@ public class FlandreApp
                         switch (obj)
                         {
                             case null:
-                                ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.GuildId, ctx.Message.ChannelId,
+                                ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.ChannelId,
                                     ctx.Message.Sender.Id, $"未找到指令：{root}。");
                                 return;
                             case Command cmd:
@@ -212,7 +231,7 @@ public class FlandreApp
                         }
                     }
 
-                    ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.GuildId, ctx.Message.ChannelId,
+                    ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.ChannelId,
                         ctx.Message.Sender.Id, plugin.GetHelp());
                     break;
                 }

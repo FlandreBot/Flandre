@@ -23,41 +23,46 @@ public interface IBot
 
     #endregion 生命周期
 
-    #region 发送消息
+    #region 消息相关
 
     /// <summary>
     /// 发送消息
     /// </summary>
     /// <param name="sourceType">消息类型</param>
-    /// <param name="guildId">Guild ID</param>
     /// <param name="channelId">Channel ID</param>
     /// <param name="userId">用户 ID</param>
     /// <param name="content">消息内容</param>
-    Task SendMessage(MessageSourceType sourceType, string guildId, string channelId, string userId,
+    Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content);
 
     /// <summary>
     /// 发送消息
     /// </summary>
     /// <param name="message">消息对象</param>
-    Task SendMessage(Message message);
+    /// <param name="contentOverride">覆盖消息对象的内容，可选</param>
+    Task<string?> SendMessage(Message message, MessageContent? contentOverride = null);
 
     /// <summary>
     /// 发送频道 (Channel) 消息
     /// </summary>
-    /// <param name="guildId">Guild ID</param>
     /// <param name="channelId">Channel ID</param>
     /// <param name="content">消息内容</param>
-    Task SendChannelMessage(string guildId, string channelId, MessageContent content);
+    Task<string?> SendChannelMessage(string channelId, MessageContent content);
 
     /// <summary>
     /// 发送私聊消息
     /// </summary>
     /// <param name="userId">用户 ID</param>
     /// <param name="content">消息内容</param>
-    Task SendPrivateMessage(string userId, MessageContent content);
+    Task<string?> SendPrivateMessage(string userId, MessageContent content);
 
-    #endregion 发送消息
+    /// <summary>
+    /// 删除（撤回）消息
+    /// </summary>
+    /// <param name="messageId">消息 ID</param>
+    Task DeleteMessage(string messageId);
+
+    #endregion 消息相关
 
     #region 用户相关
 

@@ -42,8 +42,8 @@ public class CommandAttribute : Attribute
 
             var info = CommandUtils.ParseParameterSection(bracket switch
             {
-                '<' => parser.Read('>', includeTerminator: true),
-                '[' => parser.Read(']', includeTerminator: true),
+                '<' => parser.Read('>', true),
+                '[' => parser.Read(']', true),
                 _ => parser.ReadToEnd()
             });
 

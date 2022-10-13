@@ -27,12 +27,12 @@ public class Message
     /// <summary>
     /// Guild ID
     /// </summary>
-    public string GuildId { get; init; } = "";
+    public string? GuildId { get; init; }
 
     /// <summary>
     /// Channel ID
     /// </summary>
-    public string ChannelId { get; init; } = "";
+    public string? ChannelId { get; init; }
 
     /// <summary>
     /// 发送者信息
@@ -47,7 +47,6 @@ public class Message
     /// <summary>
     /// 获取消息内容中的所有文本
     /// </summary>
-    /// <returns></returns>
     public string GetText()
     {
         return Content.GetText();

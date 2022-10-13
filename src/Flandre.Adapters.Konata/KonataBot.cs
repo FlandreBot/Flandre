@@ -142,46 +142,37 @@ public class KonataBot : IBot
 
     #endregion 生命周期
 
-    #region 发送消息
+    #region 消息相关
 
-    /// <summary>
-    /// 发送消息
-    /// </summary>
-    /// <param name="sourceType">消息类型</param>
-    /// <param name="guildId">Guild ID，可提供任意值</param>
-    /// <param name="channelId">群号</param>
-    /// <param name="userId">用户 QQ 号</param>
-    /// <param name="content">消息内容</param>
-    public Task SendMessage(MessageSourceType sourceType, string guildId, string channelId, string userId,
+    /// <inheritdoc />
+    public Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content)
     {
         return sourceType switch
         {
-            MessageSourceType.Channel => SendChannelMessage(guildId, channelId, content),
-            MessageSourceType.Private => SendPrivateMessage(userId, content),
-            _ => Task.CompletedTask
+            MessageSourceType.Channel => SendChannelMessage(channelId!, content),
+            MessageSourceType.Private => SendPrivateMessage(userId!, content),
+            _ => Task.FromResult<string?>(null)
         };
     }
 
-    /// <summary>
-    /// 发送消息
-    /// </summary>
-    /// <param name="message">消息对象</param>
-    public Task SendMessage(Message message)
+    /// <inheritdoc />
+    public Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
     {
-        return SendMessage(message.SourceType, message.GuildId, message.ChannelId, message.Sender.Id, message.Content);
+        return SendMessage(message.SourceType, message.ChannelId, message.Sender.Id,
+            contentOverride ?? message.Content);
     }
 
     /// <summary>
     /// 发送群消息
     /// </summary>
-    /// <param name="guildId">Guild ID，无需提供</param>
     /// <param name="channelId">群号</param>
     /// <param name="content">消息内容</param>
-    public async Task SendChannelMessage(string guildId, string channelId, MessageContent content)
+    public async Task<string?> SendChannelMessage(string channelId, MessageContent content)
     {
         await InnerBot.SendGroupMessage(
             uint.Parse(channelId), content.ToKonataMessageChain());
+        return null;
     }
 
     /// <summary>
@@ -189,13 +180,20 @@ public class KonataBot : IBot
     /// </summary>
     /// <param name="userId">用户 QQ 号</param>
     /// <param name="content">消息内容</param>
-    public async Task SendPrivateMessage(string userId, MessageContent content)
+    public async Task<string?> SendPrivateMessage(string userId, MessageContent content)
     {
         await InnerBot.SendFriendMessage(
             uint.Parse(userId), content.ToKonataMessageChain());
+        return null;
     }
 
-    #endregion 发送消息
+    /// <remarks>Konata 平台不支持该操作。</remarks>
+    public Task DeleteMessage(string messageId)
+    {
+        return Task.CompletedTask;
+    }
+
+    #endregion 消息相关
 
     #region 用户相关
 
@@ -213,10 +211,7 @@ public class KonataBot : IBot
         });
     }
 
-    /// <summary>
-    /// 获取用户信息
-    /// </summary>
-    /// <param name="userId">用户 QQ 号</param>
+    /// <inheritdoc />
     public async Task<User?> GetUser(string userId)
     {
         return (await GetFriendList()).FirstOrDefault(user => user.Id == userId);
@@ -294,15 +289,20 @@ public class KonataBot : IBot
     #region Channel 相关
 
     /// <remarks>由于 Konata 暂不支持 QQ 频道，该方法将固定返回 null。</remarks>
-    public Task<Channel?> GetChannel(string channelId)
+    public async Task<Channel?> GetChannel(string channelId)
     {
-        return Task.FromResult<Channel?>(null);
+        return (await GetChannelList()).FirstOrDefault(channel => channel.Id == channelId);
     }
 
     /// <remarks>由于 Konata 暂不支持 QQ 频道，该方法将固定返回空数组。</remarks>
-    public Task<IEnumerable<Channel>> GetChannelList()
+    public async Task<IEnumerable<Channel>> GetChannelList()
     {
-        return Task.FromResult<IEnumerable<Channel>>(Array.Empty<Channel>());
+        return (await InnerBot.GetGroupList(true))
+            .Select(group => new Channel
+            {
+                Id = group.Uin.ToString(),
+                Name = group.Name
+            });
     }
 
     #endregion Channel 相关

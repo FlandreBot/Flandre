@@ -34,6 +34,10 @@ internal static class MessageUtils
                     break;
             }
 
+        var groupId = message.Type == MessageStruct.SourceType.Group
+            ? message.Receiver.Uin.ToString()
+            : null;
+
         return new Message
         {
             Time = DateTimeOffset.FromUnixTimeSeconds(message.Time).LocalDateTime,
@@ -41,13 +45,12 @@ internal static class MessageUtils
                 ? MessageSourceType.Channel
                 : MessageSourceType.Private,
             MessageId = message.Uuid.ToString(),
-            ChannelId = message.Type == MessageStruct.SourceType.Group
-                ? message.Receiver.Uin.ToString()
-                : "private:" + message.Sender.Uin,
+            GuildId = groupId,
+            ChannelId = groupId,
             Sender = new User
             {
                 Name = message.Sender.Name,
-                Nickname = message.Sender.Name,
+                // Nickname = message.Sender.Name,   (can't get user's nickname)
                 Id = message.Sender.Uin.ToString(),
                 AvatarUrl = CommonUtils.GetAvatarUrl(message.Sender.Uin)
             },

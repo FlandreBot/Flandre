@@ -30,29 +30,37 @@ public class TestBot : IBot
     {
     }
 
-    public Task SendMessage(MessageSourceType sourceType, string guildId, string channelId, string userId,
+    public Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content)
     {
         return SendMessage(new Message { Content = content });
     }
 
-    public async Task SendMessage(Message message)
+    public async Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
     {
-        _tcs?.SetResult(message.Content);
+        _tcs?.SetResult(contentOverride ?? message.Content);
+        return null;
     }
 
-    public async Task SendChannelMessage(string guildId, string channelId, MessageContent content)
+    public async Task<string?> SendChannelMessage(string channelId, MessageContent content)
     {
-        if (_tcs is null) return;
-        if (_sourceType != MessageSourceType.Channel) return;
+        if (_tcs is null) return null;
+        if (_sourceType != MessageSourceType.Channel) return null;
         await SendMessage(new Message { Content = content });
+        return null;
     }
 
-    public async Task SendPrivateMessage(string userId, MessageContent content)
+    public async Task<string?> SendPrivateMessage(string userId, MessageContent content)
     {
-        if (_tcs is null) return;
-        if (_sourceType != MessageSourceType.Private) return;
+        if (_tcs is null) return null;
+        if (_sourceType != MessageSourceType.Private) return null;
         await SendMessage(new Message { Content = content });
+        return null;
+    }
+
+    public async Task DeleteMessage(string messageId)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<User> GetSelf()

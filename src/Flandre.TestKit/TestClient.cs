@@ -40,7 +40,7 @@ public class FlandreTestClient
             Content = message
         };
         _adapter.Bot.ReceiveMessage(msg, tcs);
-        
+
         return tcs.Task;
     }
 }

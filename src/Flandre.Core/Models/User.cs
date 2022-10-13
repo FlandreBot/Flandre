@@ -13,7 +13,7 @@ public class User
     /// <summary>
     /// 用户昵称
     /// </summary>
-    public string Nickname { get; init; } = "";
+    public string? Nickname { get; init; }
 
     /// <summary>
     /// 用户 ID

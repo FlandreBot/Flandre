@@ -167,6 +167,10 @@ public class Command
         {
             _plugin.Logger.Error(te.InnerException ?? te);
         }
+        catch (AggregateException ae)
+        {
+            _plugin.Logger.Error(ae.InnerException ?? ae);
+        }
         catch (Exception e)
         {
             _plugin.Logger.Error(e);

@@ -62,6 +62,14 @@ public class MessageContent : IEnumerable<MessageSegment>
     }
 
     /// <summary>
+    /// 由消息段隐式转换
+    /// </summary>
+    public static implicit operator MessageContent(MessageSegment segment)
+    {
+        return new MessageContent(new[] { segment });
+    }
+
+    /// <summary>
     /// 由字符串隐式转换
     /// </summary>
     public static implicit operator MessageContent(string text)
