@@ -60,7 +60,6 @@ public class TestBot : IBot
 
     public async Task DeleteMessage(string messageId)
     {
-        throw new NotImplementedException();
     }
 
     public async Task<User> GetSelf()

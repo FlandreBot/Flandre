@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Flandre.Adapters.OneBot.Utils;
 using Flandre.Core.Common;
 using Flandre.Core.Events.Bot;
 using Flandre.Core.Messaging;

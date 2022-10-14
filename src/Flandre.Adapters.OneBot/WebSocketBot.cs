@@ -2,7 +2,6 @@
 using System.Net.WebSockets;
 using System.Text.Json;
 using Flandre.Adapters.OneBot.Models;
-using Flandre.Adapters.OneBot.Utils;
 using Flandre.Core.Common;
 using Flandre.Core.Events.Bot;
 using Flandre.Core.Messaging;
@@ -107,12 +106,11 @@ public class OneBotWebSocketBot : OneBotBot
             if (!_apiTasks.TryGetValue(resp.Echo, out var tcs)) return;
 
             if (resp.Status == "failed")
-            {
                 tcs.SetException(new OneBotApiException(resp.Msg ?? resp.Wording ?? $"调用 API 失败。({resp.RetCode})"));
-                return;
-            }
+            else
+                tcs.SetResult(resp.Data);
 
-            tcs.SetResult(resp.Data);
+            _apiTasks.TryRemove(resp.Echo, out _);
         }
     }
 
@@ -132,7 +130,7 @@ public class OneBotWebSocketBot : OneBotBot
                 Id = e.UserId.ToString(),
                 AvatarUrl = OneBotUtils.GetUserAvatar(e.UserId)
             },
-            Content = e.RawMessage // TODO - 处理 CQCode
+            Content = CqCodeParser.ParseCqMessage(e.RawMessage)
         }));
     }
 

@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using Flandre.Adapters.OneBot.Models;
-using Flandre.Adapters.OneBot.Utils;
 using Flandre.Core.Messaging;
 
 // ReSharper disable RedundantAnonymousTypePropertyName

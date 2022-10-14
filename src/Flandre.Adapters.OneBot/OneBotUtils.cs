@@ -1,7 +1,6 @@
 ﻿using Flandre.Core;
-using Flandre.Core.Messaging;
 
-namespace Flandre.Adapters.OneBot.Utils;
+namespace Flandre.Adapters.OneBot;
 
 public static class OneBotUtils
 {
@@ -21,20 +20,6 @@ public static class OneBotUtils
             .Replace("&#91;", "[")
             .Replace("&#93;", "]")
             .Replace("&#44;", ",");
-    }
-
-    /// <summary>
-    /// 将含有 CQ 码的消息解析为 <see cref="MessageContent"/>。
-    /// </summary>
-    /// <param name="message">含有 CQ 码的消息</param>
-    public static MessageContent ParseCqMessage(string message)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static string ToCqMessage(this MessageContent content)
-    {
-        throw new NotImplementedException();
     }
 
     public static string GetUserAvatar(string userId)
