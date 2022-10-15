@@ -32,7 +32,7 @@ public class OneBotGuildBot : IBot
                 Name = e.Sender.Nickname,
                 Id = e.Sender.TinyId!
             },
-            Content = CqCodeParser.ParseCqMessage(e.RawMessage)
+            Content = CqCodeParser.ParseCqMessage(e.Message!)
         }));
     }
 
