@@ -15,7 +15,7 @@
 [![.NET Version](https://img.shields.io/badge/.NET-6-ffe57f?style=flat)](https://www.nuget.org/packages/Flandre.Core/)
 [![Codecov](https://img.shields.io/codecov/c/gh/FlandreDevs/Flandre/dev?style=flat&color=a5d6a7&label=Coverage)](https://app.codecov.io/gh/FlandreDevs/Flandre)
 
-· [使用文档](https://flandredevs.github.io/) ·
+\- **[使用文档](https://flandredevs.github.io/)** -
 
 本项目的名称来源于东方 Project 中的角色芙兰朵露 · 斯卡雷特 (Flandre Scarlet) ~~(番茄炒蛋)~~
 
@@ -36,6 +36,8 @@ Flandre 自设计之初就是为了跨平台，对聊天平台的结构进行抽
 
 目前已经实现的适配器：
 
+- [Flandre.Adapters.OneBot](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.OneBot/README.md) - 基于 [OneBot](https://github.com/botuniverse/onebot) 协议实现的 QQ 协议适配器，主要对 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 提供支持。同时基于 go-cqhttp 对 QQ 频道也进行了一定的支持。
+
 - [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.Konata/README.md) - QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
 
 ### 指令系统
@@ -48,10 +50,7 @@ Flandre 自设计之初就是为了跨平台，对聊天平台的结构进行抽
 
 ### 事件驱动
 
-Flandre 内部采用各类事件控制，开发者可以轻松地通过订阅事件/重写相关方法的方式控制应用的运行流程。  
-_注：事件系统仍在完善当中_
-
-~~才发布没多久的项目再吹就吹过了~~
+Flandre 内部采用各类事件控制，开发者可以轻松地通过订阅事件/重写相关方法的方式控制应用的运行流程。
 
 ## 起步
 
@@ -164,7 +163,8 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 - [x] 指令系统
 - [x] 指令的选项系统
 - [x] 编写单元测试
-- [ ] OneBot 协议适配
+- [x] OneBot 协议适配
+- [ ] Session 系统
 
 ## 分支说明
 
@@ -190,7 +190,7 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 
 [![QQ](https://img.shields.io/badge/Flandre.Community-164189664-blue?style=flat&logo=tencent-qq&logoColor=white)](https://jq.qq.com/?_wv=1027&k=tTNVlDR6)
 
-**本群只交流程序开发，拒绝任何形式的伸手党或商业行为。提问前请确保已经阅读过[提问的智慧](https://github.com/tvvocold/How-To-Ask-Questions-The-Smart-Way)。**
+**本群只交流程序开发，拒绝任何形式的伸手党或商业行为。**
 
 ## License
 
