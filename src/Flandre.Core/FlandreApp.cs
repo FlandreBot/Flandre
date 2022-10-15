@@ -144,21 +144,21 @@ public class FlandreApp
 
     private void SubscribeEvents()
     {
-        void CatchAndLog(Action action)
+        void CatchAndLog(Action action) => Task.Run(() =>
         {
             try
             {
-                Task.Run(action);
+                action();
             }
-            catch (AggregateException e)
+            catch (AggregateException ae)
             {
-                Logger.Error(e.InnerException ?? e);
+                Logger.Error(ae.InnerException ?? ae);
             }
             catch (Exception e)
             {
                 Logger.Error(e);
             }
-        }
+        });
 
         foreach (var bot in Bots)
         {
@@ -191,7 +191,7 @@ public class FlandreApp
             {
                 var content = cmd.ParseCommand(ctx, p);
                 if (content is null) return;
-                ctx.Bot.SendMessage(ctx.Message, content);
+                ctx.Bot.SendMessage(ctx.Message, content).Wait();
             }
 
             if (commandStr == Config.CommandPrefix) return;
@@ -204,7 +204,7 @@ public class FlandreApp
             {
                 case null:
                     if (Config.CommandPrefix == "") return;
-                    ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。");
+                    ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
                     return;
 
                 case Command command:
@@ -220,7 +220,7 @@ public class FlandreApp
                         switch (obj)
                         {
                             case null:
-                                ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。");
+                                ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
                                 return;
                             case Command cmd:
                                 DealCommand(cmd, parser);
@@ -228,7 +228,7 @@ public class FlandreApp
                         }
                     }
 
-                    ctx.Bot.SendMessage(ctx.Message, plugin.GetHelp());
+                    ctx.Bot.SendMessage(ctx.Message, plugin.GetHelp()).Wait();
                     break;
                 }
             }
