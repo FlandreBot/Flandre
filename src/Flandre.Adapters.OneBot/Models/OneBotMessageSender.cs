@@ -25,4 +25,7 @@ public class OneBotMessageSender
     [JsonPropertyName("role")] public string? Role { get; set; }
 
     [JsonPropertyName("title")] public string? Title { get; set; }
+
+    // 以下为频道专属
+    [JsonPropertyName("tiny_id")] public string? TinyId { get; set; }
 }

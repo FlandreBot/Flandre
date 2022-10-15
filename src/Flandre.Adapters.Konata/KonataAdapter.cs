@@ -7,7 +7,7 @@ namespace Flandre.Adapters.Konata;
 /// <summary>
 /// Konata 适配器
 /// </summary>
-public class KonataAdapter : IAdapter<KonataBot>
+public class KonataAdapter : IAdapter
 {
     private readonly Logger _logger = new("KonataAdapter");
     private readonly List<KonataBot> _bots = new();
@@ -47,7 +47,7 @@ public class KonataAdapter : IAdapter<KonataBot>
     /// <summary>
     /// 获取 bot 列表
     /// </summary>
-    public IEnumerable<KonataBot> GetBots()
+    public IEnumerable<IBot> GetBots()
     {
         return _bots;
     }

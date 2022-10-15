@@ -21,7 +21,7 @@ public class KonataBot : IBot
     /// <summary>
     /// Konata 内部 bot
     /// </summary>
-    public Bot InnerBot { get; }
+    public Bot Internal { get; }
 
     private readonly Logger _logger;
     private readonly KonataBotConfig _config;
@@ -57,10 +57,10 @@ public class KonataBot : IBot
     public async Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null)
     {
         if (approve)
-            await InnerBot.ApproveGroupInvitation(
+            await Internal.ApproveGroupInvitation(
                 uint.Parse(e.GuildId), uint.Parse(e.InviterId), (long)e.EventMessage!);
         else
-            await InnerBot.DeclineGroupInvitation(
+            await Internal.DeclineGroupInvitation(
                 uint.Parse(e.GuildId), uint.Parse(e.InviterId), (long)e.EventMessage!, comment ?? "");
     }
 
@@ -73,10 +73,10 @@ public class KonataBot : IBot
     public async Task HandleGuildRequest(BotGuildRequestedEvent e, bool approve, string? comment = null)
     {
         if (approve)
-            await InnerBot.ApproveGroupRequestJoin(
+            await Internal.ApproveGroupRequestJoin(
                 uint.Parse(e.GuildId), uint.Parse(e.RequesterId), (long)e.EventMessage!);
         else
-            await InnerBot.DeclineGroupRequestJoin(
+            await Internal.DeclineGroupRequestJoin(
                 uint.Parse(e.GuildId), uint.Parse(e.RequesterId), (long)e.EventMessage!, comment ?? "");
     }
 
@@ -89,10 +89,10 @@ public class KonataBot : IBot
     public async Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null)
     {
         if (approve)
-            await InnerBot.ApproveFriendRequest(
+            await Internal.ApproveFriendRequest(
                 uint.Parse(e.RequesterId), (long)e.EventMessage!);
         else
-            await InnerBot.DeclineFriendRequest(
+            await Internal.DeclineFriendRequest(
                 uint.Parse(e.RequesterId), (long)e.EventMessage!);
     }
 
@@ -100,18 +100,18 @@ public class KonataBot : IBot
 
     internal KonataBot(KonataBotConfig config, Logger logger)
     {
-        InnerBot = BotFather.Create(config.Konata, config.Device, config.KeyStore);
+        Internal = BotFather.Create(config.Konata, config.Device, config.KeyStore);
         _config = config;
         _logger = logger;
 
-        InnerBot.OnFriendMessage += InnerOnFriendMessage;
-        InnerBot.OnGroupMessage += InnerOnGroupMessage;
-        InnerBot.OnGroupInvite += InnerOnGroupInvite;
-        InnerBot.OnGroupRequestJoin += InnerOnGroupRequestJoin;
-        InnerBot.OnFriendRequest += InnerOnFriendRequest;
+        Internal.OnFriendMessage += InnerOnFriendMessage;
+        Internal.OnGroupMessage += InnerOnGroupMessage;
+        Internal.OnGroupInvite += InnerOnGroupInvite;
+        Internal.OnGroupRequestJoin += InnerOnGroupRequestJoin;
+        Internal.OnFriendRequest += InnerOnFriendRequest;
 
-        InnerBot.OnCaptcha += InnerOnCaptcha;
-        InnerBot.OnLog += InnerOnLog;
+        Internal.OnCaptcha += InnerOnCaptcha;
+        Internal.OnLog += InnerOnLog;
     }
 
     #region 生命周期
@@ -122,13 +122,13 @@ public class KonataBot : IBot
     public async Task Start()
     {
         _logger.Info("Starting Konata Bot...");
-        if (!await InnerBot.Login())
+        if (!await Internal.Login())
         {
             _logger.Warning($"{_config.SelfId} 登陆失败。");
             return;
         }
 
-        _config.KeyStore = InnerBot.KeyStore;
+        _config.KeyStore = Internal.KeyStore;
         _logger.Info("Konata Bot started.");
     }
 
@@ -137,7 +137,7 @@ public class KonataBot : IBot
     /// </summary>
     public Task Stop()
     {
-        return Task.Run(() => InnerBot.Dispose());
+        return Task.Run(() => Internal.Dispose());
     }
 
     #endregion 生命周期
@@ -146,7 +146,7 @@ public class KonataBot : IBot
 
     /// <inheritdoc />
     public Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
-        MessageContent content)
+        MessageContent content, string? guildId = null)
     {
         return sourceType switch
         {
@@ -168,9 +168,10 @@ public class KonataBot : IBot
     /// </summary>
     /// <param name="channelId">群号</param>
     /// <param name="content">消息内容</param>
-    public async Task<string?> SendChannelMessage(string channelId, MessageContent content)
+    /// <param name="guildId"></param>
+    public async Task<string?> SendChannelMessage(string channelId, MessageContent content, string? guildId = null)
     {
-        await InnerBot.SendGroupMessage(
+        await Internal.SendGroupMessage(
             uint.Parse(channelId), content.ToKonataMessageChain());
         return null;
     }
@@ -182,7 +183,7 @@ public class KonataBot : IBot
     /// <param name="content">消息内容</param>
     public async Task<string?> SendPrivateMessage(string userId, MessageContent content)
     {
-        await InnerBot.SendFriendMessage(
+        await Internal.SendFriendMessage(
             uint.Parse(userId), content.ToKonataMessageChain());
         return null;
     }
@@ -204,15 +205,15 @@ public class KonataBot : IBot
     {
         return Task.FromResult(new User
         {
-            Name = InnerBot.Name,
-            Nickname = InnerBot.Name,
-            Id = InnerBot.Uin.ToString(),
-            AvatarUrl = CommonUtils.GetAvatarUrl(InnerBot.Uin)
+            Name = Internal.Name,
+            Nickname = Internal.Name,
+            Id = Internal.Uin.ToString(),
+            AvatarUrl = CommonUtils.GetAvatarUrl(Internal.Uin)
         });
     }
 
     /// <inheritdoc />
-    public async Task<User?> GetUser(string userId)
+    public async Task<User?> GetUser(string userId, string? guildId = null)
     {
         return (await GetFriendList()).FirstOrDefault(user => user.Id == userId);
     }
@@ -222,7 +223,7 @@ public class KonataBot : IBot
     /// </summary>
     public async Task<IEnumerable<User>> GetFriendList()
     {
-        return (await InnerBot.GetFriendList(true)).Select(friend => new User
+        return (await Internal.GetFriendList(true)).Select(friend => new User
         {
             Name = friend.Name,
             Nickname = friend.Remark,
@@ -249,7 +250,7 @@ public class KonataBot : IBot
     /// </summary>
     public async Task<IEnumerable<Guild>> GetGuildList()
     {
-        return (await InnerBot.GetGroupList(true))
+        return (await Internal.GetGroupList(true))
             .Select(group => new Guild
             {
                 Id = group.Uin.ToString(),
@@ -273,7 +274,7 @@ public class KonataBot : IBot
     /// <param name="guildId">群号</param>
     public async Task<IEnumerable<GuildMember>> GetGuildMemberList(string guildId)
     {
-        return (await InnerBot.GetGroupMemberList(uint.Parse(guildId), true))
+        return (await Internal.GetGroupMemberList(uint.Parse(guildId), true))
             .Select(member => new GuildMember
             {
                 Name = member.Name,
@@ -288,16 +289,20 @@ public class KonataBot : IBot
 
     #region Channel 相关
 
-    /// <remarks>由于 Konata 暂不支持 QQ 频道，该方法将固定返回 null。</remarks>
-    public async Task<Channel?> GetChannel(string channelId)
+    /// <summary>
+    /// 获取群列表，对于 Konata 等效于 <see cref="GetGuild"/>
+    /// </summary>
+    public async Task<Channel?> GetChannel(string channelId, string? guildId = null)
     {
-        return (await GetChannelList()).FirstOrDefault(channel => channel.Id == channelId);
+        return (await GetChannelList("")).FirstOrDefault(channel => channel.Id == channelId);
     }
 
-    /// <remarks>由于 Konata 暂不支持 QQ 频道，该方法将固定返回空数组。</remarks>
-    public async Task<IEnumerable<Channel>> GetChannelList()
+    /// <summary>
+    /// 获取群列表，对于 Konata 等效于 <see cref="GetGuildList"/>
+    /// </summary>
+    public async Task<IEnumerable<Channel>> GetChannelList(string guildId)
     {
-        return (await InnerBot.GetGroupList(true))
+        return (await Internal.GetGroupList(true))
             .Select(group => new Channel
             {
                 Id = group.Uin.ToString(),
@@ -356,12 +361,12 @@ public class KonataBot : IBot
         {
             case CaptchaEvent.CaptchaType.Sms:
                 _logger.Warning($"手机验证码已发送至 {e.Phone}，请注意查收，输入验证码后按 Enter 继续：");
-                InnerBot.SubmitSmsCode(Console.ReadLine());
+                Internal.SubmitSmsCode(Console.ReadLine());
                 break;
 
             case CaptchaEvent.CaptchaType.Slider:
                 _logger.Warning($"滑动验证码 URL: {e.SliderUrl}，输入 Ticket 后按 Enter 继续：");
-                InnerBot.SubmitSliderTicket(Console.ReadLine());
+                Internal.SubmitSliderTicket(Console.ReadLine());
                 break;
         }
     }

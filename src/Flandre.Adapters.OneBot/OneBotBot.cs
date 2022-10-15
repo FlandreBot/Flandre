@@ -3,12 +3,25 @@ using Flandre.Core.Common;
 using Flandre.Core.Events.Bot;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
+using Flandre.Core.Utils;
 
 namespace Flandre.Adapters.OneBot;
 
-public abstract partial class OneBotBot : IBot
+public abstract class OneBotBot : IBot
 {
-    protected abstract Task<JsonElement> SendApiRequest(string action, object? @params = null);
+    internal OneBotGuildBot GuildBot;
+    internal readonly Logger Logger;
+
+    public OneBotInternalBot Internal { get; }
+
+    internal OneBotBot(Logger logger)
+    {
+        Internal = new OneBotInternalBot(this);
+        GuildBot = new OneBotGuildBot(this);
+        Logger = logger;
+    }
+
+    internal abstract Task<JsonElement> SendApiRequest(string action, object? @params = null);
 
     #region 核心方法
 
@@ -17,7 +30,7 @@ public abstract partial class OneBotBot : IBot
     public abstract Task Stop();
 
     public Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
-        MessageContent content)
+        MessageContent content, string? guildId = null)
     {
         return sourceType switch
         {
@@ -33,24 +46,24 @@ public abstract partial class OneBotBot : IBot
             contentOverride ?? message.Content);
     }
 
-    public async Task<string?> SendChannelMessage(string channelId, MessageContent content)
+    public async Task<string?> SendChannelMessage(string channelId, MessageContent content, string? guildId = null)
     {
-        return (await SendGroupMessage(long.Parse(channelId), content)).ToString();
+        return (await Internal.SendGroupMessage(long.Parse(channelId), content)).ToString();
     }
 
     public async Task<string?> SendPrivateMessage(string userId, MessageContent content)
     {
-        return (await SendPrivateMessage(long.Parse(userId), content)).ToString();
+        return (await Internal.SendPrivateMessage(long.Parse(userId), content)).ToString();
     }
 
     public Task DeleteMessage(string messageId)
     {
-        return DeleteMessage(int.Parse(messageId));
+        return Internal.DeleteMessage(int.Parse(messageId));
     }
 
     public async Task<User> GetSelf()
     {
-        var user = await GetLoginInfo();
+        var user = await Internal.GetLoginInfo();
         return new User
         {
             Name = user.Nickname,
@@ -59,9 +72,9 @@ public abstract partial class OneBotBot : IBot
         };
     }
 
-    public async Task<User?> GetUser(string userId)
+    public async Task<User?> GetUser(string userId, string? guildId = null)
     {
-        var user = await GetStrangerInfo(long.Parse(userId));
+        var user = await Internal.GetStrangerInfo(long.Parse(userId));
         return new User
         {
             Name = user.Nickname,
@@ -72,7 +85,7 @@ public abstract partial class OneBotBot : IBot
 
     public async Task<IEnumerable<User>> GetFriendList()
     {
-        var list = await GetOneBotFriendList();
+        var list = await Internal.GetFriendList();
         return list.Select(f => new User
         {
             Name = f.Nickname,
@@ -86,7 +99,7 @@ public abstract partial class OneBotBot : IBot
     {
         try
         {
-            var group = await GetGroupInfo(long.Parse(guildId));
+            var group = await Internal.GetGroupInfo(long.Parse(guildId));
             return new Guild
             {
                 Id = group.GroupId.ToString(),
@@ -101,7 +114,7 @@ public abstract partial class OneBotBot : IBot
 
     public async Task<IEnumerable<Guild>> GetGuildList()
     {
-        var list = await GetGroupList();
+        var list = await Internal.GetGroupList();
         return list.Select(g => new Guild
         {
             Id = g.GroupId.ToString(),
@@ -113,7 +126,7 @@ public abstract partial class OneBotBot : IBot
     {
         try
         {
-            var member = await GetGroupMemberInfo(long.Parse(guildId), long.Parse(userId));
+            var member = await Internal.GetGroupMemberInfo(long.Parse(guildId), long.Parse(userId));
             return new GuildMember
             {
                 Name = member.Nickname,
@@ -131,7 +144,7 @@ public abstract partial class OneBotBot : IBot
 
     public async Task<IEnumerable<GuildMember>> GetGuildMemberList(string guildId)
     {
-        var list = await GetGroupMemberList(long.Parse(guildId));
+        var list = await Internal.GetGroupMemberList(long.Parse(guildId));
         return list.Select(member => new GuildMember
         {
             Name = member.Nickname,
@@ -142,11 +155,11 @@ public abstract partial class OneBotBot : IBot
         });
     }
 
-    public async Task<Channel?> GetChannel(string channelId)
+    public async Task<Channel?> GetChannel(string channelId, string? guildId = null)
     {
         try
         {
-            var group = await GetGroupInfo(long.Parse(channelId));
+            var group = await Internal.GetGroupInfo(long.Parse(channelId));
             return new Channel
             {
                 Id = group.GroupId.ToString(),
@@ -159,9 +172,9 @@ public abstract partial class OneBotBot : IBot
         }
     }
 
-    public async Task<IEnumerable<Channel>> GetChannelList()
+    public async Task<IEnumerable<Channel>> GetChannelList(string guildId)
     {
-        var list = await GetGroupList();
+        var list = await Internal.GetGroupList();
         return list.Select(c => new Channel
         {
             Id = c.GroupId.ToString(),
@@ -179,17 +192,17 @@ public abstract partial class OneBotBot : IBot
 
     public async Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null)
     {
-        await SetGroupAddRequest(e.EventMessage?.ToString()!, "invite", approve, comment ?? "");
+        await Internal.SetGroupAddRequest(e.EventMessage?.ToString()!, "invite", approve, comment ?? "");
     }
 
     public async Task HandleGuildRequest(BotGuildRequestedEvent e, bool approve, string? comment = null)
     {
-        await SetGroupAddRequest(e.EventMessage?.ToString()!, "add", approve, comment ?? "");
+        await Internal.SetGroupAddRequest(e.EventMessage?.ToString()!, "add", approve, comment ?? "");
     }
 
     public async Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null)
     {
-        await SetFriendAddRequest(e.EventMessage?.ToString()!, approve, comment ?? "");
+        await Internal.SetFriendAddRequest(e.EventMessage?.ToString()!, approve, comment ?? "");
     }
 
     #endregion

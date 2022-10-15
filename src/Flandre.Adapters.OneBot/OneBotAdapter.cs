@@ -3,9 +3,9 @@ using Flandre.Core.Utils;
 
 namespace Flandre.Adapters.OneBot;
 
-public class OneBotAdapter : IAdapter<OneBotBot>
+public class OneBotAdapter : IAdapter
 {
-    private readonly List<OneBotBot> _bots = new();
+    private readonly List<IBot> _bots = new();
 
     private readonly OneBotAdapterConfig _config;
 
@@ -20,7 +20,9 @@ public class OneBotAdapter : IAdapter<OneBotBot>
             {
                 case "websocket":
                 case "ws":
-                    _bots.Add(new OneBotWebSocketBot(bot, _logger));
+                    var obb = new OneBotWebSocketBot(bot, _logger);
+                    _bots.Add(obb);
+                    _bots.Add(obb.GuildBot);
                     break;
 
                 default:
@@ -39,7 +41,7 @@ public class OneBotAdapter : IAdapter<OneBotBot>
         await Task.WhenAll(_bots.ConvertAll(bot => bot.Stop()));
     }
 
-    public IEnumerable<OneBotBot> GetBots()
+    public IEnumerable<IBot> GetBots()
     {
         return _bots;
     }

@@ -17,7 +17,7 @@ namespace Flandre.Core;
 /// </summary>
 public class FlandreApp
 {
-    private readonly List<IAdapter<IBot>> _adapters = new();
+    private readonly List<IAdapter> _adapters = new();
 
     internal readonly List<IBot> Bots = new();
 
@@ -83,7 +83,7 @@ public class FlandreApp
     {
         switch (module)
         {
-            case IAdapter<IBot> adapter:
+            case IAdapter adapter:
                 _adapters.Add(adapter);
                 Bots.AddRange(adapter.GetBots());
                 break;

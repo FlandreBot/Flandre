@@ -31,7 +31,7 @@ public class TestBot : IBot
     }
 
     public Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
-        MessageContent content)
+        MessageContent content, string? guildId = null)
     {
         return SendMessage(new Message { Content = content });
     }
@@ -42,7 +42,7 @@ public class TestBot : IBot
         return null;
     }
 
-    public async Task<string?> SendChannelMessage(string channelId, MessageContent content)
+    public async Task<string?> SendChannelMessage(string channelId, MessageContent content, string? guildId = null)
     {
         if (_tcs is null) return null;
         if (_sourceType != MessageSourceType.Channel) return null;
@@ -72,7 +72,7 @@ public class TestBot : IBot
         };
     }
 
-    public async Task<User?> GetUser(string userId)
+    public async Task<User?> GetUser(string userId, string? guildId = null)
     {
         return null;
     }
@@ -102,12 +102,12 @@ public class TestBot : IBot
         return new List<GuildMember>();
     }
 
-    public async Task<Channel?> GetChannel(string channelId)
+    public async Task<Channel?> GetChannel(string channelId, string? guildId = null)
     {
         return null;
     }
 
-    public async Task<IEnumerable<Channel>> GetChannelList()
+    public async Task<IEnumerable<Channel>> GetChannelList(string guildId)
     {
         return new List<Channel>();
     }

@@ -32,8 +32,9 @@ public interface IBot
     /// <param name="channelId">Channel ID</param>
     /// <param name="userId">用户 ID</param>
     /// <param name="content">消息内容</param>
+    /// <param name="guildId">群组 ID</param>
     Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
-        MessageContent content);
+        MessageContent content, string? guildId = null);
 
     /// <summary>
     /// 发送消息
@@ -47,7 +48,8 @@ public interface IBot
     /// </summary>
     /// <param name="channelId">Channel ID</param>
     /// <param name="content">消息内容</param>
-    Task<string?> SendChannelMessage(string channelId, MessageContent content);
+    /// <param name="guildId">群组 ID</param>
+    Task<string?> SendChannelMessage(string channelId, MessageContent content, string? guildId = null);
 
     /// <summary>
     /// 发送私聊消息
@@ -75,7 +77,8 @@ public interface IBot
     /// 获取用户信息
     /// </summary>
     /// <param name="userId">用户 ID</param>
-    Task<User?> GetUser(string userId);
+    /// <param name="guildId">群组 ID</param>
+    Task<User?> GetUser(string userId, string? guildId = null);
 
     /// <summary>
     /// 获取好友列表
@@ -118,12 +121,14 @@ public interface IBot
     /// 获取 Channel 信息
     /// </summary>
     /// <param name="channelId">Channel ID</param>
-    Task<Channel?> GetChannel(string channelId);
+    /// <param name="guildId">群组 ID</param>
+    Task<Channel?> GetChannel(string channelId, string? guildId = null);
 
     /// <summary>
     /// 获取 Channel 列表
     /// </summary>
-    Task<IEnumerable<Channel>> GetChannelList();
+    /// <param name="guildId">群组 ID</param>
+    Task<IEnumerable<Channel>> GetChannelList(string guildId);
 
     #endregion Channel 相关
 

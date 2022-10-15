@@ -17,16 +17,13 @@ public class OneBotWebSocketBot : OneBotBot
     private readonly WebsocketClient _wsClient;
     private bool _clientStopped;
 
-    private readonly Logger _logger;
-
     private readonly OneBotBotConfig _config;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonElement>> _apiTasks = new();
 
-    internal OneBotWebSocketBot(OneBotBotConfig config, Logger logger)
+    internal OneBotWebSocketBot(OneBotBotConfig config, Logger logger) : base(logger)
     {
         _config = config;
-        _logger = logger;
 
         _wsClient = new WebsocketClient(new Uri(config.Endpoint!))
         {
@@ -39,18 +36,18 @@ public class OneBotWebSocketBot : OneBotBot
         _wsClient.DisconnectionHappened.Subscribe(_ =>
         {
             if (_clientStopped) return;
-            _logger.Warning($"WebSocket 连接丢失，将在 {_config.WebSocketReconnectTimeout} 秒后尝试重连...");
+            Logger.Warning($"WebSocket 连接丢失，将在 {_config.WebSocketReconnectTimeout} 秒后尝试重连...");
             foreach (var tcs in _apiTasks.Values)
                 tcs.SetException(new WebsocketException("WebSocket 连接丢失。"));
             _apiTasks.Clear();
         });
 
-        _wsClient.ReconnectionHappened.Subscribe(_ => { _logger.Success("成功连接至 WebSocket 服务器。"); });
+        _wsClient.ReconnectionHappened.Subscribe(_ => { Logger.Success("成功连接至 WebSocket 服务器。"); });
     }
 
     #region WebSocket 交互
 
-    protected override Task<JsonElement> SendApiRequest(string action, object? @params = null)
+    internal override Task<JsonElement> SendApiRequest(string action, object? @params = null)
     {
         var tcs = new TaskCompletionSource<JsonElement>();
         var echo = Guid.NewGuid().ToString();
@@ -70,7 +67,11 @@ public class OneBotWebSocketBot : OneBotBot
             switch (postType.ToString())
             {
                 case "message":
-                    OnApiMessageEvent(json.Deserialize<OneBotApiMessageEvent>()!);
+                    json.RootElement.TryGetProperty("message_type", out var messageType);
+                    if (messageType.ToString() == "guild")
+                        GuildBot.InvokeMessageEvent(json.Deserialize<OneBotApiGuildMessageEvent>()!);
+                    else
+                        OnApiMessageEvent(json.Deserialize<OneBotApiMessageEvent>()!);
                     break;
 
                 case "request":
