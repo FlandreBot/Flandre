@@ -191,8 +191,7 @@ public class FlandreApp
             {
                 var content = cmd.ParseCommand(ctx, p);
                 if (content is null) return;
-                ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.ChannelId,
-                    ctx.Message.Sender.Id, content);
+                ctx.Bot.SendMessage(ctx.Message, content);
             }
 
             if (commandStr == Config.CommandPrefix) return;
@@ -205,8 +204,7 @@ public class FlandreApp
             {
                 case null:
                     if (Config.CommandPrefix == "") return;
-                    ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.ChannelId,
-                        ctx.Message.Sender.Id, $"未找到指令：{root}。");
+                    ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。");
                     return;
 
                 case Command command:
@@ -222,8 +220,7 @@ public class FlandreApp
                         switch (obj)
                         {
                             case null:
-                                ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.ChannelId,
-                                    ctx.Message.Sender.Id, $"未找到指令：{root}。");
+                                ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。");
                                 return;
                             case Command cmd:
                                 DealCommand(cmd, parser);
@@ -231,8 +228,7 @@ public class FlandreApp
                         }
                     }
 
-                    ctx.Bot.SendMessage(ctx.Message.SourceType, ctx.Message.ChannelId,
-                        ctx.Message.Sender.Id, plugin.GetHelp());
+                    ctx.Bot.SendMessage(ctx.Message, plugin.GetHelp());
                     break;
                 }
             }
