@@ -9,6 +9,11 @@ namespace Flandre.Core.Common;
 /// </summary>
 public interface IBot
 {
+    /// <summary>
+    /// Bot 平台名称
+    /// </summary>
+    string Platform { get; }
+
     #region 生命周期
 
     /// <summary>

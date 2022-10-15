@@ -8,6 +8,11 @@ namespace Flandre.Adapters.OneBot;
 
 public class OneBotGuildBot : IBot
 {
+    /// <summary>
+    /// Bot 平台名称，值为 qqguild
+    /// </summary>
+    public string Platform => "qqguild";
+
     public OneBotGuildInternalBot Internal { get; }
 
     private readonly OneBotBot _mainBot;

@@ -9,6 +9,11 @@ namespace Flandre.TestKit;
 
 public class TestBot : IBot
 {
+    /// <summary>
+    /// Bot 平台名称，值为 test
+    /// </summary>
+    public string Platform => "test";
+
     private readonly string _selfId = Guid.NewGuid().ToString();
 
     private TaskCompletionSource<MessageContent?>? _tcs;

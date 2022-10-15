@@ -19,6 +19,11 @@ namespace Flandre.Adapters.Konata;
 public class KonataBot : IBot
 {
     /// <summary>
+    /// Bot 平台名称，值为 konata
+    /// </summary>
+    public string Platform => "konata";
+    
+    /// <summary>
     /// Konata 内部 bot
     /// </summary>
     public Bot Internal { get; }
