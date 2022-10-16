@@ -30,15 +30,15 @@ public class Logger
     /// <param name="message">日志消息</param>
     protected void Log(LogLevels logLevel, string message)
     {
-        var loggingEvent = new LoggerLoggingEvent();
-        
+        var loggingEvent =
+            new LoggerLoggingEvent($"{DateTime.Now:HH:mm:ss} [{logLevel.ToString()[0]}/{Name}] {message}");
+
         DefaultLoggingHandlers.ForEach(logging => logging(loggingEvent));
         OnLoggerLogging?.Invoke(this, loggingEvent);
 
         if (loggingEvent.Cancelled) return;
-        
-        var logMessage = loggingEvent.CustomMessage ??
-                         $"{DateTime.Now:HH:mm:ss} [{logLevel.ToString()[0]}/{Name}] {message}";
+
+        var logMessage = loggingEvent.CustomMessage ?? loggingEvent.Message;
         Console.WriteLine(logMessage);
     }
 
@@ -96,6 +96,7 @@ public class Logger
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Log(LogLevels.Debug, message);
     }
+
     /// <summary>
     /// 日志事件委托
     /// </summary>
@@ -117,22 +118,22 @@ public enum LogLevels
     /// 调试
     /// </summary>
     Debug = 0,
-        
+
     /// <summary>
     /// 信息
     /// </summary>
     Info = 1,
-        
+
     /// <summary>
     /// 成功
     /// </summary>
     Success = 2,
-        
+
     /// <summary>
     /// 警告
     /// </summary>
     Warning = 3,
-        
+
     /// <summary>
     /// 错误
     /// </summary>
