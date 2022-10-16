@@ -38,8 +38,7 @@ public class Logger
 
         if (loggingEvent.Cancelled) return;
 
-        var logMessage = loggingEvent.CustomMessage ?? loggingEvent.Message;
-        Console.WriteLine(logMessage);
+        Console.WriteLine(loggingEvent.Message);
     }
 
     /// <summary>

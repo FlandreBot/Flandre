@@ -8,9 +8,7 @@ public class LoggerLoggingEvent : BaseEvent
     /// <summary>
     /// 默认格式的日志信息
     /// </summary>
-    public string Message { get; }
-    
-    internal string? CustomMessage;
+    public string Message { get; private set; }
 
     internal bool Cancelled;
 
@@ -24,7 +22,7 @@ public class LoggerLoggingEvent : BaseEvent
     /// </summary>
     public void SetCustomMessage(string message)
     {
-        CustomMessage = message;
+        Message = message;
     }
 
     /// <summary>
