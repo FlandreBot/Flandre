@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Flandre.Core.Attributes;
 using Flandre.Core.Events.Bot;
+using Flandre.Core.Events.Logger;
 using Flandre.Core.Messaging;
 using Flandre.Core.Utils;
 
@@ -83,6 +84,15 @@ public abstract class Plugin : IModule
     /// <param name="ctx">当前上下文</param>
     /// <param name="e">好友申请事件</param>
     public virtual void OnFriendRequested(Context ctx, BotFriendRequestedEvent e)
+    {
+    }
+
+    /// <summary>
+    /// 日志记录前触发的事件
+    /// </summary>
+    /// <param name="ctx">当前上下文</param>
+    /// <param name="e">日志记录前事件</param>
+    public virtual void OnLoggerLogging(Context ctx, LoggerLoggingEvent e)
     {
     }
 }

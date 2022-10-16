@@ -1,10 +1,15 @@
-﻿namespace Flandre.Core.Utils;
+﻿using Flandre.Core.Common;
+using Flandre.Core.Events.Logger;
+
+namespace Flandre.Core.Utils;
 
 /// <summary>
 /// 日志记录器
 /// </summary>
 public class Logger
 {
+    internal static List<Action<LoggerLoggingEvent>> DefaultLoggingHandlers = new();
+
     /// <summary>
     /// 日志类别
     /// </summary>
@@ -19,9 +24,22 @@ public class Logger
         Name = name;
     }
 
-    private static void Log(string message)
+    /// <summary>
+    /// 记录日志
+    /// </summary>
+    /// <param name="logLevel">日志等级</param>
+    /// <param name="message">日志消息</param>
+    protected void Log(LogLevels logLevel, string message)
     {
-        var logMessage = $"{DateTime.Now:HH:mm:ss} {message}";
+        var loggingEvent = new LoggerLoggingEvent();
+        
+        DefaultLoggingHandlers.ForEach(logging => logging(loggingEvent));
+        OnLogging?.Invoke(this, loggingEvent);
+
+        if (loggingEvent.Cancelled) return;
+        
+        var logMessage = loggingEvent.CustomMessage ??
+                         $"{DateTime.Now:HH:mm:ss} [{logLevel.ToString()[0]}/{Name}] {message}";
         Console.WriteLine(logMessage);
     }
 
@@ -31,7 +49,7 @@ public class Logger
     public void Info(string message)
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Log($"[I/{Name}] {message}");
+        Log(LogLevels.Info, message);
     }
 
     /// <summary>
@@ -40,7 +58,7 @@ public class Logger
     public void Success(string message)
     {
         Console.ForegroundColor = ConsoleColor.Green;
-        Log($"[S/{Name}] {message}");
+        Log(LogLevels.Success, message);
     }
 
     /// <summary>
@@ -50,7 +68,7 @@ public class Logger
     public void Warning(string message)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Log($"[W/{Name}] {message}");
+        Log(LogLevels.Warning, message);
     }
 
     /// <summary>
@@ -59,7 +77,7 @@ public class Logger
     public void Error(string message)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        Log($"[E/{Name}] {message}");
+        Log(LogLevels.Error, message);
     }
 
     /// <summary>
@@ -68,7 +86,7 @@ public class Logger
     public void Error(Exception exception)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        Log($"[E/{Name}] {exception.GetType().Name}: {exception.Message}\n{exception.StackTrace}");
+        Log(LogLevels.Error, $"{exception.GetType().Name}: {exception.Message}\n{exception.StackTrace}");
     }
 
     /// <summary>
@@ -77,6 +95,47 @@ public class Logger
     public void Debug(string message)
     {
         Console.ForegroundColor = ConsoleColor.DarkGray;
-        Log($"[D/{Name}] {message}");
+        Log(LogLevels.Debug, message);
     }
+    /// <summary>
+    /// 日志事件委托
+    /// </summary>
+    /// <typeparam name="TEvent">事件类型</typeparam>
+    public delegate void LoggerEventHandler<in TEvent>(Logger logger, TEvent e);
+
+    /// <summary>
+    /// 日志记录前
+    /// </summary>
+    public event LoggerEventHandler<LoggerLoggingEvent>? OnLogging;
+}
+
+/// <summary>
+/// 日志等级
+/// </summary>
+public enum LogLevels
+{
+    /// <summary>
+    /// 调试
+    /// </summary>
+    Debug = 0,
+        
+    /// <summary>
+    /// 信息
+    /// </summary>
+    Info = 1,
+        
+    /// <summary>
+    /// 成功
+    /// </summary>
+    Success = 2,
+        
+    /// <summary>
+    /// 警告
+    /// </summary>
+    Warning = 3,
+        
+    /// <summary>
+    /// 错误
+    /// </summary>
+    Error = 4
 }

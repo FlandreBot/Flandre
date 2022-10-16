@@ -174,6 +174,9 @@ public class FlandreApp
                     plugin.OnGuildRequested(ctx, e));
                 bot.OnFriendRequested += (_, e) => CatchAndLog(() =>
                     plugin.OnFriendRequested(ctx, e));
+                
+                Logger.DefaultLoggingHandlers.Add(e =>
+                    plugin.OnLoggerLogging(ctx, e));
             }
 
             bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
