@@ -7,7 +7,10 @@ namespace Flandre.Core.Utils;
 /// </summary>
 public class Logger
 {
-    internal static List<Action<LoggerLoggingEvent>> DefaultLoggingHandlers = new();
+    /// <summary>
+    /// 全局日志处理，在日志记录前调用
+    /// </summary>
+    public static readonly List<Action<LoggerLoggingEvent>> DefaultLoggingHandlers = new();
 
     /// <summary>
     /// 日志类别
