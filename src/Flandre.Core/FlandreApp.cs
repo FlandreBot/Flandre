@@ -117,15 +117,14 @@ public class FlandreApp
     /// </summary>
     public void Start()
     {
-        Logger.Info("Starting App...");
+        SubscribeEvents(); // 注册事件
 
         OnAppStarting?.Invoke(this, new AppStartingEvent());
 
+        Logger.Info("Starting App...");
+
         // 启动所有适配器
         Task.WaitAll(_adapters.ConvertAll(adapter => adapter.Start()).ToArray());
-
-        // 为所有模块注册事件
-        SubscribeEvents();
 
         OnAppReady?.Invoke(this, new AppReadyEvent());
 
@@ -162,9 +161,19 @@ public class FlandreApp
 
         foreach (var bot in Bots)
         {
+            var ctx = new Context(this, bot);
+
+            bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
+                OnCommandParsing(new MessageContext(this, bot, e.Message)));
+
             foreach (var plugin in Plugins)
             {
-                var ctx = new Context(this, bot);
+                OnAppStarting += (_, e) => CatchAndLog(() =>
+                    plugin.OnAppStarting(ctx, e));
+                OnAppReady += (_, e) => CatchAndLog(() =>
+                    plugin.OnAppReady(ctx, e));
+                OnAppStopped += (_, e) => CatchAndLog(() =>
+                    plugin.OnAppStopped(ctx, e));
 
                 bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
                     plugin.OnMessageReceived(new MessageContext(this, bot, e.Message)));
@@ -174,13 +183,10 @@ public class FlandreApp
                     plugin.OnGuildRequested(ctx, e));
                 bot.OnFriendRequested += (_, e) => CatchAndLog(() =>
                     plugin.OnFriendRequested(ctx, e));
-                
+
                 Logger.DefaultLoggingHandlers.Add(e =>
                     plugin.OnLoggerLogging(ctx, e));
             }
-
-            bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
-                OnCommandParsing(new MessageContext(this, bot, e.Message)));
         }
     }
 

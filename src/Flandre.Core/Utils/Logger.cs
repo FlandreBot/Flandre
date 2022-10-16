@@ -1,5 +1,4 @@
-﻿using Flandre.Core.Common;
-using Flandre.Core.Events.Logger;
+﻿using Flandre.Core.Events.Logger;
 
 namespace Flandre.Core.Utils;
 
@@ -34,7 +33,7 @@ public class Logger
         var loggingEvent = new LoggerLoggingEvent();
         
         DefaultLoggingHandlers.ForEach(logging => logging(loggingEvent));
-        OnLogging?.Invoke(this, loggingEvent);
+        OnLoggerLogging?.Invoke(this, loggingEvent);
 
         if (loggingEvent.Cancelled) return;
         
@@ -106,7 +105,7 @@ public class Logger
     /// <summary>
     /// 日志记录前
     /// </summary>
-    public event LoggerEventHandler<LoggerLoggingEvent>? OnLogging;
+    public event LoggerEventHandler<LoggerLoggingEvent>? OnLoggerLogging;
 }
 
 /// <summary>

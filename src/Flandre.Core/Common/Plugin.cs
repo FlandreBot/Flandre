@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Flandre.Core.Attributes;
+using Flandre.Core.Events.App;
 using Flandre.Core.Events.Bot;
 using Flandre.Core.Events.Logger;
 using Flandre.Core.Messaging;
@@ -53,9 +54,36 @@ public abstract class Plugin : IModule
     }
 
     /// <summary>
+    /// 处理应用启动事件
+    /// </summary>
+    /// <param name="ctx">当前上下文</param>
+    /// <param name="e">应用启动事件</param>
+    public virtual void OnAppStarting(Context ctx, AppStartingEvent e)
+    {
+    }
+
+    /// <summary>
+    /// 处理应用就绪事件
+    /// </summary>
+    /// <param name="ctx">当前上下文</param>
+    /// <param name="e">应用就绪事件</param>
+    public virtual void OnAppReady(Context ctx, AppReadyEvent e)
+    {
+    }
+
+    /// <summary>
+    /// 处理应用停止事件
+    /// </summary>
+    /// <param name="ctx">当前上下文</param>
+    /// <param name="e">应用停止事件</param>
+    public virtual void OnAppStopped(Context ctx, AppStoppedEvent e)
+    {
+    }
+
+    /// <summary>
     /// 处理消息事件
     /// </summary>
-    /// <param name="ctx">消息上下文</param>
+    /// <param name="ctx">当前消息上下文</param>
     public virtual void OnMessageReceived(MessageContext ctx)
     {
     }
