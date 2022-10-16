@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  publish-core:
+  publish:
     name: Publish NuGet Packages
     runs-on: ubuntu-latest
     steps:
@@ -29,7 +29,6 @@ jobs:
           TAG_COMMIT: true
           TAG_FORMAT: v*
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-          INCLUDE_SYMBOLS: false
 
       - name: Publish Adapters.Konata
         id: publish-adapter-konata
@@ -41,4 +40,14 @@ jobs:
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-          INCLUDE_SYMBOLS: false
+
+      - name: Publish Adapters.OneBot
+        id: publish-adapter-onebot
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.OneBot/Flandre.Adapters.OneBot.csproj
+          PACKAGE_NAME: Flandre.Adapters.OneBot
+          VERSION_FILE_PATH: src/Flandre.Adapters.OneBot/Flandre.Adapters.OneBot.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
