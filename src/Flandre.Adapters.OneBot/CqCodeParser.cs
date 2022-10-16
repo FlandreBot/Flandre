@@ -1,4 +1,5 @@
-﻿using Flandre.Adapters.OneBot.Segments;
+﻿using System.Text;
+using Flandre.Adapters.OneBot.Segments;
 using Flandre.Core.Messaging;
 using Flandre.Core.Messaging.Segments;
 using Flandre.Core.Utils;
@@ -43,8 +44,43 @@ public static class CqCodeParser
 
     public static string ToCqMessage(this MessageContent content)
     {
-        // TODO
-        return content.GetText();
+        var sb = new StringBuilder();
+        foreach (var segment in content)
+            sb.Append(segment.ToCqCode());
+        return sb.ToString();
+    }
+
+    public static string ToCqCode(this MessageSegment segment)
+    {
+        switch (segment)
+        {
+            case TextSegment ts:
+                return ts.Text;
+
+            case FaceSegment fs:
+                return $"[CQ:face,id={fs.FaceId}]";
+
+            case AudioSegment aus:
+                if (aus.Data is not null)
+                    return $"[CQ:record,file=base64://{Convert.ToBase64String(aus.Data)}]";
+                if (aus.Path is not null)
+                    return $"[CQ:record,file={aus.Path}]";
+                if (aus.Url is not null)
+                    return $"[CQ:record,file={aus.Url}]";
+                break;
+
+            case ImageSegment ims:
+                var type = ims.Type is null ? "" : $",type={ims.Type}";
+                if (ims.Data is not null)
+                    return $"[CQ:image,file=base64://{Convert.ToBase64String(ims.Data)}{type}]";
+                if (ims.Path is not null)
+                    return $"[CQ:image,file={ims.Path}{type}]";
+                if (ims.Url is not null)
+                    return $"[CQ:image,file={ims.Url}{type}]";
+                return "";
+        }
+
+        return "";
     }
 
     private static FaceSegment ParseFace(string[] data)
