@@ -213,6 +213,7 @@ public class FlandreApp
             {
                 case null:
                     if (Config.CommandPrefix == "") return;
+                    if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return;
                     ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
                     return;
 
@@ -224,11 +225,13 @@ public class FlandreApp
                 {
                     if (!parser.IsEnd())
                     {
-                        root = $"{root}.{parser.Read(' ')}";
+                        root = $"{root}.{parser.SkipSpaces().Read(' ')}";
                         obj = _commandMap.GetValueOrDefault(root);
                         switch (obj)
                         {
                             case null:
+                                if (Config.IgnoreUndefinedCommand.Equals("all", StringComparison.OrdinalIgnoreCase))
+                                    return;
                                 ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
                                 return;
                             case Command cmd:
@@ -237,6 +240,8 @@ public class FlandreApp
                         }
                     }
 
+                    if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase))
+                        return;
                     ctx.Bot.SendMessage(ctx.Message, plugin.GetHelp()).Wait();
                     break;
                 }
@@ -254,4 +259,12 @@ public class FlandreAppConfig
     /// 全局指令前缀
     /// </summary>
     public string CommandPrefix { get; set; } = "";
+
+    /// <summary>
+    /// 忽略未定义指令的调用。可用值为：
+    /// <br/> no - （默认）不忽略，调用未定义指令时发出警告信息
+    /// <br/> root - 仅忽略根指令（顶级指令）
+    /// <br/> all - 忽略所有
+    /// </summary>
+    public string IgnoreUndefinedCommand { get; set; } = "no";
 }
