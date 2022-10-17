@@ -35,7 +35,7 @@ public class OneBotGuildBot : IBot
             Sender = new User
             {
                 Name = e.Sender.Nickname,
-                Id = e.Sender.TinyId!
+                UserId = e.Sender.TinyId!
             },
             Content = CqCodeParser.ParseCqMessage(e.Message!)
         }));
@@ -63,7 +63,7 @@ public class OneBotGuildBot : IBot
 
     public Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
     {
-        return SendMessage(message.SourceType, message.ChannelId, message.Sender.Id,
+        return SendMessage(message.SourceType, message.ChannelId, message.Sender.UserId,
             contentOverride ?? message.Content, message.GuildId);
     }
 
@@ -90,7 +90,7 @@ public class OneBotGuildBot : IBot
         return new User
         {
             Name = self.Nickname!,
-            Id = self.TinyId!,
+            UserId = self.TinyId!,
             AvatarUrl = self.AvatarUrl
         };
     }
@@ -140,7 +140,7 @@ public class OneBotGuildBot : IBot
             return new GuildMember
             {
                 Name = user.Nickname!,
-                Id = user.TinyId!,
+                UserId = user.TinyId!,
                 AvatarUrl = user.AvatarUrl,
                 Roles = user.Roles?.Select(r => r.RoleName!).ToList() ?? new List<string>()
             };
@@ -167,7 +167,7 @@ public class OneBotGuildBot : IBot
         return list.Select(m => new GuildMember
         {
             Name = m.Nickname!,
-            Id = m.TinyId!,
+            UserId = m.TinyId!,
             Roles = new List<string> { m.RoleName! }
         });
     }

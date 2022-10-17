@@ -51,7 +51,7 @@ internal static class MessageUtils
             {
                 Name = message.Sender.Name,
                 // Nickname = message.Sender.Name,   (can't get user's nickname)
-                Id = message.Sender.Uin.ToString(),
+                UserId = message.Sender.Uin.ToString(),
                 AvatarUrl = CommonUtils.GetAvatarUrl(message.Sender.Uin)
             },
             Content = mb.Build()
@@ -70,7 +70,7 @@ internal static class MessageUtils
                     if (!prefixChecked)
                     {
                         var messageStruct = new MessageStruct(
-                            uint.Parse(quoteSegment.QuotedMessage.Sender.Id),
+                            uint.Parse(quoteSegment.QuotedMessage.Sender.UserId),
                             quoteSegment.QuotedMessage.Sender.Nickname,
                             quoteSegment.QuotedMessage.Content.ToKonataMessageChain(),
                             quoteSegment.QuotedMessage.SourceType ==

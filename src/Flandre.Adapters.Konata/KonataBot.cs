@@ -164,7 +164,7 @@ public class KonataBot : IBot
     /// <inheritdoc />
     public Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
     {
-        return SendMessage(message.SourceType, message.ChannelId, message.Sender.Id,
+        return SendMessage(message.SourceType, message.ChannelId, message.Sender.UserId,
             contentOverride ?? message.Content);
     }
 
@@ -212,7 +212,7 @@ public class KonataBot : IBot
         {
             Name = Internal.Name,
             Nickname = Internal.Name,
-            Id = Internal.Uin.ToString(),
+            UserId = Internal.Uin.ToString(),
             AvatarUrl = CommonUtils.GetAvatarUrl(Internal.Uin)
         });
     }
@@ -220,7 +220,7 @@ public class KonataBot : IBot
     /// <inheritdoc />
     public async Task<User?> GetUser(string userId, string? guildId = null)
     {
-        return (await GetFriendList()).FirstOrDefault(user => user.Id == userId);
+        return (await GetFriendList()).FirstOrDefault(user => user.UserId == userId);
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public class KonataBot : IBot
         {
             Name = friend.Name,
             Nickname = friend.Remark,
-            Id = friend.Uin.ToString(),
+            UserId = friend.Uin.ToString(),
             AvatarUrl = CommonUtils.GetAvatarUrl(friend.Uin)
         });
     }
@@ -270,7 +270,7 @@ public class KonataBot : IBot
     /// <param name="userId">群成员 QQ</param>
     public async Task<GuildMember?> GetGuildMember(string guildId, string userId)
     {
-        return (await GetGuildMemberList(guildId)).FirstOrDefault(member => member.Id == userId);
+        return (await GetGuildMemberList(guildId)).FirstOrDefault(member => member.UserId == userId);
     }
 
     /// <summary>
@@ -284,7 +284,7 @@ public class KonataBot : IBot
             {
                 Name = member.Name,
                 Nickname = member.NickName,
-                Id = member.Uin.ToString(),
+                UserId = member.Uin.ToString(),
                 AvatarUrl = CommonUtils.GetAvatarUrl(member.Uin),
                 Roles = new List<string> { member.Role.ToString() }
             });

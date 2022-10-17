@@ -47,7 +47,7 @@ public abstract class OneBotBot : IBot
 
     public Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
     {
-        return SendMessage(message.SourceType, message.ChannelId, message.Sender.Id,
+        return SendMessage(message.SourceType, message.ChannelId, message.Sender.UserId,
             contentOverride ?? message.Content);
     }
 
@@ -72,7 +72,7 @@ public abstract class OneBotBot : IBot
         return new User
         {
             Name = user.Nickname,
-            Id = user.UserId.ToString(),
+            UserId = user.UserId.ToString(),
             AvatarUrl = OneBotUtils.GetUserAvatar(user.UserId)
         };
     }
@@ -83,7 +83,7 @@ public abstract class OneBotBot : IBot
         return new User
         {
             Name = user.Nickname,
-            Id = user.UserId.ToString(),
+            UserId = user.UserId.ToString(),
             AvatarUrl = OneBotUtils.GetUserAvatar(user.UserId)
         };
     }
@@ -95,7 +95,7 @@ public abstract class OneBotBot : IBot
         {
             Name = f.Nickname,
             Nickname = f.Remark,
-            Id = f.UserId.ToString(),
+            UserId = f.UserId.ToString(),
             AvatarUrl = OneBotUtils.GetUserAvatar(f.UserId)
         });
     }
@@ -136,7 +136,7 @@ public abstract class OneBotBot : IBot
             {
                 Name = member.Nickname,
                 Nickname = member.Card,
-                Id = member.UserId.ToString(),
+                UserId = member.UserId.ToString(),
                 AvatarUrl = OneBotUtils.GetUserAvatar(member.UserId),
                 Roles = new List<string> { member.Role }
             };
@@ -154,7 +154,7 @@ public abstract class OneBotBot : IBot
         {
             Name = member.Nickname,
             Nickname = member.Card,
-            Id = member.UserId.ToString(),
+            UserId = member.UserId.ToString(),
             AvatarUrl = OneBotUtils.GetUserAvatar(member.UserId),
             Roles = new List<string> { member.Role }
         });

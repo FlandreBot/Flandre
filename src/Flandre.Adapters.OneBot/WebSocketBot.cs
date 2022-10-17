@@ -128,7 +128,7 @@ public class OneBotWebSocketBot : OneBotBot
             {
                 Name = e.Sender.Nickname,
                 Nickname = e.Sender.Card,
-                Id = e.UserId.ToString(),
+                UserId = e.UserId.ToString(),
                 AvatarUrl = OneBotUtils.GetUserAvatar(e.UserId)
             },
             Content = CqCodeParser.ParseCqMessage(e.RawMessage)
