@@ -47,10 +47,7 @@ public class KonataAdapter : IAdapter
     /// <summary>
     /// 获取 bot 列表
     /// </summary>
-    public IEnumerable<IBot> GetBots()
-    {
-        return _bots;
-    }
+    public IEnumerable<Bot> GetBots() => _bots;
 }
 
 /// <summary>

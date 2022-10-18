@@ -2,7 +2,6 @@
 using System.Net.WebSockets;
 using System.Text.Json;
 using Flandre.Adapters.OneBot.Models;
-using Flandre.Core.Common;
 using Flandre.Core.Events.Bot;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
@@ -20,6 +19,11 @@ public class OneBotWebSocketBot : OneBotBot
     private readonly OneBotBotConfig _config;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonElement>> _apiTasks = new();
+
+    public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
+    public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
+    public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
+    public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 
     internal OneBotWebSocketBot(OneBotBotConfig config, Logger logger) : base(logger)
     {
@@ -84,7 +88,7 @@ public class OneBotWebSocketBot : OneBotBot
                                     requestEvent.UserId.ToString(), requestEvent.UserId.ToString(), true)
                                 { EventMessage = requestEvent.Flag });
                         else if (requestEvent.SubType == "add")
-                            OnGuildRequested?.Invoke(this, new BotGuildRequestedEvent(
+                            OnGuildJoinRequested?.Invoke(this, new BotGuildJoinRequestedEvent(
                                     requestEvent.GroupId?.ToString()!, requestEvent.GroupId?.ToString()!,
                                     requestEvent.UserId.ToString(), requestEvent.UserId.ToString(),
                                     requestEvent.Comment)
@@ -150,9 +154,4 @@ public class OneBotWebSocketBot : OneBotBot
         _wsClient.Dispose();
         _apiTasks.Clear();
     }
-
-    public override event IBot.BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
-    public override event IBot.BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
-    public override event IBot.BotEventHandler<BotGuildRequestedEvent>? OnGuildRequested;
-    public override event IBot.BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 }

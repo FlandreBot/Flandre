@@ -102,7 +102,7 @@ public abstract class Plugin : IModule
     /// </summary>
     /// <param name="ctx">当前上下文</param>
     /// <param name="e">入群申请事件</param>
-    public virtual void OnGuildRequested(Context ctx, BotGuildRequestedEvent e)
+    public virtual void OnGuildRequested(Context ctx, BotGuildJoinRequestedEvent e)
     {
     }
 

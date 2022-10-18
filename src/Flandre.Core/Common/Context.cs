@@ -15,14 +15,14 @@ public class Context
     /// <summary>
     /// 当前 bot 实例
     /// </summary>
-    public IBot Bot { get; init; }
+    public Bot Bot { get; init; }
 
     /// <summary>
     /// 构造上下文
     /// </summary>
     /// <param name="app">FlandreApp 实例</param>
     /// <param name="bot">bot 实例</param>
-    public Context(FlandreApp app, IBot bot)
+    public Context(FlandreApp app, Bot bot)
     {
         App = app;
         Bot = bot;
@@ -45,7 +45,7 @@ public class MessageContext : Context
     /// <param name="app">FlandreApp 实例</param>
     /// <param name="bot">bot 实例</param>
     /// <param name="message">消息</param>
-    public MessageContext(FlandreApp app, IBot bot, Message message)
+    public MessageContext(FlandreApp app, Bot bot, Message message)
         : base(app, bot)
     {
         Message = message;

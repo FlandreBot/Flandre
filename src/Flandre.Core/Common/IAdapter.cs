@@ -18,5 +18,5 @@ public interface IAdapter : IModule
     /// <summary>
     /// 获取适配器 bot 列表
     /// </summary>
-    public IEnumerable<IBot> GetBots();
+    public IEnumerable<Bot> GetBots();
 }

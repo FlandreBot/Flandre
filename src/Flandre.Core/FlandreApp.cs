@@ -19,7 +19,7 @@ public class FlandreApp
 {
     private readonly List<IAdapter> _adapters = new();
 
-    internal readonly List<IBot> Bots = new();
+    internal readonly List<Bot> Bots = new();
 
     internal readonly List<Plugin> Plugins = new();
 
@@ -179,7 +179,7 @@ public class FlandreApp
                     plugin.OnMessageReceived(new MessageContext(this, bot, e.Message)));
                 bot.OnGuildInvited += (_, e) => CatchAndLog(() =>
                     plugin.OnGuildInvited(ctx, e));
-                bot.OnGuildRequested += (_, e) => CatchAndLog(() =>
+                bot.OnGuildJoinRequested += (_, e) => CatchAndLog(() =>
                     plugin.OnGuildRequested(ctx, e));
                 bot.OnFriendRequested += (_, e) => CatchAndLog(() =>
                     plugin.OnFriendRequested(ctx, e));

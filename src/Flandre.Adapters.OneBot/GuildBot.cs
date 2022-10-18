@@ -3,19 +3,27 @@ using Flandre.Core.Common;
 using Flandre.Core.Events.Bot;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
+using Flandre.Core.Utils;
 
 namespace Flandre.Adapters.OneBot;
 
-public class OneBotGuildBot : IBot
+public class OneBotGuildBot : Bot
 {
     /// <summary>
     /// Bot 平台名称，值为 qqguild
     /// </summary>
-    public string Platform => "qqguild";
+    public override string Platform => "qqguild";
 
     public OneBotGuildInternalBot Internal { get; }
 
     private readonly OneBotBot _mainBot;
+
+    protected override Logger GetLogger() => _mainBot.Logger;
+
+    public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
+    public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
+    public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
+    public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 
     internal OneBotGuildBot(OneBotBot mainBot)
     {
@@ -41,50 +49,27 @@ public class OneBotGuildBot : IBot
         }));
     }
 
-    public Task Start()
-    {
-        return Task.CompletedTask;
-    }
+    public override Task Start() => Task.CompletedTask;
 
-    public Task Stop()
-    {
-        return Task.CompletedTask;
-    }
+    public override Task Stop() => Task.CompletedTask;
 
-    public async Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
+    public override async Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content, string? guildId = null)
     {
         if (sourceType == MessageSourceType.Channel)
             return await Internal.SendGuildChannelMessage(guildId!, channelId!, content);
 
-        _mainBot.Logger.Warning("OneBot 暂不支持发送频道私聊消息。");
+        _mainBot.Logger.Warning("qqguild 平台暂不支持发送频道私聊消息。");
         return null;
     }
 
-    public Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
-    {
-        return SendMessage(message.SourceType, message.ChannelId, message.Sender.UserId,
-            contentOverride ?? message.Content, message.GuildId);
-    }
-
-    public async Task<string?> SendChannelMessage(string channelId, MessageContent content, string? guildId = null)
+    public override async Task<string?> SendChannelMessage(string channelId, MessageContent content,
+        string? guildId = null)
     {
         return await Internal.SendGuildChannelMessage(guildId!, channelId, content);
     }
 
-    public Task<string?> SendPrivateMessage(string userId, MessageContent content)
-    {
-        _mainBot.Logger.Warning("OneBot 暂不支持发送频道私聊消息。");
-        return Task.FromResult<string?>(null);
-    }
-
-    public Task DeleteMessage(string messageId)
-    {
-        _mainBot.Logger.Warning("OneBot 暂不支持撤回频道消息。");
-        return Task.FromResult<string?>(null);
-    }
-
-    public async Task<User> GetSelf()
+    public override async Task<User?> GetSelf()
     {
         var self = await Internal.GetGuildServiceProfile();
         return new User
@@ -95,18 +80,19 @@ public class OneBotGuildBot : IBot
         };
     }
 
-    public Task<User?> GetUser(string userId, string? guildId = null)
+    public override Task<User?> GetUser(string userId, string? guildId = null)
     {
-        _mainBot.Logger.Warning("OneBot 暂不支持获取频道用户信息。若您需要获取频道成员信息，请使用 GetGuildMember 方法代替。");
+        _mainBot.Logger.Warning(
+            $"qqguild 平台暂不支持 {nameof(GetUser)} 方法。若您需要获取频道成员信息，请使用 {nameof(GetGuildMember)} 方法代替。");
         return Task.FromResult<User?>(null);
     }
 
-    public Task<IEnumerable<User>> GetFriendList()
+    public override Task<IEnumerable<User>> GetFriendList()
     {
         return Task.FromResult<IEnumerable<User>>(Array.Empty<User>());
     }
 
-    public async Task<Guild?> GetGuild(string guildId)
+    public override async Task<Guild?> GetGuild(string guildId)
     {
         try
         {
@@ -123,7 +109,7 @@ public class OneBotGuildBot : IBot
         }
     }
 
-    public async Task<IEnumerable<Guild>> GetGuildList()
+    public override async Task<IEnumerable<Guild>> GetGuildList()
     {
         return (await Internal.GetGuildList()).Select(g => new Guild
         {
@@ -132,7 +118,7 @@ public class OneBotGuildBot : IBot
         });
     }
 
-    public async Task<GuildMember?> GetGuildMember(string guildId, string userId)
+    public override async Task<GuildMember?> GetGuildMember(string guildId, string userId)
     {
         try
         {
@@ -151,7 +137,7 @@ public class OneBotGuildBot : IBot
         }
     }
 
-    public async Task<IEnumerable<GuildMember>> GetGuildMemberList(string guildId)
+    public override async Task<IEnumerable<GuildMember>> GetGuildMemberList(string guildId)
     {
         var list = new List<OneBotGuildMember>();
         OneBotGuildMemberListResponse resp;
@@ -172,40 +158,17 @@ public class OneBotGuildBot : IBot
         });
     }
 
-    public async Task<Channel?> GetChannel(string channelId, string? guildId = null)
+    public override async Task<Channel?> GetChannel(string channelId, string? guildId = null)
     {
         return (await GetChannelList(guildId!)).FirstOrDefault(c => c.Id == channelId);
     }
 
-    public async Task<IEnumerable<Channel>> GetChannelList(string guildId)
+    public override async Task<IEnumerable<Channel>> GetChannelList(string guildId)
     {
         return (await Internal.GetGuildChannelList(guildId)).Select(c => new Channel
         {
             Id = c.ChannelId!,
             Name = c.ChannelName!
         });
-    }
-
-    public event IBot.BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
-    public event IBot.BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
-    public event IBot.BotEventHandler<BotGuildRequestedEvent>? OnGuildRequested;
-    public event IBot.BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
-
-    public Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null)
-    {
-        _mainBot.Logger.Warning("OneBot 暂不支持处理频道邀请。");
-        return Task.CompletedTask;
-    }
-
-    public Task HandleGuildRequest(BotGuildRequestedEvent e, bool approve, string? comment = null)
-    {
-        _mainBot.Logger.Warning("OneBot 暂不支持处理频道申请。");
-        return Task.CompletedTask;
-    }
-
-    public Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null)
-    {
-        _mainBot.Logger.Warning("OneBot 暂不支持处理频道好友申请。");
-        return Task.CompletedTask;
     }
 }

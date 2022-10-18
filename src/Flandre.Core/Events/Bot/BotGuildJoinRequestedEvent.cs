@@ -3,7 +3,7 @@
 /// <summary>
 /// 入群申请事件
 /// </summary>
-public class BotGuildRequestedEvent : BaseEvent
+public class BotGuildJoinRequestedEvent : BaseEvent
 {
     /// <summary>
     /// Guild 名称
@@ -38,7 +38,7 @@ public class BotGuildRequestedEvent : BaseEvent
     /// <param name="requesterName">申请人名称</param>
     /// <param name="requesterId">申请人 ID</param>
     /// <param name="comment">申请备注</param>
-    public BotGuildRequestedEvent(string guildName, string guildId, string requesterName, string requesterId,
+    public BotGuildJoinRequestedEvent(string guildName, string guildId, string requesterName, string requesterId,
         string comment)
     {
         GuildName = guildName;
