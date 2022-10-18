@@ -4,7 +4,7 @@ using Flandre.Core.Events.App;
 using Flandre.Core.Utils;
 
 [assembly: InternalsVisibleTo("Flandre.Core.Tests")]
-[assembly: InternalsVisibleTo("Flandre.TestKit")]
+[assembly: InternalsVisibleTo("Flandre.Adapters.Mock")]
 
 // ReSharper disable EventNeverSubscribedTo.Global
 // ReSharper disable MemberCanBePrivate.Global

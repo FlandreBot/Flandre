@@ -1,11 +1,11 @@
 ﻿using Flandre.Core.Messaging;
 using Flandre.Core.Models;
 
-namespace Flandre.TestKit;
+namespace Flandre.Adapters.Mock;
 
-public class FlandreTestClient
+public class MockClient
 {
-    private readonly TestAdapter _adapter;
+    private readonly MockAdapter _adapter;
 
     public string GuildId { get; internal init; } = "";
     public string ChannelId { get; internal init; } = "";
@@ -13,7 +13,7 @@ public class FlandreTestClient
 
     public MessageSourceType EnvironmentType { get; internal init; }
 
-    internal FlandreTestClient(TestAdapter adapter)
+    internal MockClient(MockAdapter adapter)
     {
         _adapter = adapter;
     }
@@ -33,7 +33,7 @@ public class FlandreTestClient
             {
                 Name = "Test Client",
                 Nickname = "Test Client",
-                Id = UserId,
+                UserId = UserId,
                 AvatarUrl = null,
                 Roles = new List<string>()
             },

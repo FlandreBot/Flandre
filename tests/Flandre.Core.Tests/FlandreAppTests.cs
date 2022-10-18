@@ -1,7 +1,7 @@
 ﻿using Flandre.Core.Attributes;
 using Flandre.Core.Common;
 using Flandre.Core.Messaging;
-using Flandre.TestKit;
+using Flandre.Adapters.Mock;
 
 // ReSharper disable StringLiteralTypo
 
@@ -13,7 +13,7 @@ public class FlandreAppTests
     public void TestFlandreApp()
     {
         var app = new FlandreApp();
-        var adapter = new TestAdapter();
+        var adapter = new MockAdapter();
 
         var channelClient = adapter.GenerateChannelClient();
         var friendClient = adapter.GenerateFriendClient();

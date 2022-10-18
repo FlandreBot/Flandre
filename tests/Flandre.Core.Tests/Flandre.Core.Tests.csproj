@@ -23,7 +23,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Flandre.Core\Flandre.Core.csproj" />
-        <ProjectReference Include="..\..\src\Flandre.TestKit\Flandre.TestKit.csproj" />
+        <ProjectReference Include="..\..\src\Flandre.Adapters.Mock\Flandre.Adapters.Mock.csproj" />
     </ItemGroup>
 
 </Project>

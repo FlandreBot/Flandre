@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Konata", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core.Tests", "tests\Flandre.Core.Tests\Flandre.Core.Tests.csproj", "{22726A9B-8E54-4513-AB04-61B4A34DDC2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.TestKit", "src\Flandre.TestKit\Flandre.TestKit.csproj", "{18C926FE-1F45-421C-A19B-BB914DBD7437}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Mock", "src\Flandre.Adapters.Mock\Flandre.Adapters.Mock.csproj", "{18C926FE-1F45-421C-A19B-BB914DBD7437}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.OneBot", "src\Flandre.Adapters.OneBot\Flandre.Adapters.OneBot.csproj", "{49047181-70A7-44F9-BC70-992BD0289C97}"
 EndProject
