@@ -23,12 +23,12 @@ public abstract class Bot
     /// <summary>
     /// 启动 Bot 实例
     /// </summary>
-    public abstract Task Start();
+    public virtual Task Start() => Task.CompletedTask;
 
     /// <summary>
     /// 停止 Bot 实例
     /// </summary>
-    public abstract Task Stop();
+    public virtual Task Stop() => Task.CompletedTask;
 
     /// <summary>
     /// 该方法不受支持，发出警告

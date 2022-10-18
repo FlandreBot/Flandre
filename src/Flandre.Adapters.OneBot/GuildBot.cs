@@ -49,10 +49,6 @@ public class OneBotGuildBot : Bot
         }));
     }
 
-    public override Task Start() => Task.CompletedTask;
-
-    public override Task Stop() => Task.CompletedTask;
-
     public override async Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content, string? guildId = null)
     {

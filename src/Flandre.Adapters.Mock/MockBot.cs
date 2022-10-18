@@ -37,10 +37,6 @@ public class MockBot : Bot
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
     }
 
-    public override Task Start() => Task.CompletedTask;
-
-    public override Task Stop() => Task.CompletedTask;
-
     public override Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content, string? guildId = null)
     {
