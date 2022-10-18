@@ -31,6 +31,15 @@ public class MessageBuilder
         Segments.Add(imageSegment);
         return this;
     }
+    
+    /// <summary>
+    /// 添加图片消息段
+    /// </summary>
+    /// <param name="data">图片数据</param>
+    public MessageBuilder Image(byte[] data)
+    {
+        return Image(ImageSegment.FromData(data));
+    }
 
     /// <summary>
     /// 添加消息段
