@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Flandre.Core.Common;
 using Flandre.Core.Events.App;
+using Flandre.Core.Messaging;
 using Flandre.Core.Utils;
 
 [assembly: InternalsVisibleTo("Flandre.Core.Tests")]
