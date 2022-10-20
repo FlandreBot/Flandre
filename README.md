@@ -4,7 +4,7 @@
 
 # Flandre
 
-.NET 6 实现的跨平台，低耦合的聊天机器人框架  
+.NET 6 实现的跨平台，现代化聊天机器人框架  
 一次编写，多处运行
 
 [![License](https://img.shields.io/github/license/FlandreDevs/Flandre?label=License&style=flat&color=42a5f5)](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE)
@@ -23,36 +23,41 @@
 
 ---
 
-**项目仍在早期开发阶段，功能尚未完善，且处于快速迭代过程中。**  
-**如果您对项目的开发感兴趣，诚挚欢迎您的改进建议或 PR 贡献。**
+## 🚧 注意
+
+项目仍在早期开发阶段，功能尚未完善，且处于快速迭代过程中。  
+如果您对项目的开发感兴趣，诚挚欢迎您的改进建议或 PR 贡献。
 
 **1.0 版本发布前随时可能发生 API 的非兼容性变更，不建议用于生产环境。**
 
-## 特性
+## ⭐ 特性
 
-### 跨平台
+### 🌐 原生跨平台
 
-Flandre 自设计之初就是为了跨平台，对聊天平台的结构进行抽象化，采用适配器模式兼容各大聊天平台，同时提供了良好的开发体验。
-
+Flandre 为跨平台而生，对聊天平台的结构进行抽象化，采用适配器模式进行兼容，同时提供了良好的开发体验。  
 目前已经实现的适配器：
 
-- [Flandre.Adapters.OneBot](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.OneBot/README.md) - 基于 [OneBot](https://github.com/botuniverse/onebot) 协议实现的 QQ 协议适配器，主要对 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 提供支持。同时基于 go-cqhttp 对 QQ 频道也进行了一定的支持。
+| 平台 | 介绍 |
+|:--:|:--:|
+| [OneBot](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.OneBot/README.md) | [OneBot](https://github.com/botuniverse/onebot) v11 协议封装，主要对 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 提供支持。支持 QQ 协议，同时基于 go-cqhttp 对 QQ 频道也进行了一定的支持。 |
+| [Konata](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.Konata/README.md) | QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core) |
+| Telegram | 计划中... |
+| Discord | 计划中... |
 
-- [Flandre.Adapters.Konata](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.Konata/README.md) - QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)
+### 📦 开箱即用的指令系统
 
-### 指令系统
-
-得益于内置的指令解析系统，开发者可以方便地掌控指令的参数信息，包括但不限于参数数量检查，类型检查，参数默认值等等。而所有的定义可以在一个字符串内完成，例如：
+Flandre 实现了一套开箱即用的指令解析系统，而无需开发者自己造轮子。
+开发者可以方便地掌控指令的参数信息，包括但不限于参数数量检查，类型检查，参数默认值等等。而所有的定义可以在一个字符串内完成，例如：
 
 ```csharp
 [Command("example <foo:string> [bar:double] [baz:int=114514]")]
 ```
 
-### 事件驱动
+### 🏗 事件驱动
 
 Flandre 内部采用各类事件控制，开发者可以轻松地通过订阅事件/重写相关方法的方式控制应用的运行流程。
 
-## 起步
+## 🚀 起步
 
 遵循不知道哪里来的惯例，我们以一个复读小程序开始：
 
@@ -153,7 +158,7 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 
 这样写的缺点是可能导致指令定义过于冗长，可以结合实际情况选择。
 
-## 路线
+## 🛣 路线
 
 - [x] 基本框架搭建
 - [x] 消息段实现
@@ -166,7 +171,7 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 - [x] OneBot 协议适配
 - [ ] Session 系统
 
-## 分支说明
+## 💻 分支
 
 项目目前有两个主要分支：
 
@@ -175,7 +180,7 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 
 向仓库贡献代码时，请确保目前正处于 `dev` 分支上。
 
-## 致谢
+## ❤️ 致谢
 
 项目编写过程中参考了许多开源项目，没有它们就没有 Flandre 的诞生：
 
@@ -184,15 +189,15 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 
 （按字母排序）
 
-## 联系我们
+## 💬 交流
 
-您可以加入我们的 QQ 群进行项目相关的交流：
+GitHub 是我们的主要活动场地。您也可以加入我们的 QQ 群进行项目相关的交流：
 
 [![QQ](https://img.shields.io/badge/Flandre.Community-164189664-blue?style=flat&logo=tencent-qq&logoColor=white)](https://jq.qq.com/?_wv=1027&k=tTNVlDR6)
 
-**本群只交流程序开发，拒绝任何形式的伸手党或商业行为。**
+本群只交流程序开发，拒绝任何形式的伸手党或商业行为。
 
-## License
+## 📄 开源
 
 本项目以 [MIT 许可证](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE) 开源 (′▽\`)╭(′▽\`)╯
 
