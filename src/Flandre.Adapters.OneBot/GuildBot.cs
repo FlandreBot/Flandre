@@ -5,6 +5,8 @@ using Flandre.Core.Messaging;
 using Flandre.Core.Models;
 using Flandre.Core.Utils;
 
+#pragma warning disable CS0067
+
 namespace Flandre.Adapters.OneBot;
 
 public class OneBotGuildBot : Bot
@@ -21,6 +23,9 @@ public class OneBotGuildBot : Bot
     protected override Logger GetLogger() => _mainBot.Logger;
 
     public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
+    public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
+    public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
+    public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 
     internal OneBotGuildBot(OneBotBot mainBot)
     {
