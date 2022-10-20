@@ -21,7 +21,7 @@ public sealed class KonataBot : FlandreBot
     /// <summary>
     /// Bot 平台名称，值为 konata
     /// </summary>
-    public override string Platform => "konata";
+    public override string Platform => _config.PlatformOverride ?? "konata";
 
     /// <summary>
     /// Konata 内部 bot
@@ -359,4 +359,9 @@ public class KonataBotConfig : FlandreBotConfig
     /// Konata 密钥信息
     /// </summary>
     public BotKeyStore KeyStore { get; set; } = new();
+
+    /// <summary>
+    /// 覆盖平台字符串。对于使用多个 QQ 适配器时很有用，例如设置为 onebot。
+    /// </summary>
+    public string? PlatformOverride { get; set; } = null;
 }
