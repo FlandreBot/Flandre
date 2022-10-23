@@ -26,10 +26,10 @@ public class FlandreApp
     internal readonly List<Plugin> Plugins = new();
 
     private readonly ManualResetEvent _exitEvent = new(false);
-
-    private readonly Dictionary<string, Command> _commandMap = new();
-
+    
     internal static Logger Logger { get; } = new("App");
+    
+    internal Dictionary<string, Command> CommandMap { get; } = new();
 
     /// <summary>
     /// App 配置
@@ -103,7 +103,7 @@ public class FlandreApp
             case Plugin plugin:
                 Plugins.Add(plugin);
                 foreach (var command in plugin.Commands)
-                    _commandMap[command.CommandInfo.Command] = command;
+                    CommandMap[command.CommandInfo.Command] = command;
                 break;
         }
 
@@ -211,8 +211,8 @@ public class FlandreApp
 
             while (true)
             {
-                if (_commandMap.TryGetValue(root, out var command) &&
-                    (parser.IsEnd() || !_commandMap.Keys.Any(cmd =>
+                if (CommandMap.TryGetValue(root, out var command) &&
+                    (parser.IsEnd() || !CommandMap.Keys.Any(cmd =>
                         cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
                 {
                     var content = command.ParseCommand(ctx, parser);

@@ -40,6 +40,17 @@ public class FlandreAppTests
 
         app.Use(adapter).Use(new TestPlugin()).Start();
     }
+
+    [Fact]
+    public void TestCommandMap()
+    {
+        var app = new FlandreApp().Use(new TestPlugin());
+        
+        Assert.Equal(3, app.CommandMap.Count);
+        Assert.NotNull(app.CommandMap.GetValueOrDefault("test1"));
+        Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.test"));
+        Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.sub.sub.test"));
+    }
 }
 
 [Plugin("Test")]
@@ -63,4 +74,10 @@ public class TestPlugin : Plugin
         var trueOpt = args.GetOption<bool>("trueopt");
         return $"arg1: {arg1} opt: {opt} b: {boolOpt} t: {trueOpt}";
     }
+
+    [Command("sub.test")]
+    public static MessageContent? OnSubTest(MessageContext ctx, ParsedArgs args) => null;
+
+    [Command("...sub....sub..sub......test..")]
+    public static MessageContent? OnSubSubSubTest(MessageContext ctx, ParsedArgs args) => null;
 }
