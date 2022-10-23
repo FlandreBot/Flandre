@@ -3,6 +3,7 @@ using Flandre.Core.Attributes;
 using Flandre.Core.Events.App;
 using Flandre.Core.Events.Bot;
 using Flandre.Core.Events.Logger;
+using Flandre.Core.Events.Plugin;
 using Flandre.Core.Messaging;
 using Flandre.Core.Utils;
 
@@ -48,6 +49,17 @@ public abstract class Plugin : IModule
         }
     }
 
+    /// <summary>
+    /// 插件初始化
+    /// </summary>
+    public virtual Task Start() => Task.CompletedTask;
+
+    /// <summary>
+    /// 插件清理操作
+    /// </summary>
+    /// <returns></returns>
+    public virtual Task Stop() => Task.CompletedTask;
+
     internal MessageContent GetHelp()
     {
         throw new NotImplementedException();
@@ -56,27 +68,45 @@ public abstract class Plugin : IModule
     /// <summary>
     /// 处理应用启动事件
     /// </summary>
-    /// <param name="ctx">当前上下文</param>
+    /// <param name="app">应用实例</param>
     /// <param name="e">应用启动事件</param>
-    public virtual void OnAppStarting(Context ctx, AppStartingEvent e)
+    public virtual void OnAppStarting(FlandreApp app, AppStartingEvent e)
     {
     }
 
     /// <summary>
     /// 处理应用就绪事件
     /// </summary>
-    /// <param name="ctx">当前上下文</param>
+    /// <param name="app">应用实例</param>
     /// <param name="e">应用就绪事件</param>
-    public virtual void OnAppReady(Context ctx, AppReadyEvent e)
+    public virtual void OnAppReady(FlandreApp app, AppReadyEvent e)
     {
     }
 
     /// <summary>
     /// 处理应用停止事件
     /// </summary>
-    /// <param name="ctx">当前上下文</param>
+    /// <param name="app">应用实例</param>
     /// <param name="e">应用停止事件</param>
-    public virtual void OnAppStopped(Context ctx, AppStoppedEvent e)
+    public virtual void OnAppStopped(FlandreApp app, AppStoppedEvent e)
+    {
+    }
+
+    /// <summary>
+    /// 处理插件启动事件
+    /// </summary>
+    /// <param name="app">应用实例</param>
+    /// <param name="e">插件启动事件</param>
+    public virtual void OnPluginStarting(FlandreApp app, PluginStartingEvent e)
+    {
+    }
+
+    /// <summary>
+    /// 处理插件停止事件
+    /// </summary>
+    /// <param name="app">应用实例</param>
+    /// <param name="e">插件停止事件</param>
+    public virtual void OnPluginStopped(FlandreApp app, PluginStoppedEvent e)
     {
     }
 

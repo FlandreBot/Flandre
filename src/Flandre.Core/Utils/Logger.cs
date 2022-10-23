@@ -39,9 +39,7 @@ public class Logger
         DefaultLoggingHandlers.ForEach(logging => logging(loggingEvent));
         OnLoggerLogging?.Invoke(this, loggingEvent);
 
-        if (loggingEvent.Cancelled) return;
-
-        Console.WriteLine(loggingEvent.Message);
+        if (!loggingEvent.Cancelled) Console.WriteLine(loggingEvent.Message);
     }
 
     /// <summary>

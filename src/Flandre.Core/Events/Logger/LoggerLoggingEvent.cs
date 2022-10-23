@@ -3,7 +3,7 @@
 /// <summary>
 /// 日志记录前触发的事件
 /// </summary>
-public class LoggerLoggingEvent : BaseEvent
+public class LoggerLoggingEvent : BaseEvent, ICancellableEvent
 {
     /// <summary>
     /// 默认格式的日志信息

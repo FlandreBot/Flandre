@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Flandre.Core.Common;
 using Flandre.Core.Events.App;
+using Flandre.Core.Events.Plugin;
 using Flandre.Core.Messaging;
 using Flandre.Core.Utils;
 
@@ -57,6 +58,16 @@ public class FlandreApp
     /// 应用就绪事件
     /// </summary>
     public event AppEventHandler<AppReadyEvent>? OnAppReady;
+
+    /// <summary>
+    /// 插件启动事件
+    /// </summary>
+    public event AppEventHandler<PluginStartingEvent>? OnPluginStarting;
+
+    /// <summary>
+    /// 插件停止事件
+    /// </summary>
+    public event AppEventHandler<PluginStoppedEvent>? OnPluginStopped;
 
     #endregion
 
@@ -124,8 +135,14 @@ public class FlandreApp
 
         Logger.Info("Starting App...");
 
-        // 启动所有适配器
-        Task.WaitAll(_adapters.ConvertAll(adapter => adapter.Start()).ToArray());
+        // 启动所有模块
+        Task.WaitAll(_adapters.Select(adapter => adapter.Start()).ToArray());
+        Task.WaitAll(Plugins.Select(plugin => Task.Run(async () =>
+        {
+            var e = new PluginStartingEvent(plugin);
+            OnPluginStarting?.Invoke(this, e);
+            if (!e.Cancelled) await plugin.Start();
+        })).ToArray());
 
         OnAppReady?.Invoke(this, new AppReadyEvent());
 
@@ -137,7 +154,12 @@ public class FlandreApp
     /// </summary>
     public void Stop()
     {
-        Task.WaitAll(_adapters.ConvertAll(adapter => adapter.Stop()).ToArray());
+        Task.WaitAll(_adapters.Select(adapter => adapter.Stop()).ToArray());
+        Task.WaitAll(Plugins.Select(plugin => Task.Run(async () =>
+        {
+            await plugin.Stop();
+            OnPluginStopped?.Invoke(this, new PluginStoppedEvent(plugin));
+        })).ToArray());
         OnAppStopped?.Invoke(this, new AppStoppedEvent());
         _exitEvent.Set();
     }
@@ -160,6 +182,13 @@ public class FlandreApp
             }
         });
 
+        foreach (var plugin in Plugins)
+        {
+            OnAppStarting += plugin.OnAppStarting;
+            OnAppReady += plugin.OnAppReady;
+            OnAppStopped += plugin.OnAppStopped;
+        }
+
         foreach (var bot in Bots)
         {
             var ctx = new Context(this, bot);
@@ -169,13 +198,6 @@ public class FlandreApp
 
             foreach (var plugin in Plugins)
             {
-                OnAppStarting += (_, e) => CatchAndLog(() =>
-                    plugin.OnAppStarting(ctx, e));
-                OnAppReady += (_, e) => CatchAndLog(() =>
-                    plugin.OnAppReady(ctx, e));
-                OnAppStopped += (_, e) => CatchAndLog(() =>
-                    plugin.OnAppStopped(ctx, e));
-
                 bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
                     plugin.OnMessageReceived(new MessageContext(this, bot, e.Message)));
                 bot.OnGuildInvited += (_, e) => CatchAndLog(() =>
