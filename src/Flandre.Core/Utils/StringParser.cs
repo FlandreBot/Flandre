@@ -39,6 +39,16 @@ public class StringParser
     }
 
     /// <summary>
+    /// 跳到指定的字符位置
+    /// </summary>
+    /// <param name="terminator">终点字符</param>
+    public StringParser Skip(char terminator)
+    {
+        _pos = FixIndex(_str.IndexOf(terminator, _pos));
+        return this;
+    }
+
+    /// <summary>
     /// 跳过空格
     /// </summary>
     public StringParser SkipSpaces()
@@ -80,7 +90,7 @@ public class StringParser
     {
         var end = FixIndex(_str.IndexOf(terminator, _pos));
         var value = _str.Substring(_pos, end - _pos);
-        _pos += end - _pos;
+        _pos = end;
 
         if (includeTerminator)
         {
@@ -98,7 +108,7 @@ public class StringParser
     {
         var end = _str.Length;
         var value = _str.Substring(_pos, end - _pos);
-        _pos += end - _pos;
+        _pos = end;
         return value;
     }
 
