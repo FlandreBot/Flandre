@@ -12,11 +12,6 @@ public class PluginAttribute : Attribute
     public string Name { get; }
 
     /// <summary>
-    /// 插件根指令
-    /// </summary>
-    public string? BaseCommand { get; set; }
-
-    /// <summary>
     /// 定义插件
     /// </summary>
     /// <param name="name">插件名称</param>

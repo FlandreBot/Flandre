@@ -27,7 +27,8 @@ public class FlandreApp
 
     private readonly ManualResetEvent _exitEvent = new(false);
 
-    private readonly Dictionary<string, object> _commandMap = new();
+    private readonly Dictionary<string, object> _OLD_commandMap = new();
+    private readonly Dictionary<string, Command> _commandMap = new();
 
     internal static Logger Logger { get; } = new("App");
 
@@ -102,22 +103,8 @@ public class FlandreApp
 
             case Plugin plugin:
                 Plugins.Add(plugin);
-
-                if (plugin.PluginInfo.BaseCommand is not null)
-                {
-                    _commandMap[plugin.PluginInfo.BaseCommand] = plugin;
-                    foreach (var command in plugin.Commands)
-                        if (plugin.PluginInfo.BaseCommand == command.CommandInfo.Command)
-                            _commandMap[command.CommandInfo.Command] = command;
-                        else
-                            _commandMap[$"{plugin.PluginInfo.BaseCommand}.{command.CommandInfo.Command}"] = command;
-                }
-                else
-                {
-                    foreach (var command in plugin.Commands)
-                        _commandMap[command.CommandInfo.Command] = command;
-                }
-
+                foreach (var command in plugin.Commands)
+                    _commandMap[command.CommandInfo.Command] = command;
                 break;
         }
 
@@ -217,58 +204,34 @@ public class FlandreApp
     {
         var commandStr = ctx.Message.GetText().Trim();
 
-        if (commandStr.StartsWith(Config.CommandPrefix))
+        if (commandStr.StartsWith(Config.CommandPrefix) && commandStr != Config.CommandPrefix)
         {
-            void DealCommand(Command cmd, StringParser p)
+            void ParseAndSend(Command cmd, StringParser p)
             {
                 var content = cmd.ParseCommand(ctx, p);
                 if (content is null) return;
                 ctx.Bot.SendMessage(ctx.Message, content).Wait();
             }
 
-            if (commandStr == Config.CommandPrefix) return;
             var parser = new StringParser(commandStr.TrimStart(Config.CommandPrefix));
-            var root = parser.Read(' ');
 
-            var obj = _commandMap.GetValueOrDefault(root);
+            var root = parser.SkipSpaces().Read(' ');
 
-            switch (obj)
+            do
             {
-                case null:
-                    if (Config.CommandPrefix == "") return;
-                    if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return;
-                    ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
-                    return;
-
-                case Command command:
-                    DealCommand(command, parser);
-                    return;
-
-                case Plugin plugin:
+                if (_commandMap.TryGetValue(root, out var command) &&
+                    (parser.IsEnd() || !_commandMap.Keys.Any(cmd =>
+                        cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
                 {
-                    if (!parser.IsEnd())
-                    {
-                        root = $"{root}.{parser.SkipSpaces().Read(' ')}";
-                        obj = _commandMap.GetValueOrDefault(root);
-                        switch (obj)
-                        {
-                            case null:
-                                if (Config.IgnoreUndefinedCommand.Equals("all", StringComparison.OrdinalIgnoreCase))
-                                    return;
-                                ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
-                                return;
-                            case Command cmd:
-                                DealCommand(cmd, parser);
-                                return;
-                        }
-                    }
-
-                    if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase))
-                        return;
-                    ctx.Bot.SendMessage(ctx.Message, plugin.GetHelp()).Wait();
-                    break;
+                    ParseAndSend(command, parser);
+                    return;
                 }
-            }
+
+                root = $"{root}.{parser.SkipSpaces().Read(' ')}";
+            } while (!parser.IsEnd());
+            
+            if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return;
+            ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
         }
     }
 }
