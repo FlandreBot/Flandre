@@ -27,7 +27,6 @@ public class FlandreApp
 
     private readonly ManualResetEvent _exitEvent = new(false);
 
-    private readonly Dictionary<string, object> _OLD_commandMap = new();
     private readonly Dictionary<string, Command> _commandMap = new();
 
     internal static Logger Logger { get; } = new("App");
@@ -206,30 +205,26 @@ public class FlandreApp
 
         if (commandStr.StartsWith(Config.CommandPrefix) && commandStr != Config.CommandPrefix)
         {
-            void ParseAndSend(Command cmd, StringParser p)
-            {
-                var content = cmd.ParseCommand(ctx, p);
-                if (content is null) return;
-                ctx.Bot.SendMessage(ctx.Message, content).Wait();
-            }
-
             var parser = new StringParser(commandStr.TrimStart(Config.CommandPrefix));
 
             var root = parser.SkipSpaces().Read(' ');
 
-            do
+            while (true)
             {
                 if (_commandMap.TryGetValue(root, out var command) &&
                     (parser.IsEnd() || !_commandMap.Keys.Any(cmd =>
                         cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
                 {
-                    ParseAndSend(command, parser);
+                    var content = command.ParseCommand(ctx, parser);
+                    if (content is null) return;
+                    ctx.Bot.SendMessage(ctx.Message, content).Wait();
                     return;
                 }
 
-                root = $"{root}.{parser.SkipSpaces().Read(' ')}";
-            } while (!parser.IsEnd());
-            
+                if (parser.SkipSpaces().IsEnd()) break;
+                root = $"{root}.{parser.Read(' ')}";
+            }
+
             if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return;
             ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
         }

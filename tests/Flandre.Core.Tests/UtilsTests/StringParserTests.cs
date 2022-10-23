@@ -12,7 +12,10 @@ public class StringParserTests
 
         Assert.Equal('S', parser.Current);
 
-        parser.Skip(2);
+        parser.Skip(1);
+        Assert.Equal('t', parser.Current);
+
+        parser.Skip('r');
         Assert.Equal('r', parser.Current);
 
         parser.Skip(1).SkipSpaces(); // skip 'r' and skip spaces

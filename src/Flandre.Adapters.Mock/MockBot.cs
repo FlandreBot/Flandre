@@ -11,7 +11,7 @@ namespace Flandre.Adapters.Mock;
 public class MockBot : Bot
 {
     /// <summary>
-    /// Bot 平台名称，值为 test
+    /// Bot 平台名称，值为 mock
     /// </summary>
     public override string Platform => "mock";
 
