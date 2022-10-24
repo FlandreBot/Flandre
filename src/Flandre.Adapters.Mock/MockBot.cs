@@ -45,7 +45,7 @@ public class MockBot : Bot
 
     public override async Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
     {
-        _tcs?.SetResult(contentOverride ?? message.Content);
+        _tcs?.TrySetResult(contentOverride ?? message.Content);
         return null;
     }
 

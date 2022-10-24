@@ -18,6 +18,11 @@ public class Logger
     public string Name { get; set; }
 
     /// <summary>
+    /// 记录异常时抛出。建议在单元测试时使用。
+    /// </summary>
+    public static bool ThrowOnError { get; set; }
+
+    /// <summary>
     /// 构造日志记录器
     /// </summary>
     /// <param name="name">日志类别</param>
@@ -86,6 +91,7 @@ public class Logger
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Log(LogLevels.Error, $"{exception.GetType().Name}: {exception.Message}\n{exception.StackTrace}");
+        if (ThrowOnError) throw exception;
     }
 
     /// <summary>

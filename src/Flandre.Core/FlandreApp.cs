@@ -26,9 +26,9 @@ public class FlandreApp
     internal readonly List<Plugin> Plugins = new();
 
     private readonly ManualResetEvent _exitEvent = new(false);
-    
+
     internal static Logger Logger { get; } = new("App");
-    
+
     internal Dictionary<string, Command> CommandMap { get; } = new();
 
     /// <summary>
@@ -82,8 +82,8 @@ public class FlandreApp
         // Ctrl+C
         Console.CancelKeyPress += (_, _) => Stop();
 
-        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
-            Logger.Error((Exception)args.ExceptionObject);
+        // AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        //     Logger.Error((Exception)args.ExceptionObject);
     }
 
     /// <summary>
@@ -179,23 +179,23 @@ public class FlandreApp
         {
             var ctx = new Context(this, bot);
 
-            bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
-                OnCommandParsing(new MessageContext(this, bot, e.Message)));
-
             foreach (var plugin in Plugins)
             {
+                Logger.DefaultLoggingHandlers.Add(e =>
+                    plugin.OnLoggerLogging(ctx, e));
+
                 bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
                     plugin.OnMessageReceived(new MessageContext(this, bot, e.Message)));
                 bot.OnGuildInvited += (_, e) => CatchAndLog(() =>
                     plugin.OnGuildInvited(ctx, e));
                 bot.OnGuildJoinRequested += (_, e) => CatchAndLog(() =>
-                    plugin.OnGuildRequested(ctx, e));
+                    plugin.OnGuildJoinRequested(ctx, e));
                 bot.OnFriendRequested += (_, e) => CatchAndLog(() =>
                     plugin.OnFriendRequested(ctx, e));
-
-                Logger.DefaultLoggingHandlers.Add(e =>
-                    plugin.OnLoggerLogging(ctx, e));
             }
+
+            bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
+                OnCommandParsing(new MessageContext(this, bot, e.Message)));
         }
     }
 
@@ -225,6 +225,7 @@ public class FlandreApp
                 root = $"{root}.{parser.Read(' ')}";
             }
 
+            if (string.IsNullOrWhiteSpace(Config.CommandPrefix)) return;
             if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return;
             ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
         }

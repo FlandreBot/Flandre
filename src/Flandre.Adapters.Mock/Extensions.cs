@@ -4,7 +4,7 @@ namespace Flandre.Adapters.Mock;
 
 public static class FlandreTestingExtensions
 {
-    public static MockClient GenerateChannelClient(this MockAdapter adapter, string guildId, string channelId,
+    public static MockClient GetChannelClient(this MockAdapter adapter, string guildId, string channelId,
         string userId)
     {
         return new MockClient(adapter)
@@ -16,13 +16,13 @@ public static class FlandreTestingExtensions
         };
     }
 
-    public static MockClient GenerateChannelClient(this MockAdapter adapter)
+    public static MockClient GetChannelClient(this MockAdapter adapter)
     {
-        return GenerateChannelClient(adapter, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
+        return GetChannelClient(adapter, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString());
     }
 
-    public static MockClient GenerateFriendClient(this MockAdapter adapter, string userId)
+    public static MockClient GetFriendClient(this MockAdapter adapter, string userId)
     {
         return new MockClient(adapter)
         {
@@ -31,8 +31,8 @@ public static class FlandreTestingExtensions
         };
     }
 
-    public static MockClient GenerateFriendClient(this MockAdapter adapter)
+    public static MockClient GetFriendClient(this MockAdapter adapter)
     {
-        return GenerateFriendClient(adapter, Guid.NewGuid().ToString());
+        return GetFriendClient(adapter, Guid.NewGuid().ToString());
     }
 }

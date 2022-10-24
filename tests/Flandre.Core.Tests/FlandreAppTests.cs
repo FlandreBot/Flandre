@@ -2,6 +2,7 @@
 using Flandre.Core.Common;
 using Flandre.Core.Messaging;
 using Flandre.Adapters.Mock;
+using Flandre.Core.Utils;
 
 // ReSharper disable StringLiteralTypo
 
@@ -12,26 +13,27 @@ public class FlandreAppTests
     [Fact]
     public void TestFlandreApp()
     {
+        Logger.ThrowOnError = true;
         var app = new FlandreApp();
         var adapter = new MockAdapter();
 
-        var channelClient = adapter.GenerateChannelClient();
-        var friendClient = adapter.GenerateFriendClient();
+        var channelClient = adapter.GetChannelClient();
+        var friendClient = adapter.GetFriendClient();
 
-        app.OnAppReady += async (_, _) =>
+        app.OnAppReady += (_, _) =>
         {
-            var content = await channelClient.SendForReply("OMR:114514");
+            var content = channelClient.SendForReply("OMR:114514").Result;
             Assert.Equal("OMR:114514", content?.GetText());
 
-            content = await friendClient.SendForReply("test1 true --opt 114.514");
+            content = friendClient.SendForReply("test1 true --opt 114.514").Result;
             Assert.Equal("arg1: True opt: 114.514 b: False t: True",
                 content?.GetText());
 
-            content = await friendClient.SendForReply("test1  -o 1919.810  false");
+            content = friendClient.SendForReply("test1  -o 1919.810  false").Result;
             Assert.Equal("arg1: False opt: 1919.81 b: False t: True",
                 content?.GetText());
 
-            content = await friendClient.SendForReply("test1 -bo 111.444 --no-trueopt false");
+            content = friendClient.SendForReply("test1 -bo 111.444 --no-trueopt false").Result;
             Assert.Equal("arg1: False opt: 111.444 b: True t: False",
                 content?.GetText());
 
@@ -45,7 +47,7 @@ public class FlandreAppTests
     public void TestCommandMap()
     {
         var app = new FlandreApp().Use(new TestPlugin());
-        
+
         Assert.Equal(3, app.CommandMap.Count);
         Assert.NotNull(app.CommandMap.GetValueOrDefault("test1"));
         Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.test"));
