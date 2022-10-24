@@ -30,6 +30,8 @@ public class FlandreApp
     internal static Logger Logger { get; } = new("App");
 
     internal Dictionary<string, Command> CommandMap { get; } = new();
+    
+    internal Dictionary<string, Command> ShortcutMap { get; } = new();
 
     /// <summary>
     /// App 配置
@@ -103,7 +105,13 @@ public class FlandreApp
             case Plugin plugin:
                 Plugins.Add(plugin);
                 foreach (var command in plugin.Commands)
+                {
                     CommandMap[command.CommandInfo.Command] = command;
+                    foreach (var shortcut in command.Shortcuts)
+                    {
+                        ShortcutMap[shortcut.Shortcut] = command;
+                    }
+                }
                 break;
         }
 
@@ -208,10 +216,19 @@ public class FlandreApp
             var parser = new StringParser(commandStr.TrimStart(Config.CommandPrefix));
 
             var root = parser.SkipSpaces().Read(' ');
+            parser.SkipSpaces();
+
+            if (ShortcutMap.TryGetValue(root, out var command))
+            {
+                var content = command.ParseCommand(ctx, parser);
+                if (content is null) return;
+                ctx.Bot.SendMessage(ctx.Message, content).Wait();
+                return;
+            }
 
             while (true)
             {
-                if (CommandMap.TryGetValue(root, out var command) &&
+                if (CommandMap.TryGetValue(root, out command) &&
                     (parser.IsEnd() || !CommandMap.Keys.Any(cmd =>
                         cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
                 {

@@ -21,6 +21,8 @@ public class MockBot : Bot
 
     private TaskCompletionSource<MessageContent?>? _tcs;
 
+    private readonly Dictionary<string, TaskCompletionSource<MessageContent?>> _tcsDict = new();
+
     private MessageSourceType _sourceType = MessageSourceType.Channel;
 
     protected override Logger GetLogger() => _logger;
@@ -30,7 +32,7 @@ public class MockBot : Bot
         _logger = logger;
     }
 
-    internal void ReceiveMessage(Message message, TaskCompletionSource<MessageContent?> tcs)
+    internal void ReceiveMessage(Message message, TaskCompletionSource<MessageContent?> tcs, int timeout)
     {
         _tcs = tcs;
         _sourceType = message.SourceType;
@@ -40,13 +42,14 @@ public class MockBot : Bot
     public override Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content, string? guildId = null)
     {
-        return SendMessage(new Message { Content = content });
+        throw new NotSupportedException();
     }
 
     public override async Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
     {
         _tcs?.TrySetResult(contentOverride ?? message.Content);
-        return null;
+        _tcs = null;
+        return message.MessageId;
     }
 
     public override async Task<string?> SendChannelMessage(string channelId, MessageContent content,

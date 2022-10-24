@@ -24,15 +24,22 @@ public class Command
     /// 指令选项
     /// </summary>
     public List<OptionAttribute> Options { get; }
+    
+    /// <summary>
+    /// 指令快捷方式
+    /// </summary>
+    public List<ShortcutAttribute> Shortcuts { get; }
 
     private readonly Plugin _plugin;
 
-    internal Command(Plugin plugin, CommandAttribute info, MethodInfo innerMethod, List<OptionAttribute> options)
+    internal Command(Plugin plugin, CommandAttribute info, MethodInfo innerMethod,
+        List<OptionAttribute> options, List<ShortcutAttribute> shortcuts)
     {
         _plugin = plugin;
         CommandInfo = info;
         InnerMethod = innerMethod;
         Options = options;
+        Shortcuts = shortcuts;
     }
 
     internal MessageContent? ParseCommand(MessageContext ctx, StringParser parser)

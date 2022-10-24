@@ -24,8 +24,13 @@ public class FlandreAppTests
         {
             var content = channelClient.SendForReply("OMR:114514").Result;
             Assert.Equal("OMR:114514", content?.GetText());
+            // throw new Exception();
 
             content = friendClient.SendForReply("test1 true --opt 114.514").Result;
+            Assert.Equal("arg1: True opt: 114.514 b: False t: True",
+                content?.GetText());
+            
+            content = friendClient.SendForReply(" 测试  true --opt 114.514").Result;
             Assert.Equal("arg1: True opt: 114.514 b: False t: True",
                 content?.GetText());
 
@@ -68,6 +73,7 @@ public class TestPlugin : Plugin
     [Option("opt", "-o <opt:double>")]
     [Option("boolopt", "-b <:bool>")]
     [Option("trueopt", "-t <:bool=true>")]
+    [Shortcut("测试")]
     public static MessageContent OnTest1(MessageContext ctx, ParsedArgs args)
     {
         var arg1 = args.GetArgument<bool>("arg1");
