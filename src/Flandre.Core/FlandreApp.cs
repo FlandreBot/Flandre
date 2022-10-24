@@ -30,7 +30,7 @@ public class FlandreApp
     internal static Logger Logger { get; } = new("App");
 
     internal Dictionary<string, Command> CommandMap { get; } = new();
-    
+
     internal Dictionary<string, Command> ShortcutMap { get; } = new();
 
     /// <summary>
@@ -112,6 +112,7 @@ public class FlandreApp
                         ShortcutMap[shortcut.Shortcut] = command;
                     }
                 }
+
                 break;
         }
 
@@ -210,15 +211,28 @@ public class FlandreApp
     private void OnCommandParsing(MessageContext ctx)
     {
         var commandStr = ctx.Message.GetText().Trim();
+        if (commandStr == Config.CommandPrefix) return;
 
-        if (commandStr.StartsWith(Config.CommandPrefix) && commandStr != Config.CommandPrefix)
+        var parser = new StringParser(commandStr);
+
+        var root = parser.SkipSpaces().Read(' ');
+
+        if (ShortcutMap.TryGetValue(root, out var command))
         {
-            var parser = new StringParser(commandStr.TrimStart(Config.CommandPrefix));
+            var content = command.ParseCommand(ctx, parser);
+            if (content is null) return;
+            ctx.Bot.SendMessage(ctx.Message, content).Wait();
+            return;
+        }
 
-            var root = parser.SkipSpaces().Read(' ');
-            parser.SkipSpaces();
+        root = root.TrimStart(Config.CommandPrefix);
+        parser.SkipSpaces();
 
-            if (ShortcutMap.TryGetValue(root, out var command))
+        while (true)
+        {
+            if (CommandMap.TryGetValue(root, out command) &&
+                (parser.IsEnd() || !CommandMap.Keys.Any(cmd =>
+                    cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
             {
                 var content = command.ParseCommand(ctx, parser);
                 if (content is null) return;
@@ -226,26 +240,13 @@ public class FlandreApp
                 return;
             }
 
-            while (true)
-            {
-                if (CommandMap.TryGetValue(root, out command) &&
-                    (parser.IsEnd() || !CommandMap.Keys.Any(cmd =>
-                        cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
-                {
-                    var content = command.ParseCommand(ctx, parser);
-                    if (content is null) return;
-                    ctx.Bot.SendMessage(ctx.Message, content).Wait();
-                    return;
-                }
-
-                if (parser.SkipSpaces().IsEnd()) break;
-                root = $"{root}.{parser.Read(' ')}";
-            }
-
-            if (string.IsNullOrWhiteSpace(Config.CommandPrefix)) return;
-            if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return;
-            ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
+            if (parser.SkipSpaces().IsEnd()) break;
+            root = $"{root}.{parser.Read(' ')}";
         }
+
+        if (string.IsNullOrWhiteSpace(Config.CommandPrefix)) return;
+        if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return;
+        ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
     }
 }
 
