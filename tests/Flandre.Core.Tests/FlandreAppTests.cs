@@ -56,7 +56,7 @@ public class FlandreAppTests
         app.OnAppReady += (_, _) =>
         {
             Assert.Equal(5, app.CommandMap.Count);
-            Assert.Equal(1, app.ShortcutMap.Count);
+            Assert.Equal(2, app.ShortcutMap.Count);
             
             Assert.NotNull(app.CommandMap.GetValueOrDefault("test1"));
             Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.test"));
@@ -64,6 +64,7 @@ public class FlandreAppTests
             
             // shortcut
             Assert.NotNull(app.ShortcutMap.GetValueOrDefault("测试"));
+            Assert.NotNull(app.ShortcutMap.GetValueOrDefault("子测试"));
             Assert.Equal(app.ShortcutMap["测试"], app.CommandMap["test1"]);
             
             // alias
@@ -111,6 +112,7 @@ public class TestPlugin : Plugin
 
     [Command("sub.test")]
     [Alias("sssuuubbb")]
+    [Shortcut("子测试")]
     public static MessageContent? OnSubTest(MessageContext ctx, ParsedArgs args) => null;
 
     [Command("...sub....sub..sub......test..")]

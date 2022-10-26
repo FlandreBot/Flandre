@@ -24,12 +24,12 @@ public class Command
     /// 指令选项
     /// </summary>
     public List<OptionAttribute> Options { get; }
-    
+
     /// <summary>
     /// 指令快捷方式
     /// </summary>
     public List<ShortcutAttribute> Shortcuts { get; }
-    
+
     /// <summary>
     /// 指令别名
     /// </summary>

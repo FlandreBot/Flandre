@@ -31,7 +31,7 @@ public class MessageBuilder
         Segments.Add(imageSegment);
         return this;
     }
-    
+
     /// <summary>
     /// 添加图片消息段
     /// </summary>
