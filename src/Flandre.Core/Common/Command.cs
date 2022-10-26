@@ -29,17 +29,23 @@ public class Command
     /// 指令快捷方式
     /// </summary>
     public List<ShortcutAttribute> Shortcuts { get; }
+    
+    /// <summary>
+    /// 指令别名
+    /// </summary>
+    public List<AliasAttribute> Aliases { get; }
 
     private readonly Plugin _plugin;
 
     internal Command(Plugin plugin, CommandAttribute info, MethodInfo innerMethod,
-        List<OptionAttribute> options, List<ShortcutAttribute> shortcuts)
+        List<OptionAttribute> options, List<ShortcutAttribute> shortcuts, List<AliasAttribute> aliases)
     {
         _plugin = plugin;
         CommandInfo = info;
         InnerMethod = innerMethod;
         Options = options;
         Shortcuts = shortcuts;
+        Aliases = aliases;
     }
 
     internal MessageContent? ParseCommand(MessageContext ctx, StringParser parser)

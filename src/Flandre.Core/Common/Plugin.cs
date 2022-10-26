@@ -45,8 +45,9 @@ public abstract class Plugin : IModule
 
             var options = method.GetCustomAttributes<OptionAttribute>().ToList();
             var shortcuts = method.GetCustomAttributes<ShortcutAttribute>().ToList();
+            var aliases = method.GetCustomAttributes<AliasAttribute>().ToList();
 
-            Commands.Add(new Command(this, attr, method, options, shortcuts));
+            Commands.Add(new Command(this, attr, method, options, shortcuts, aliases));
         }
     }
 

@@ -134,4 +134,10 @@ internal static class CommandUtils
 
         return true;
     }
+
+    internal static string NormalizeCommandDefinition(string source)
+    {
+        return string.Join('.', source.Split('.',
+            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+    }
 }

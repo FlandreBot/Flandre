@@ -108,9 +108,9 @@ public class FlandreApp
                 {
                     CommandMap[command.CommandInfo.Command] = command;
                     foreach (var shortcut in command.Shortcuts)
-                    {
                         ShortcutMap[shortcut.Shortcut] = command;
-                    }
+                    foreach (var alias in command.Aliases)
+                        CommandMap[alias.Alias] = command;
                 }
 
                 break;

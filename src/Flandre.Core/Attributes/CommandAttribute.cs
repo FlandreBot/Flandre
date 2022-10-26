@@ -25,8 +25,7 @@ public class CommandAttribute : Attribute
     public CommandAttribute(string pattern)
     {
         var parser = new StringParser(pattern);
-        Command = string.Join('.', parser.Read(' ').Split('.',
-            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+        Command = CommandUtils.NormalizeCommandDefinition(parser.Read(' '));
         parser.SkipSpaces();
 
         var isNotRequiredParamAdded = false;
