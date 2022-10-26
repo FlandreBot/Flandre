@@ -29,10 +29,6 @@ public class FlandreAppTests
             content = friendClient.SendForReply("test1 true --opt 114.514").Result;
             Assert.Equal("arg1: True opt: 114.514 b: False t: True",
                 content?.GetText());
-            
-            content = friendClient.SendForReply(" 测试  true --opt 114.514").Result;
-            Assert.Equal("arg1: True opt: 114.514 b: False t: True",
-                content?.GetText());
 
             content = friendClient.SendForReply("test1  -o 1919.810  false").Result;
             Assert.Equal("arg1: False opt: 1919.81 b: False t: True",
@@ -49,14 +45,43 @@ public class FlandreAppTests
     }
 
     [Fact]
-    public void TestCommandMap()
+    public void TestShortcutAndAlias()
     {
-        var app = new FlandreApp().Use(new TestPlugin());
+        Logger.ThrowOnError = true;
+        var app = new FlandreApp();
+        var adapter = new MockAdapter();
 
-        Assert.Equal(3, app.CommandMap.Count);
-        Assert.NotNull(app.CommandMap.GetValueOrDefault("test1"));
-        Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.test"));
-        Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.sub.sub.test"));
+        var channelClient = adapter.GetChannelClient();
+
+        app.OnAppReady += (_, _) =>
+        {
+            Assert.Equal(5, app.CommandMap.Count);
+            Assert.Equal(1, app.ShortcutMap.Count);
+            
+            Assert.NotNull(app.CommandMap.GetValueOrDefault("test1"));
+            Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.test"));
+            Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.sub.sub.test"));
+            
+            // shortcut
+            Assert.NotNull(app.ShortcutMap.GetValueOrDefault("测试"));
+            Assert.Equal(app.ShortcutMap["测试"], app.CommandMap["test1"]);
+            
+            // alias
+            Assert.NotNull(app.CommandMap.GetValueOrDefault("test111.11.45.14"));
+            Assert.Equal(app.CommandMap["sssuuubbb"], app.CommandMap["sub.test"]);
+
+            var result = "arg1: True opt: 114.514 b: False t: True";
+
+            var content = channelClient.SendForReply("test1 true --opt 114.514").Result;
+            Assert.Equal(result, content?.GetText());
+
+            content = channelClient.SendForReply(" 测试  true --opt 114.514").Result;
+            Assert.Equal(result, content?.GetText());
+
+            app.Stop();
+        };
+
+        app.Use(adapter).Use(new TestPlugin()).Start();
     }
 }
 
@@ -74,6 +99,7 @@ public class TestPlugin : Plugin
     [Option("boolopt", "-b <:bool>")]
     [Option("trueopt", "-t <:bool=true>")]
     [Shortcut("测试")]
+    [Alias("..test111.11..45...14...")] // test normalize
     public static MessageContent OnTest1(MessageContext ctx, ParsedArgs args)
     {
         var arg1 = args.GetArgument<bool>("arg1");
@@ -84,6 +110,7 @@ public class TestPlugin : Plugin
     }
 
     [Command("sub.test")]
+    [Alias("sssuuubbb")]
     public static MessageContent? OnSubTest(MessageContext ctx, ParsedArgs args) => null;
 
     [Command("...sub....sub..sub......test..")]

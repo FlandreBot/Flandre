@@ -65,4 +65,13 @@ public class CommandUtilsTests
         if (result)
             Assert.Equal(expectedValue, value);
     }
+
+    [Theory]
+    [InlineData("test.alpha", "test.alpha")]
+    [InlineData("...test.beta....", "test.beta")]
+    [InlineData("...te.st.1.1...4514...gamma...", "te.st.1.1.4514.gamma")]
+    public void TestNormalizeCommandDefinition(string source, string expected)
+    {
+        Assert.Equal(expected, CommandUtils.NormalizeCommandDefinition(source));
+    }
 }
