@@ -5,4 +5,7 @@
 /// </summary>
 public class AppReadyEvent : BaseEvent
 {
+    internal AppReadyEvent()
+    {
+    }
 }

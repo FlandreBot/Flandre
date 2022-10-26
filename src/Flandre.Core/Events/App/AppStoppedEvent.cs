@@ -5,4 +5,7 @@
 /// </summary>
 public class AppStoppedEvent : BaseEvent
 {
+    internal AppStoppedEvent()
+    {
+    }
 }

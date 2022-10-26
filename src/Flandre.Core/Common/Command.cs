@@ -48,7 +48,7 @@ public class Command
         Aliases = aliases;
     }
 
-    internal MessageContent? ParseCommand(MessageContext ctx, StringParser parser)
+    internal (ParsedArgs, string?) ParseCommand(StringParser parser)
     {
         var args = new ParsedArgs();
 
@@ -74,7 +74,7 @@ public class Command
                 var option = Options.FirstOrDefault(opt => opt.Alias == optName)
                              ?? Options.FirstOrDefault(opt => opt.Name == optName);
                 if (option is null)
-                    return $"未知选项：{optName}。";
+                    return (args, $"未知选项：{optName}。");
 
                 parser.SkipSpaces();
 
@@ -92,7 +92,7 @@ public class Command
                         if (CommandUtils.TryParseType(parser.Read(' '),
                                 option.Type, out var result, false))
                             args.Options.OptionsDict[option.Name] = result;
-                        else return $"选项 {option.Name} 类型错误，应为 {option.Type}。";
+                        else return (args, $"选项 {option.Name} 类型错误，应为 {option.Type}。");
                         break;
                 }
             }
@@ -108,7 +108,7 @@ public class Command
                     var optName = opts[i];
                     var option = Options.FirstOrDefault(opt => opt.ShortName == optName);
                     if (option is null)
-                        return $"未知选项：{optName}。";
+                        return (args, $"未知选项：{optName}。");
 
                     if (option.Type == "bool")
                     {
@@ -117,14 +117,14 @@ public class Command
                     else
                     {
                         if (i < opts.Length - 1)
-                            return $"选项 {option.Name} 类型错误，应为 {option.Type}。";
+                            return (args, $"选项 {option.Name} 类型错误，应为 {option.Type}。");
 
                         if (option.Type == "string")
                             args.Options.OptionsDict[option.Name] = parser.ReadQuoted();
                         else if (CommandUtils.TryParseType(parser.Read(' '),
                                      option.Type, out var result, false))
                             args.Options.OptionsDict[option.Name] = result;
-                        else return $"选项 {option.Name} 类型错误，应为 {option.Type}。";
+                        else return (args, $"选项 {option.Name} 类型错误，应为 {option.Type}。");
                     }
                 }
             }
@@ -132,7 +132,7 @@ public class Command
             {
                 // argument
                 if (argIndex >= CommandInfo.Parameters.Count)
-                    return "参数过多，请检查指令格式。";
+                    return (args, "参数过多，请检查指令格式。");
 
                 var param = CommandInfo.Parameters[argIndex];
 
@@ -146,7 +146,7 @@ public class Command
                     if (CommandUtils.TryParseType(parser.Read(' '),
                             param.Type, out var result, false))
                         args.Arguments.ArgumentList.Add(new KeyValuePair<string, object>(param.Name, result));
-                    else return $"参数 {param.Name} 类型错误，应为 {param.Type}。";
+                    else return (args, $"参数 {param.Name} 类型错误，应为 {param.Type}。");
                 }
 
                 providedArgs.Add(param.Name);
@@ -159,7 +159,7 @@ public class Command
         {
             var provided = providedArgs.Contains(param.Name);
             if (param.IsRequired && !provided)
-                return $"参数 {param.Name} 缺失。";
+                return (args, $"参数 {param.Name} 缺失。");
             if (param.IsRequired || provided) continue;
             args.Arguments.ArgumentList.Add(new KeyValuePair<string, object>(param.Name, param.DefaultValue));
         }
@@ -168,6 +168,11 @@ public class Command
             if (!args.Options.OptionsDict.ContainsKey(opt.Name))
                 args.Options.OptionsDict[opt.Name] = opt.DefaultValue;
 
+        return (args, null);
+    }
+
+    internal MessageContent? InvokeCommand(MessageContext ctx, ParsedArgs args)
+    {
         try
         {
             var cmdResult = InnerMethod.Invoke(

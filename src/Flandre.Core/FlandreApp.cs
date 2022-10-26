@@ -71,6 +71,26 @@ public class FlandreApp
     /// </summary>
     public event AppEventHandler<PluginStoppedEvent>? OnPluginStopped;
 
+    /// <summary>
+    /// 指令解析前事件
+    /// </summary>
+    public event AppEventHandler<AppCommandParsingEvent>? OnCommandParsing;
+
+    /// <summary>
+    /// 指令解析完成事件
+    /// </summary>
+    public event AppEventHandler<AppCommandParsedEvent>? OnCommandParsed;
+
+    /// <summary>
+    /// 指令调用前事件
+    /// </summary>
+    public event AppEventHandler<AppCommandInvokingEvent>? OnCommandInvoking;
+
+    /// <summary>
+    /// 指令调用完成事件
+    /// </summary>
+    public event AppEventHandler<AppCommandInvokedEvent>? OnCommandInvoked;
+
     #endregion
 
     /// <summary>
@@ -126,7 +146,9 @@ public class FlandreApp
     {
         SubscribeEvents(); // 注册事件
 
-        OnAppStarting?.Invoke(this, new AppStartingEvent());
+        var startingEvent = new AppStartingEvent();
+        OnAppStarting?.Invoke(this, startingEvent);
+        if (startingEvent.IsCancelled) return;
 
         Logger.Info("Starting App...");
 
@@ -136,7 +158,7 @@ public class FlandreApp
         {
             var e = new PluginStartingEvent(plugin);
             OnPluginStarting?.Invoke(this, e);
-            if (!e.Cancelled) await plugin.Start();
+            if (!e.IsCancelled) await plugin.Start();
         })).ToArray());
 
         OnAppReady?.Invoke(this, new AppReadyEvent());
@@ -204,12 +226,41 @@ public class FlandreApp
             }
 
             bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
-                OnCommandParsing(new MessageContext(this, bot, e.Message)));
+                ParseCommand(new MessageContext(this, bot, e.Message)));
         }
     }
 
-    private void OnCommandParsing(MessageContext ctx)
+    private void ParseCommand(MessageContext ctx)
     {
+        void ParseAndInvoke(Command c, StringParser p)
+        {
+            var parsingEvent = new AppCommandParsingEvent(ctx, c, p);
+            OnCommandParsing?.Invoke(this, parsingEvent);
+            if (parsingEvent.IsCancelled) return;
+            var args = parsingEvent.CustomArgs;
+            if (args is null)
+            {
+                (args, var error) = c.ParseCommand(p);
+                OnCommandParsed?.Invoke(this, new AppCommandParsedEvent(args, error));
+                if (error is not null)
+                {
+                    ctx.Bot.SendMessage(ctx.Message, error).Wait();
+                    return;
+                }
+            }
+
+            var invokingEvent = new AppCommandInvokingEvent(c, ctx, args);
+            OnCommandInvoking?.Invoke(this, invokingEvent);
+
+            var content = c.InvokeCommand(ctx, args);
+
+            var invokedEvent = new AppCommandInvokedEvent(c, ctx, args, content);
+            OnCommandInvoked?.Invoke(this, invokedEvent);
+
+            if (content is null) return;
+            ctx.Bot.SendMessage(ctx.Message, content).Wait();
+        }
+
         var commandStr = ctx.Message.GetText().Trim();
         if (commandStr == Config.CommandPrefix) return;
 
@@ -219,9 +270,7 @@ public class FlandreApp
 
         if (ShortcutMap.TryGetValue(root, out var command))
         {
-            var content = command.ParseCommand(ctx, parser);
-            if (content is null) return;
-            ctx.Bot.SendMessage(ctx.Message, content).Wait();
+            ParseAndInvoke(command, parser);
             return;
         }
 
@@ -234,9 +283,7 @@ public class FlandreApp
                 (parser.IsEnd() || !CommandMap.Keys.Any(cmd =>
                     cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
             {
-                var content = command.ParseCommand(ctx, parser);
-                if (content is null) return;
-                ctx.Bot.SendMessage(ctx.Message, content).Wait();
+                ParseAndInvoke(command, parser);
                 return;
             }
 
@@ -263,8 +310,7 @@ public class FlandreAppConfig
     /// <summary>
     /// 忽略未定义指令的调用。可用值为：
     /// <br/> no - （默认）不忽略，调用未定义指令时发出警告信息
-    /// <br/> root - 仅忽略根指令（顶级指令）
-    /// <br/> all - 忽略所有
+    /// <br/> root - 忽略根指令（顶级指令）
     /// </summary>
     public string IgnoreUndefinedCommand { get; set; } = "no";
 }

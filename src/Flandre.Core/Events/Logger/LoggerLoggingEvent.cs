@@ -3,30 +3,15 @@
 /// <summary>
 /// 日志记录前触发的事件
 /// </summary>
-public class LoggerLoggingEvent : BaseEvent, ICancellableEvent
+public class LoggerLoggingEvent : CancellableEvent
 {
     /// <summary>
-    /// 默认格式的日志信息
+    /// 默认格式的日志信息，可覆盖。
     /// </summary>
-    public string Message { get; private set; }
-
-    internal bool Cancelled;
+    public string Message { get; set; }
 
     internal LoggerLoggingEvent(string message)
     {
         Message = message;
     }
-
-    /// <summary>
-    /// 设置自定义日志信息，将覆盖默认行为
-    /// </summary>
-    public void SetCustomMessage(string message)
-    {
-        Message = message;
-    }
-
-    /// <summary>
-    /// 取消此次日志
-    /// </summary>
-    public void Cancel() => Cancelled = true;
 }
