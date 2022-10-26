@@ -81,6 +81,9 @@ public static class CqCodeParser
 
             case QuoteSegment qs:
                 return $"[CQ:reply,id={qs.QuotedMessage.MessageId}]";
+
+            case AtSegment ats:
+                return $"[CQ:at,qq={(ats.Scope == AtSegmentScope.All ? "all" : ats.UserId)}]";
         }
 
         return "";
