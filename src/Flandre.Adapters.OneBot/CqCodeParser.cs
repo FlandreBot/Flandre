@@ -77,7 +77,10 @@ public static class CqCodeParser
                     return $"[CQ:image,file={ims.Path}{type}]";
                 if (ims.Url is not null)
                     return $"[CQ:image,file={ims.Url}{type}]";
-                return "";
+                break;
+
+            case QuoteSegment qs:
+                return $"[CQ:reply,id={qs.QuotedMessage.MessageId}]";
         }
 
         return "";
