@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Title>Flandre.Adapters.Konata</Title>
         <Product>$(Title)</Product>
-        <PackageVersion>1.0.0-alpha</PackageVersion>
+        <PackageVersion>1.0.0-alpha.2</PackageVersion>
         <Version>$(PackageVersion)</Version>
         <Authors>b1acksoil</Authors>
         <Description>Konata.Core (QQ Protocol) adapter for Flandre project.</Description>

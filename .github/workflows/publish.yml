@@ -51,3 +51,14 @@ jobs:
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          
+      - name: Publish Adapters.Mock
+        id: publish-adapter-mock
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.Mock/Flandre.Adapters.Mock.csproj
+          PACKAGE_NAME: Flandre.Adapters.Mock
+          VERSION_FILE_PATH: src/Flandre.Adapters.Mock/Flandre.Adapters.Mock.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
