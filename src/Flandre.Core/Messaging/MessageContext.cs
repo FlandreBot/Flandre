@@ -33,7 +33,7 @@ public class MessageContext : Context
     /// 群组 ID，等同于 Message.GuildId
     /// </summary>
     public string? GuildId => Message.GuildId;
-    
+
     /// <summary>
     /// 频道 ID，等同于 Message.ChannelId
     /// </summary>

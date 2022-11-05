@@ -13,12 +13,12 @@ public class AppCommandParsingEvent : CancellableEvent
     /// 当前事件的消息上下文
     /// </summary>
     public MessageContext Context { get; }
-    
+
     /// <summary>
     /// 匹配到的指令
     /// </summary>
     public Command Command { get; }
-    
+
     /// <summary>
     /// 指令解析使用的字符串解析器，包含待解析的参数和选项
     /// </summary>
@@ -28,7 +28,7 @@ public class AppCommandParsingEvent : CancellableEvent
     /// 自定义解析参数
     /// </summary>
     public ParsedArgs? CustomArgs { get; set; } = null;
-    
+
     internal AppCommandParsingEvent(MessageContext ctx, Command command, StringParser parser)
     {
         Context = ctx;
