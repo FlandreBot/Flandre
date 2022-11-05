@@ -49,7 +49,7 @@ public class MockBot : Bot
     {
         if (_tcsDict.TryGetValue(message.MessageId, out var tcs))
         {
-            tcs.SetResult(message.Content);
+            tcs.SetResult(contentOverride ?? message.Content);
             _tcsDict.Remove(message.MessageId);
         }
 
