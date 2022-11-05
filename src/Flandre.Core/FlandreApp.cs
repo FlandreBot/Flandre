@@ -251,9 +251,6 @@ public class FlandreApp
                 bot.OnFriendRequested += (_, e) => CatchAndLog(() =>
                     plugin.OnFriendRequested(ctx, e));
             }
-
-            bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
-                ParseCommand(new MessageContext(this, bot, e.Message)));
         }
 
         // 插件 OnMessageReceived
