@@ -18,7 +18,7 @@ public class MockClient
         _adapter = adapter;
     }
 
-    public Task<MessageContent?> SendForReply(string message, int timeout = 10)
+    public Task<MessageContent?> SendForReply(string message, TimeSpan? timeout = null)
     {
         var tcs = new TaskCompletionSource<MessageContent?>();
 
@@ -39,7 +39,7 @@ public class MockClient
             },
             Content = message
         };
-        _adapter.Bot.ReceiveMessage(msg, tcs, 10);
+        _adapter.Bot.ReceiveMessage(msg, tcs, timeout ?? new TimeSpan(0, 0, 10));
 
         return tcs.Task;
     }

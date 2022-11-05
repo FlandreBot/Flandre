@@ -19,11 +19,10 @@ namespace Flandre.Core;
 /// </summary>
 public class FlandreApp
 {
-    private readonly List<IAdapter> _adapters = new();
-
-    internal readonly List<Bot> Bots = new();
-
+    internal readonly List<IAdapter> Adapters = new();
+    internal readonly List<Func<MessageContext, Action, Task>> Middlewares = new();
     internal readonly List<Plugin> Plugins = new();
+    internal readonly List<Bot> Bots = new();
 
     private readonly ManualResetEvent _exitEvent = new(false);
 
@@ -109,33 +108,60 @@ public class FlandreApp
     }
 
     /// <summary>
-    /// 注册模块
+    /// 注册适配器
     /// </summary>
-    /// <param name="module">需要注册的模块</param>
+    /// <param name="adapter">适配器</param>
     /// <returns>应用实例本身</returns>
-    public FlandreApp Use(IModule module)
+    public FlandreApp Use(IAdapter adapter)
     {
-        switch (module)
+        Adapters.Add(adapter);
+        Bots.AddRange(adapter.GetBots());
+        return this;
+    }
+
+    /// <summary>
+    /// 注册插件
+    /// </summary>
+    /// <param name="plugin">需要注册的模块的插件</param>
+    /// <returns>应用实例本身</returns>
+    public FlandreApp Use(Plugin plugin)
+    {
+        Plugins.Add(plugin);
+        foreach (var command in plugin.Commands)
         {
-            case IAdapter adapter:
-                _adapters.Add(adapter);
-                Bots.AddRange(adapter.GetBots());
-                break;
-
-            case Plugin plugin:
-                Plugins.Add(plugin);
-                foreach (var command in plugin.Commands)
-                {
-                    CommandMap[command.CommandInfo.Command] = command;
-                    foreach (var shortcut in command.Shortcuts)
-                        ShortcutMap[shortcut.Shortcut] = command;
-                    foreach (var alias in command.Aliases)
-                        CommandMap[alias.Alias] = command;
-                }
-
-                break;
+            CommandMap[command.CommandInfo.Command] = command;
+            foreach (var shortcut in command.Shortcuts)
+                ShortcutMap[shortcut.Shortcut] = command;
+            foreach (var alias in command.Aliases)
+                CommandMap[alias.Alias] = command;
         }
 
+        return this;
+    }
+
+    /// <summary>
+    /// 注册异步中间件
+    /// </summary>
+    /// <param name="middleware">中间件</param>
+    /// <returns>应用实例本身</returns>
+    public FlandreApp Use(Func<MessageContext, Action, Task> middleware)
+    {
+        Middlewares.Add(middleware);
+        return this;
+    }
+
+    /// <summary>
+    /// 注册同步中间件
+    /// </summary>
+    /// <param name="middleware">中间件</param>
+    /// <returns>应用实例本身</returns>
+    public FlandreApp Use(Action<MessageContext, Action> middleware)
+    {
+        Middlewares.Add((ctx, next) =>
+        {
+            middleware.Invoke(ctx, next);
+            return Task.CompletedTask;
+        });
         return this;
     }
 
@@ -153,7 +179,7 @@ public class FlandreApp
         Logger.Info("Starting App...");
 
         // 启动所有模块
-        Task.WaitAll(_adapters.Select(adapter => adapter.Start()).ToArray());
+        Task.WaitAll(Adapters.Select(adapter => adapter.Start()).ToArray());
         Task.WaitAll(Plugins.Select(plugin => Task.Run(async () =>
         {
             var e = new PluginStartingEvent(plugin);
@@ -171,7 +197,7 @@ public class FlandreApp
     /// </summary>
     public void Stop()
     {
-        Task.WaitAll(_adapters.Select(adapter => adapter.Stop()).ToArray());
+        Task.WaitAll(Adapters.Select(adapter => adapter.Stop()).ToArray());
         Task.WaitAll(Plugins.Select(plugin => Task.Run(async () =>
         {
             await plugin.Stop();
@@ -208,6 +234,9 @@ public class FlandreApp
 
         foreach (var bot in Bots)
         {
+            bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
+                ExecuteMiddlewares(new MessageContext(this, bot, e.Message), 0));
+
             var ctx = new Context(this, bot);
 
             foreach (var plugin in Plugins)
@@ -215,8 +244,6 @@ public class FlandreApp
                 Logger.DefaultLoggingHandlers.Add(e =>
                     plugin.OnLoggerLogging(ctx, e));
 
-                bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
-                    plugin.OnMessageReceived(new MessageContext(this, bot, e.Message)));
                 bot.OnGuildInvited += (_, e) => CatchAndLog(() =>
                     plugin.OnGuildInvited(ctx, e));
                 bot.OnGuildJoinRequested += (_, e) => CatchAndLog(() =>
@@ -228,25 +255,45 @@ public class FlandreApp
             bot.OnMessageReceived += (_, e) => CatchAndLog(() =>
                 ParseCommand(new MessageContext(this, bot, e.Message)));
         }
+
+        // 插件 OnMessageReceived
+        Use((ctx, next) =>
+        {
+            foreach (var plugin in Plugins)
+                plugin.OnMessageReceived(ctx);
+            next();
+        });
+
+        // 指令解析中间件
+        Use((ctx, next) =>
+        {
+            var content = ParseCommand(ctx);
+            if (content is not null)
+                ctx.Bot.SendMessage(ctx.Message, content);
+            next();
+        });
     }
 
-    private void ParseCommand(MessageContext ctx)
+    private void ExecuteMiddlewares(MessageContext ctx, int index)
     {
-        void ParseAndInvoke(Command c, StringParser p)
+        if (Middlewares.Count < index + 1) return;
+        Middlewares[index].Invoke(ctx, () => ExecuteMiddlewares(ctx, index + 1)).Wait();
+    }
+
+    private MessageContent? ParseCommand(MessageContext ctx)
+    {
+        MessageContent? ParseAndInvoke(Command c, StringParser p)
         {
             var parsingEvent = new AppCommandParsingEvent(ctx, c, p);
             OnCommandParsing?.Invoke(this, parsingEvent);
-            if (parsingEvent.IsCancelled) return;
+            if (parsingEvent.IsCancelled) return null;
             var args = parsingEvent.CustomArgs;
             if (args is null)
             {
                 (args, var error) = c.ParseCommand(p);
                 OnCommandParsed?.Invoke(this, new AppCommandParsedEvent(args, error));
                 if (error is not null)
-                {
-                    ctx.Bot.SendMessage(ctx.Message, error).Wait();
-                    return;
-                }
+                    return error;
             }
 
             var invokingEvent = new AppCommandInvokingEvent(c, ctx, args);
@@ -257,22 +304,19 @@ public class FlandreApp
             var invokedEvent = new AppCommandInvokedEvent(c, ctx, args, content);
             OnCommandInvoked?.Invoke(this, invokedEvent);
 
-            if (content is null) return;
-            ctx.Bot.SendMessage(ctx.Message, content).Wait();
+            return content;
         }
 
         var commandStr = ctx.Message.GetText().Trim();
-        if (commandStr == Config.CommandPrefix) return;
+        if (commandStr == Config.CommandPrefix) return null;
 
         var parser = new StringParser(commandStr);
 
         var root = parser.SkipSpaces().Read(' ');
 
         if (ShortcutMap.TryGetValue(root, out var command))
-        {
-            ParseAndInvoke(command, parser);
-            return;
-        }
+            return ParseAndInvoke(command, parser);
+
 
         root = root.TrimStart(Config.CommandPrefix);
         parser.SkipSpaces();
@@ -282,17 +326,16 @@ public class FlandreApp
             if (CommandMap.TryGetValue(root, out command) &&
                 (parser.IsEnd() || !CommandMap.Keys.Any(cmd =>
                     cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
-            {
-                ParseAndInvoke(command, parser);
-                return;
-            }
+                return ParseAndInvoke(command, parser);
 
             if (parser.SkipSpaces().IsEnd()) break;
             root = $"{root}.{parser.Read(' ')}";
         }
 
-        if (string.IsNullOrWhiteSpace(Config.CommandPrefix)) return;
-        if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return;
+        if (string.IsNullOrWhiteSpace(Config.CommandPrefix)) return null;
+        if (!Config.IgnoreUndefinedCommand.Equals("no", StringComparison.OrdinalIgnoreCase)) return null;
         ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
+
+        return null;
     }
 }
