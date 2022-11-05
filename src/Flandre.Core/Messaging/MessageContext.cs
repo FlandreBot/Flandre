@@ -28,4 +28,14 @@ public class MessageContext : Context
     /// 用户 ID，等同于 Message.Sender.UserId
     /// </summary>
     public string UserId => Message.Sender.UserId;
+
+    /// <summary>
+    /// 群组 ID，等同于 Message.GuildId
+    /// </summary>
+    public string? GuildId => Message.GuildId;
+    
+    /// <summary>
+    /// 频道 ID，等同于 Message.ChannelId
+    /// </summary>
+    public string? ChannelId => Message.ChannelId;
 }
