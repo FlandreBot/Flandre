@@ -1,6 +1,8 @@
 ﻿using Flandre.Adapters.Mock;
 using Flandre.Core.Utils;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Flandre.Core.Tests;
 
 public class FlandreAppTests
@@ -31,6 +33,10 @@ public class FlandreAppTests
 
             content = friendClient.SendForReply("test1 -bo 111.444 --no-trueopt false").Result;
             Assert.Equal("arg1: False opt: 111.444 b: True t: False",
+                content?.GetText());
+            
+            content = friendClient.SendForReply("test2  some text aaa   bbb   ").Result;
+            Assert.Equal("some text aaa   bbb",
                 content?.GetText());
 
             app.Stop();

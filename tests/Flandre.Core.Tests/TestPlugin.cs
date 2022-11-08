@@ -29,6 +29,13 @@ public class TestPlugin : Plugin
         var trueOpt = args.GetOption<bool>("trueopt");
         return $"arg1: {arg1} opt: {opt} b: {boolOpt} t: {trueOpt}";
     }
+    
+    [Command("test2 <arg1:text>")]
+    public static MessageContent OnTest2(MessageContext _, ParsedArgs args)
+    {
+        var arg1 = args.GetArgument<string>("arg1");
+        return arg1;
+    }
 
     [Command("sub.test")]
     [Alias("sssuuubbb")]
