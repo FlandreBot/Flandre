@@ -30,6 +30,7 @@ public static class CqCodeParser
                     "face" => ParseFace(sections[1..]),
                     "record" => ParseRecord(sections[1..]),
                     "image" => ParseImage(sections[1..]),
+                    "at" => ParseAt(sections[1..]),
                     _ => new TextSegment(code)
                 });
             }
@@ -144,5 +145,10 @@ public static class CqCodeParser
         }
 
         return segment;
+    }
+    
+    private static AtSegment ParseAt(string[] data)
+    {
+        return new AtSegment(data[0][3..]); // qq=xxx
     }
 }
