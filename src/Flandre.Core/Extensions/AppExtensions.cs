@@ -14,7 +14,7 @@ public static class AppExtensions
     /// <param name="botId">Bot.SelfId</param>
     public static void SetGuildAssignee(this FlandreApp app, string platform, string guildId, string botId)
     {
-        app.GuildAssignees.TryAdd($"{platform}:{guildId}", botId);
+        app.GuildAssignees.AddOrUpdate($"{platform}:{guildId}", botId, (_, _) => botId);
     }
 
     /// <summary>
