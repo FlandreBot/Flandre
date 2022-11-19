@@ -7,9 +7,12 @@ public partial class FlandreApp
 {
     internal void CheckAssigneeMiddleware(MessageContext ctx, Action next)
     {
-        var segment = ctx.Message.Content.GetSegment<AtSegment>();
-        if (ctx.SelfId == segment?.UserId)
-            next();
+        var segment = ctx.Message.Content.Segments.FirstOrDefault();
+        if (segment is AtSegment ats)
+        {
+            if (ats.UserId == ctx.SelfId)
+                next();
+        }
         // 如果没找到群组的 assignee
         else if (!GuildAssignees.TryGetValue($"{ctx.Platform}:{ctx.GuildId}", out var assignee))
             next();

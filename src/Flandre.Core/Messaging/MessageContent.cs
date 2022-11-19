@@ -8,7 +8,7 @@ namespace Flandre.Core.Messaging;
 /// </summary>
 public class MessageContent : IEnumerable<MessageSegment>
 {
-    private readonly IEnumerable<MessageSegment> _segments;
+    internal IEnumerable<MessageSegment> Segments { get; }
 
     /// <summary>
     /// 使用消息段构造消息内容
@@ -16,7 +16,7 @@ public class MessageContent : IEnumerable<MessageSegment>
     /// <param name="segments"></param>
     public MessageContent(IEnumerable<MessageSegment> segments)
     {
-        _segments = segments;
+        Segments = segments;
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ public class MessageContent : IEnumerable<MessageSegment>
     /// <typeparam name="TSegment">消息段类型</typeparam>
     public TSegment? GetSegment<TSegment>() where TSegment : MessageSegment
     {
-        return (TSegment?)_segments.FirstOrDefault(segment => segment is TSegment);
+        return (TSegment?)Segments.FirstOrDefault(segment => segment is TSegment);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class MessageContent : IEnumerable<MessageSegment>
     /// <typeparam name="TSegment">消息段类型</typeparam>
     public IEnumerable<TSegment> GetSegments<TSegment>() where TSegment : MessageSegment
     {
-        return _segments.Where(segment => segment is TSegment).Cast<TSegment>();
+        return Segments.Where(segment => segment is TSegment).Cast<TSegment>();
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public class MessageContent : IEnumerable<MessageSegment>
     /// <returns></returns>
     public IEnumerator<MessageSegment> GetEnumerator()
     {
-        return _segments.GetEnumerator();
+        return Segments.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
