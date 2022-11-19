@@ -300,7 +300,7 @@ public partial class FlandreApp
         }
 
         var commandStr = ctx.Message.GetText().Trim();
-        if (commandStr == Config.CommandPrefix || !commandStr.StartsWith(Config.CommandPrefix))
+        if (commandStr == Config.CommandPrefix)
             return null;
 
         var parser = new StringParser(commandStr);
@@ -310,6 +310,7 @@ public partial class FlandreApp
         if (ShortcutMap.TryGetValue(root, out var command))
             return ParseAndInvoke(command, parser);
 
+        if (!root.StartsWith(Config.CommandPrefix)) return null;
         root = root.TrimStart(Config.CommandPrefix);
         parser.SkipSpaces();
 
