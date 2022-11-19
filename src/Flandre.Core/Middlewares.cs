@@ -11,8 +11,10 @@ public partial class FlandreApp
         if (ctx.SelfId == segment?.UserId)
             next();
         // 如果没找到群组的 assignee
-        else if (!GuildAssignees.TryGetValue($"{ctx.Platform}:{ctx.GuildId}", out var assignee)
-             && assignee == ctx.SelfId) // 找到了，而且是自己
+        else if (!GuildAssignees.TryGetValue($"{ctx.Platform}:{ctx.GuildId}", out var assignee))
+            next();
+        // 如果找到了群组的 assignee，且是自己
+        else if (ctx.SelfId == assignee)
             next();
     }
     
