@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Flandre.Core.Common;
 using Flandre.Core.Events.App;
 using Flandre.Core.Events.Plugin;
@@ -17,7 +18,7 @@ namespace Flandre.Core;
 /// <summary>
 /// 应用基本框架
 /// </summary>
-public class FlandreApp
+public partial class FlandreApp
 {
     internal readonly List<IAdapter> Adapters = new();
     internal readonly List<Func<MessageContext, Action, Task>> Middlewares = new();
@@ -31,6 +32,8 @@ public class FlandreApp
     internal Dictionary<string, Command> CommandMap { get; } = new();
 
     internal Dictionary<string, Command> ShortcutMap { get; } = new();
+
+    internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
 
     /// <summary>
     /// App 配置
@@ -253,22 +256,14 @@ public class FlandreApp
             }
         }
 
+        // 群组 assignee 检查
+        Use(CheckAssigneeMiddleware);
+
         // 插件 OnMessageReceived
-        Use((ctx, next) =>
-        {
-            foreach (var plugin in Plugins)
-                plugin.OnMessageReceived(ctx);
-            next();
-        });
+        Use(PluginMessageReceivedMiddleware);
 
         // 指令解析中间件
-        Use((ctx, next) =>
-        {
-            var content = ParseCommand(ctx);
-            if (content is not null)
-                ctx.Bot.SendMessage(ctx.Message, content);
-            next();
-        });
+        Use(ParseCommandMiddleware);
     }
 
     private void ExecuteMiddlewares(MessageContext ctx, int index)
@@ -305,7 +300,8 @@ public class FlandreApp
         }
 
         var commandStr = ctx.Message.GetText().Trim();
-        if (commandStr == Config.CommandPrefix) return null;
+        if (commandStr == Config.CommandPrefix || !commandStr.StartsWith(Config.CommandPrefix))
+            return null;
 
         var parser = new StringParser(commandStr);
 
@@ -313,7 +309,6 @@ public class FlandreApp
 
         if (ShortcutMap.TryGetValue(root, out var command))
             return ParseAndInvoke(command, parser);
-
 
         root = root.TrimStart(Config.CommandPrefix);
         parser.SkipSpaces();

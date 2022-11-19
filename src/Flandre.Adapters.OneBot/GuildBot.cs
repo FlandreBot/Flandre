@@ -16,6 +16,11 @@ public class OneBotGuildBot : Bot
     /// </summary>
     public override string Platform => "qqguild";
 
+    public override string SelfId => _selfId;
+
+    private string _selfId = "";
+    private bool _isSelfIdSet;
+
     public OneBotGuildInternalBot Internal { get; }
 
     private readonly OneBotBot _mainBot;
@@ -35,6 +40,12 @@ public class OneBotGuildBot : Bot
 
     internal void InvokeMessageEvent(OneBotApiGuildMessageEvent e)
     {
+        if (!_isSelfIdSet)
+        {
+            _selfId = e.SelfId.ToString();
+            _isSelfIdSet = true;
+        }
+
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(new Message
         {
             Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,

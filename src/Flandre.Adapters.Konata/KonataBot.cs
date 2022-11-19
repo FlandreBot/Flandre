@@ -23,6 +23,9 @@ public sealed class KonataBot : FlandreBot
     /// </summary>
     public override string Platform => _config.PlatformOverride ?? "konata";
 
+    /// <inheritdoc />
+    public override string SelfId { get; }
+
     /// <summary>
     /// Konata 内部 bot
     /// </summary>
@@ -51,6 +54,10 @@ public sealed class KonataBot : FlandreBot
         _logger = logger;
         Internal = BotFather.Create(config.Konata, config.Device, config.KeyStore);
         _config = config;
+
+        SelfId = string.IsNullOrWhiteSpace(_config.SelfId)
+            ? Internal.Uin.ToString()
+            : _config.SelfId;
 
         Internal.OnFriendMessage += InnerOnFriendMessage;
         Internal.OnGroupMessage += InnerOnGroupMessage;

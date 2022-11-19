@@ -16,6 +16,11 @@ public abstract class Bot
     public abstract string Platform { get; }
 
     /// <summary>
+    /// Bot 自身 ID
+    /// </summary>
+    public abstract string SelfId { get; }
+
+    /// <summary>
     /// 获取 Logger
     /// </summary>
     protected abstract Logger GetLogger();

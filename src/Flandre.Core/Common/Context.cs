@@ -30,4 +30,9 @@ public class Context
     /// Bot 所在平台，等同于 Bot.Platform。
     /// </summary>
     public string Platform => Bot.Platform;
+
+    /// <summary>
+    /// Bot 自身 ID，等同于 Bot.SelfId。
+    /// </summary>
+    public string SelfId => Bot.SelfId;
 }
