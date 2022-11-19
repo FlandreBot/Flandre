@@ -310,7 +310,9 @@ public partial class FlandreApp
         if (ShortcutMap.TryGetValue(root, out var command))
             return ParseAndInvoke(command, parser);
 
-        if (!root.StartsWith(Config.CommandPrefix)) return null;
+        if (!string.IsNullOrWhiteSpace(Config.CommandPrefix)
+            && !root.StartsWith(Config.CommandPrefix))
+            return null;
         root = root.TrimStart(Config.CommandPrefix);
         parser.SkipSpaces();
 
