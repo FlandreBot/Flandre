@@ -14,6 +14,9 @@ public abstract class OneBotBot : Bot
     /// </summary>
     public override string Platform => "onebot";
 
+    /// <inheritdoc />
+    public override string SelfId { get; }
+
     internal readonly OneBotGuildBot GuildBot;
     internal readonly Logger Logger;
 
@@ -24,8 +27,9 @@ public abstract class OneBotBot : Bot
 
     protected override Logger GetLogger() => Logger;
 
-    internal OneBotBot(Logger logger)
+    internal OneBotBot(string selfId, Logger logger)
     {
+        SelfId = selfId;
         Internal = new OneBotInternalBot(this);
         GuildBot = new OneBotGuildBot(this);
         Logger = logger;

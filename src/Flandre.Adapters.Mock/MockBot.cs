@@ -15,6 +15,8 @@ public class MockBot : Bot
     /// </summary>
     public override string Platform => "mock";
 
+    public override string SelfId => _selfId;
+
     private readonly Logger _logger;
 
     private readonly string _selfId = Guid.NewGuid().ToString();
