@@ -3,8 +3,6 @@
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   publish:
@@ -27,7 +25,7 @@ jobs:
           VERSION_FILE_PATH: src/Flandre.Core/Flandre.Core.csproj
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
           TAG_COMMIT: true
-          TAG_FORMAT: v*
+          TAG_FORMAT: core_v*
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
       - name: Publish Adapters.Konata
