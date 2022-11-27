@@ -58,8 +58,7 @@ public class CommandAttribute : Attribute
             }
 
             Parameters.Add(info);
-
-            FlandreApp.Logger.Debug(Parameters.Count.ToString());
+            
             parser.SkipSpaces();
         }
     }

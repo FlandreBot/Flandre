@@ -25,7 +25,7 @@ public class OneBotWebSocketBot : OneBotBot
     public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
     public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 
-    internal OneBotWebSocketBot(OneBotBotConfig config, Logger logger) : base(logger)
+    internal OneBotWebSocketBot(OneBotBotConfig config, Logger logger) : base(config.SelfId, logger)
     {
         _config = config;
 

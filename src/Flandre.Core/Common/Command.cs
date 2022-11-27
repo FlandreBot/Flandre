@@ -59,9 +59,8 @@ public class Command
         {
             var peek = parser.SkipSpaces().Peek(' ');
 
-            if (peek.StartsWith("--"))
+            if (peek.StartsWith("--")) // option (full)
             {
-                // option (full)
                 var optName = parser.Read(' ').TrimStart('-');
                 var optNo = false;
 
@@ -96,9 +95,8 @@ public class Command
                         break;
                 }
             }
-            else if (peek.StartsWith('-'))
+            else if (peek.StartsWith('-')) // option (short)
             {
-                // option (short)
                 var opts = parser.Read(' ').TrimStart('-');
 
                 parser.SkipSpaces();
@@ -128,25 +126,31 @@ public class Command
                     }
                 }
             }
-            else
+            else // argument
             {
-                // argument
                 if (argIndex >= CommandInfo.Parameters.Count)
                     return (args, "参数过多，请检查指令格式。");
 
                 var param = CommandInfo.Parameters[argIndex];
 
-                if (param.Type == "string")
+                switch (param.Type)
                 {
-                    args.Arguments.ArgumentList.Add(
-                        new KeyValuePair<string, object>(param.Name, parser.ReadQuoted()));
-                }
-                else
-                {
-                    if (CommandUtils.TryParseType(parser.Read(' '),
-                            param.Type, out var result, false))
-                        args.Arguments.ArgumentList.Add(new KeyValuePair<string, object>(param.Name, result));
-                    else return (args, $"参数 {param.Name} 类型错误，应为 {param.Type}。");
+                    case "string":
+                        args.Arguments.ArgumentList.Add(
+                            new KeyValuePair<string, object>(param.Name, parser.ReadQuoted()));
+                        break;
+                    
+                    case "text":
+                        args.Arguments.ArgumentList.Add(
+                            new KeyValuePair<string, object>(param.Name, parser.ReadToEnd()));
+                        break;
+
+                    default:
+                        if (CommandUtils.TryParseType(parser.Read(' '),
+                                param.Type, out var result, false))
+                            args.Arguments.ArgumentList.Add(new KeyValuePair<string, object>(param.Name, result));
+                        else return (args, $"参数 {param.Name} 类型错误，应为 {param.Type}。");
+                        break;
                 }
 
                 providedArgs.Add(param.Name);
