@@ -82,22 +82,27 @@ Flandre 内部采用各类事件控制，开发者可以轻松地通过订阅事
 首先通过 NuGet 包管理器引用 `Flandre.Framework` 和 `Flandre.Adapters.Konata` 包，然后：
 
 ```csharp
-using Flandre.Core;
+using Flandre.Framework;
+using Flandre.Framework.Common;
 using Flandre.Adapters.Konata;
 using Konata.Core.Common;
 
-var app = new FlandreApp();
+var builder = new FlandreAppBuilder();
 
+// 添加 Bot 配置
 var config = new KonataAdapterConfig();
 config.Bots.Add(new KonataBotConfig
 {
     KeyStore = new BotKeyStore("<QQ 号>", "<密码>")
 });
 
-app
-    .UseKonataAdapter(config)
-    .Use(new ExamplePlugin())
-    .Start();
+var app = builder
+    .UseAdapter(new KonataAdapter(config))
+    .UsePlugin<ExamplePlugin>()
+    .Build();
+
+app.Run();
+
 
 class ExamplePlugin : Plugin
 {
