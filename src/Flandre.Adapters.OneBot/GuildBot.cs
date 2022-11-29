@@ -1,9 +1,8 @@
 ﻿using Flandre.Adapters.OneBot.Models;
 using Flandre.Core.Common;
-using Flandre.Core.Events.Bot;
+using Flandre.Core.Events;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
-using Flandre.Core.Utils;
 
 #pragma warning disable CS0067
 
@@ -18,14 +17,10 @@ public class OneBotGuildBot : Bot
 
     public override string SelfId => _selfId;
 
-    private string _selfId = "";
+    private string _selfId = string.Empty;
     private bool _isSelfIdSet;
 
     public OneBotGuildInternalBot Internal { get; }
-
-    private readonly OneBotBot _mainBot;
-
-    protected override Logger GetLogger() => _mainBot.Logger;
 
     public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
     public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
@@ -35,7 +30,6 @@ public class OneBotGuildBot : Bot
     internal OneBotGuildBot(OneBotBot mainBot)
     {
         Internal = new OneBotGuildInternalBot(mainBot);
-        _mainBot = mainBot;
     }
 
     internal void InvokeMessageEvent(OneBotApiGuildMessageEvent e)
@@ -68,7 +62,7 @@ public class OneBotGuildBot : Bot
         if (sourceType == MessageSourceType.Channel)
             return await Internal.SendGuildChannelMessage(guildId!, channelId!, content);
 
-        _mainBot.Logger.Warning("qqguild 平台暂不支持发送频道私聊消息。");
+        Log(BotLogLevel.Warning, "Platform qqguild does not support sending private message.");
         return null;
     }
 
@@ -91,8 +85,8 @@ public class OneBotGuildBot : Bot
 
     public override Task<User?> GetUser(string userId, string? guildId = null)
     {
-        _mainBot.Logger.Warning(
-            $"qqguild 平台暂不支持 {nameof(GetUser)} 方法。若您需要获取频道成员信息，请使用 {nameof(GetGuildMember)} 方法代替。");
+        Log(BotLogLevel.Warning,
+            $"Platform qqguild does not support method {nameof(GetUser)}. If you need to get the information of guild member, please use method {nameof(GetGuildMember)} instead.");
         return Task.FromResult<User?>(null);
     }
 

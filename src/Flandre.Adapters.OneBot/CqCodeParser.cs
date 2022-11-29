@@ -146,7 +146,7 @@ public static class CqCodeParser
 
         return segment;
     }
-    
+
     private static AtSegment ParseAt(string[] data)
     {
         return new AtSegment(data[0][3..]); // qq=xxx

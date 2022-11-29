@@ -6,11 +6,6 @@
 public class Context
 {
     /// <summary>
-    /// FlandreApp 实例
-    /// </summary>
-    public FlandreApp App { get; }
-
-    /// <summary>
     /// 当前 bot 实例
     /// </summary>
     public Bot Bot { get; }
@@ -18,11 +13,9 @@ public class Context
     /// <summary>
     /// 构造上下文
     /// </summary>
-    /// <param name="app">FlandreApp 实例</param>
     /// <param name="bot">bot 实例</param>
-    public Context(FlandreApp app, Bot bot)
+    public Context(Bot bot)
     {
-        App = app;
         Bot = bot;
     }
 

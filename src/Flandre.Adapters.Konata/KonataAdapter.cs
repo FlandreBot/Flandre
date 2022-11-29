@@ -1,6 +1,4 @@
-﻿using Flandre.Core;
-using Flandre.Core.Common;
-using Flandre.Core.Utils;
+﻿using Flandre.Core.Common;
 
 namespace Flandre.Adapters.Konata;
 
@@ -9,7 +7,6 @@ namespace Flandre.Adapters.Konata;
 /// </summary>
 public class KonataAdapter : IAdapter
 {
-    private readonly Logger _logger = new("KonataAdapter");
     private readonly List<KonataBot> _bots = new();
     private readonly KonataAdapterConfig _config;
 
@@ -22,27 +19,18 @@ public class KonataAdapter : IAdapter
         _config = config;
 
         _config.Bots.ForEach(bot =>
-            _bots.Add(new KonataBot(bot, _logger)));
+            _bots.Add(new KonataBot(bot)));
     }
 
     /// <summary>
     /// 启动适配器
     /// </summary>
-    public async Task Start()
-    {
-        _logger.Info("Starting Konata Adapter...");
-        await Task.WhenAll(_bots.ConvertAll(bot => bot.Start()));
-        _logger.Info("Konata Adapter started.");
-    }
+    public Task Start() => Task.WhenAll(_bots.ConvertAll(bot => bot.Start()));
 
     /// <summary>
     /// 停止适配器
     /// </summary>
-    public async Task Stop()
-    {
-        await Task.WhenAll(_bots.ConvertAll(bot => bot.Stop()));
-        _logger.Info("Konata Adapter stopped.");
-    }
+    public Task Stop() => Task.WhenAll(_bots.ConvertAll(bot => bot.Stop()));
 
     /// <summary>
     /// 获取 bot 列表
@@ -53,7 +41,7 @@ public class KonataAdapter : IAdapter
 /// <summary>
 /// Konata 适配器配置
 /// </summary>
-public class KonataAdapterConfig
+public sealed class KonataAdapterConfig
 {
     /// <summary>
     /// 构造 Konata 适配器配置
@@ -76,20 +64,4 @@ public class KonataAdapterConfig
     /// bot 配置列表
     /// </summary>
     public List<KonataBotConfig> Bots { get; init; }
-}
-
-/// <summary>
-/// FlandreApp 扩展方法
-/// </summary>
-public static class FlandreAppExtensions
-{
-    /// <summary>
-    /// 使用 Konata 适配器
-    /// </summary>
-    /// <param name="app">FlandreApp 实例</param>
-    /// <param name="config">Konata 适配器配置</param>
-    public static FlandreApp UseKonataAdapter(this FlandreApp app, KonataAdapterConfig config)
-    {
-        return app.Use(new KonataAdapter(config));
-    }
 }

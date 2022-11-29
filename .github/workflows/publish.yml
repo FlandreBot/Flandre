@@ -28,6 +28,18 @@ jobs:
           TAG_FORMAT: core_v*
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+      - name: Publish Framework
+        id: publish-fx
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Framework/Flandre.Framework.csproj
+          PACKAGE_NAME: Flandre.Framework
+          VERSION_FILE_PATH: src/Flandre.Framework/Flandre.Framework.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: true
+          TAG_FORMAT: fx_v*
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
       - name: Publish Adapters.Konata
         id: publish-adapter-konata
         uses: alirezanet/publish-nuget@v3.0.4
@@ -49,7 +61,7 @@ jobs:
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-          
+
       - name: Publish Adapters.Mock
         id: publish-adapter-mock
         uses: alirezanet/publish-nuget@v3.0.4

@@ -2,10 +2,10 @@
 using System.Net.WebSockets;
 using System.Text.Json;
 using Flandre.Adapters.OneBot.Models;
-using Flandre.Core.Events.Bot;
+using Flandre.Core.Common;
+using Flandre.Core.Events;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
-using Flandre.Core.Utils;
 using Websocket.Client;
 using Websocket.Client.Exceptions;
 
@@ -25,7 +25,7 @@ public class OneBotWebSocketBot : OneBotBot
     public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
     public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 
-    internal OneBotWebSocketBot(OneBotBotConfig config, Logger logger) : base(config.SelfId, logger)
+    internal OneBotWebSocketBot(OneBotBotConfig config) : base(config.SelfId)
     {
         _config = config;
 
@@ -40,13 +40,17 @@ public class OneBotWebSocketBot : OneBotBot
         _wsClient.DisconnectionHappened.Subscribe(_ =>
         {
             if (_clientStopped) return;
-            Logger.Warning($"WebSocket 连接丢失，将在 {_config.WebSocketReconnectTimeout} 秒后尝试重连...");
+            Log(BotLogLevel.Warning,
+                $"WebSocket connection lost, reconnecting in {_config.WebSocketReconnectTimeout}s...");
             foreach (var tcs in _apiTasks.Values)
-                tcs.SetException(new WebsocketException("WebSocket 连接丢失。"));
+                tcs.SetException(new WebsocketException("WebSocket connection lost."));
             _apiTasks.Clear();
         });
 
-        _wsClient.ReconnectionHappened.Subscribe(_ => { Logger.Success("成功连接至 WebSocket 服务器。"); });
+        _wsClient.ReconnectionHappened.Subscribe(_ =>
+        {
+            Log(BotLogLevel.Information, "Successfully connected to WebSocket server.");
+        });
     }
 
     #region WebSocket 交互

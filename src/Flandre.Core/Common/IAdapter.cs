@@ -3,7 +3,7 @@
 /// <summary>
 /// 适配器接口
 /// </summary>
-public interface IAdapter : IModule
+public interface IAdapter
 {
     /// <summary>
     /// 启动适配器

@@ -1,12 +1,13 @@
-﻿using Flandre.Core.Events.Bot;
+﻿using Flandre.Core.Common;
+using Flandre.Core.Events;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
-using Flandre.Core.Utils;
 using Konata.Core.Common;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Interfaces;
 using Konata.Core.Interfaces.Api;
+using BotConfig = Konata.Core.Common.BotConfig;
 using FlandreBotConfig = Flandre.Core.Common.BotConfig;
 using FlandreBot = Flandre.Core.Common.Bot;
 using KonataInternalBot = Konata.Core.Bot;
@@ -31,11 +32,7 @@ public sealed class KonataBot : FlandreBot
     /// </summary>
     public KonataInternalBot Internal { get; }
 
-    private readonly Logger _logger;
     private readonly KonataBotConfig _config;
-
-    /// <inheritdoc />
-    protected override Logger GetLogger() => _logger;
 
     /// <inheritdoc />
     public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
@@ -49,9 +46,8 @@ public sealed class KonataBot : FlandreBot
     /// <inheritdoc />
     public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
 
-    internal KonataBot(KonataBotConfig config, Logger logger)
+    internal KonataBot(KonataBotConfig config)
     {
-        _logger = logger;
         Internal = BotFather.Create(config.Konata, config.Device, config.KeyStore);
         _config = config;
 
@@ -74,15 +70,15 @@ public sealed class KonataBot : FlandreBot
     /// <inheritdoc />
     public override async Task Start()
     {
-        _logger.Info("Starting Konata Bot...");
+        Log(BotLogLevel.Debug, $"Starting bot {_config.SelfId}...");
         if (!await Internal.Login())
         {
-            _logger.Warning($"{_config.SelfId} 登陆失败。");
+            Log(BotLogLevel.Warning, $"Bot {_config.SelfId} login failed.");
             return;
         }
 
         _config.KeyStore = Internal.KeyStore;
-        _logger.Info("Konata Bot started.");
+        Log(BotLogLevel.Information, $"Bot {_config.SelfId} started.");
     }
 
     /// <inheritdoc />
@@ -275,17 +271,19 @@ public sealed class KonataBot : FlandreBot
 
     private void InnerOnCaptcha(KonataInternalBot bot, CaptchaEvent e)
     {
-        _logger.Warning($"Bot {_config.SelfId} 需要进行登录验证。");
+        Log(BotLogLevel.Warning, $"Bot {_config.SelfId} needs login verification.");
 
         switch (e.Type)
         {
             case CaptchaEvent.CaptchaType.Sms:
-                _logger.Warning($"手机验证码已发送至 {e.Phone}，请注意查收，输入验证码后按 Enter 继续：");
+                Log(BotLogLevel.Warning,
+                    $"The phone verify code has been sent to {e.Phone}. Please input the code and press Enter.");
                 Internal.SubmitSmsCode(Console.ReadLine());
                 break;
 
             case CaptchaEvent.CaptchaType.Slider:
-                _logger.Warning($"滑动验证码 URL: {e.SliderUrl}，输入 Ticket 后按 Enter 继续：");
+                Log(BotLogLevel.Warning,
+                    $"The Slider Captcha URL is: {e.SliderUrl}. Please input the ticket and press Enter.");
                 Internal.SubmitSliderTicket(Console.ReadLine());
                 break;
         }
@@ -296,12 +294,12 @@ public sealed class KonataBot : FlandreBot
         switch (e.Level)
         {
             case LogLevel.Warning:
-                _logger.Warning(e.EventMessage);
+                Log(BotLogLevel.Warning, e.EventMessage);
                 break;
 
             case LogLevel.Exception:
             case LogLevel.Fatal:
-                _logger.Error(e.EventMessage);
+                Log(BotLogLevel.Error, e.EventMessage);
                 break;
         }
     }

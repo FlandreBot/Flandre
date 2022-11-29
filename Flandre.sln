@@ -4,11 +4,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core", "src\Flandre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Konata", "src\Flandre.Adapters.Konata\Flandre.Adapters.Konata.csproj", "{723E8DD2-55F1-4095-93D7-E6AD600A63EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core.Tests", "tests\Flandre.Core.Tests\Flandre.Core.Tests.csproj", "{22726A9B-8E54-4513-AB04-61B4A34DDC2A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Mock", "src\Flandre.Adapters.Mock\Flandre.Adapters.Mock.csproj", "{18C926FE-1F45-421C-A19B-BB914DBD7437}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.OneBot", "src\Flandre.Adapters.OneBot\Flandre.Adapters.OneBot.csproj", "{49047181-70A7-44F9-BC70-992BD0289C97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Framework", "src\Flandre.Framework\Flandre.Framework.csproj", "{76195FF7-5683-451D-9D22-955CE0CA20EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Framework.Tests", "tests\Flandre.Framework.Tests\Flandre.Framework.Tests.csproj", "{23B5856D-C230-4EC6-A3C0-A31E56AABFC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core.Tests", "tests\Flandre.Core.Tests\Flandre.Core.Tests.csproj", "{99CA905D-7B6C-4615-BF50-F06CAB14941D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,10 +28,6 @@ Global
 		{723E8DD2-55F1-4095-93D7-E6AD600A63EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{723E8DD2-55F1-4095-93D7-E6AD600A63EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{723E8DD2-55F1-4095-93D7-E6AD600A63EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22726A9B-8E54-4513-AB04-61B4A34DDC2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22726A9B-8E54-4513-AB04-61B4A34DDC2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22726A9B-8E54-4513-AB04-61B4A34DDC2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22726A9B-8E54-4513-AB04-61B4A34DDC2A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{18C926FE-1F45-421C-A19B-BB914DBD7437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{18C926FE-1F45-421C-A19B-BB914DBD7437}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18C926FE-1F45-421C-A19B-BB914DBD7437}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -36,5 +36,17 @@ Global
 		{49047181-70A7-44F9-BC70-992BD0289C97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49047181-70A7-44F9-BC70-992BD0289C97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49047181-70A7-44F9-BC70-992BD0289C97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76195FF7-5683-451D-9D22-955CE0CA20EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76195FF7-5683-451D-9D22-955CE0CA20EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76195FF7-5683-451D-9D22-955CE0CA20EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76195FF7-5683-451D-9D22-955CE0CA20EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23B5856D-C230-4EC6-A3C0-A31E56AABFC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23B5856D-C230-4EC6-A3C0-A31E56AABFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23B5856D-C230-4EC6-A3C0-A31E56AABFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23B5856D-C230-4EC6-A3C0-A31E56AABFC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99CA905D-7B6C-4615-BF50-F06CAB14941D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99CA905D-7B6C-4615-BF50-F06CAB14941D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99CA905D-7B6C-4615-BF50-F06CAB14941D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99CA905D-7B6C-4615-BF50-F06CAB14941D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

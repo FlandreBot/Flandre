@@ -3,11 +3,11 @@
     <PropertyGroup>
         <Title>Flandre.Adapters.OneBot</Title>
         <Product>$(Title)</Product>
-        <PackageVersion>1.0.0-alpha.2</PackageVersion>
+        <PackageVersion>2.0.0-alpha.1</PackageVersion>
         <Version>$(PackageVersion)</Version>
         <Authors>b1acksoil</Authors>
         <Description>OneBot protocol adapter for Flandre project.</Description>
-        <PackageTags>bot</PackageTags>
+        <PackageTags>bot;chatbot;flandre;adapter</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>avatar.jpg</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
