@@ -1,6 +1,4 @@
-﻿using Flandre.Core;
-
-namespace Flandre.Adapters.OneBot;
+﻿namespace Flandre.Adapters.OneBot;
 
 public static class OneBotUtils
 {
@@ -30,14 +28,6 @@ public static class OneBotUtils
     public static string GetUserAvatar(long userId)
     {
         return $"http://q.qlogo.cn/headimg_dl?dst_uin={userId}&spec=640";
-    }
-}
-
-public static class FlandreAppExtensions
-{
-    public static FlandreApp UseOneBotAdapter(this FlandreApp app, OneBotAdapterConfig config)
-    {
-        return app.Use(new OneBotAdapter(config));
     }
 }
 

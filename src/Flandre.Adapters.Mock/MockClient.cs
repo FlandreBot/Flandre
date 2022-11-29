@@ -7,9 +7,9 @@ public class MockClient
 {
     private readonly MockAdapter _adapter;
 
-    public string GuildId { get; internal init; } = "";
-    public string ChannelId { get; internal init; } = "";
-    public string UserId { get; internal init; } = "";
+    public string GuildId { get; internal init; } = string.Empty;
+    public string ChannelId { get; internal init; } = string.Empty;
+    public string UserId { get; internal init; } = string.Empty;
 
     public MessageSourceType EnvironmentType { get; internal init; }
 

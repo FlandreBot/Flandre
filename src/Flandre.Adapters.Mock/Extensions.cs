@@ -2,7 +2,7 @@
 
 namespace Flandre.Adapters.Mock;
 
-public static class FlandreTestingExtensions
+public static class MockAdapterExtensions
 {
     public static MockClient GetChannelClient(this MockAdapter adapter, string guildId, string channelId,
         string userId)

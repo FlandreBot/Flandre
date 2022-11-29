@@ -1,14 +1,13 @@
-﻿using Flandre.Core.Events.Bot;
+﻿using Flandre.Core.Events;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
-using Flandre.Core.Utils;
 
 namespace Flandre.Core.Common;
 
 /// <summary>
 /// 机器人
 /// </summary>
-public abstract class Bot
+public abstract partial class Bot
 {
     /// <summary>
     /// Bot 所在平台名称
@@ -21,9 +20,14 @@ public abstract class Bot
     public abstract string SelfId { get; }
 
     /// <summary>
-    /// 获取 Logger
+    /// 日志记录
     /// </summary>
-    protected abstract Logger GetLogger();
+    /// <param name="level">日志等级</param>
+    /// <param name="message">日志消息</param>
+    public void Log(BotLogLevel level, string message)
+    {
+        OnLogging?.Invoke(this, new BotLoggingEvent(level, message));
+    }
 
     /// <summary>
     /// 启动 Bot 实例
@@ -42,7 +46,7 @@ public abstract class Bot
     /// <returns>Task.CompletedTask</returns>
     protected Task LogNotSupported(string method)
     {
-        GetLogger().Warning($"{Platform} 平台暂不支持 {method} 方法。");
+        Log(BotLogLevel.Warning, $"Platform {Platform} does not support method {method}.");
         return Task.CompletedTask;
     }
 
@@ -54,7 +58,7 @@ public abstract class Bot
     /// <returns>Task.FromResult&lt;TResult&gt;(result)</returns>
     protected Task<TResult> LogNotSupported<TResult>(string method, TResult result)
     {
-        GetLogger().Warning($"{Platform} 平台暂不支持 {method} 方法。");
+        Log(BotLogLevel.Warning, $"Platform {Platform} does not support method {method}.");
         return Task.FromResult(result);
     }
 
@@ -175,59 +179,6 @@ public abstract class Bot
     /// <param name="guildId">群组 ID</param>
     public virtual Task<IEnumerable<Channel>> GetChannelList(string guildId)
         => LogNotSupported<IEnumerable<Channel>>(nameof(GetGuildList), Array.Empty<Channel>());
-
-    /// <summary>
-    /// Bot 事件委托
-    /// </summary>
-    /// <typeparam name="TEvent">事件类型</typeparam>
-    public delegate void BotEventHandler<in TEvent>(Bot bot, TEvent e);
-
-    /// <summary>
-    /// 收到消息
-    /// </summary>
-    public abstract event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
-
-    /// <summary>
-    /// 收到群组邀请
-    /// </summary>
-    public abstract event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
-
-    /// <summary>
-    /// 收到加群申请
-    /// </summary>
-    public abstract event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
-
-    /// <summary>
-    /// 收到好友申请
-    /// </summary>
-    public abstract event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
-
-    /// <summary>
-    /// 处理拉群邀请
-    /// </summary>
-    /// <param name="e">拉群邀请事件</param>
-    /// <param name="approve">是否同意</param>
-    /// <param name="comment">附加说明</param>
-    public virtual Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null)
-        => LogNotSupported(nameof(HandleGuildInvitation));
-
-    /// <summary>
-    /// 处理加群申请
-    /// </summary>
-    /// <param name="e">加群申请事件</param>
-    /// <param name="approve">是否同意</param>
-    /// <param name="comment">附加说明</param>
-    public virtual Task HandleGuildJoinRequest(BotGuildJoinRequestedEvent e, bool approve, string? comment = null)
-        => LogNotSupported(nameof(HandleGuildJoinRequest));
-
-    /// <summary>
-    /// 处理好友申请
-    /// </summary>
-    /// <param name="e">好友申请事件</param>
-    /// <param name="approve">是否同意</param>
-    /// <param name="comment">附加说明</param>
-    public virtual Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null)
-        => LogNotSupported(nameof(HandleFriendRequest));
 }
 
 /// <summary>

@@ -15,11 +15,10 @@ public class MessageContext : Context
     /// <summary>
     /// 构造消息上下文
     /// </summary>
-    /// <param name="app">FlandreApp 实例</param>
     /// <param name="bot">bot 实例</param>
     /// <param name="message">消息</param>
-    public MessageContext(FlandreApp app, Bot bot, Message message)
-        : base(app, bot)
+    public MessageContext(Bot bot, Message message)
+        : base(bot)
     {
         Message = message;
     }

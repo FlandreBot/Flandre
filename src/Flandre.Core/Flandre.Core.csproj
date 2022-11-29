@@ -3,11 +3,11 @@
     <PropertyGroup>
         <Title>Flandre.Core</Title>
         <Product>$(Title)</Product>
-        <PackageVersion>0.6.0</PackageVersion>
+        <PackageVersion>0.7.0</PackageVersion>
         <Version>$(PackageVersion)</Version>
         <Authors>b1acksoil</Authors>
-        <Description>跨平台，低耦合的聊天机器人框架，一次编写，多处运行。</Description>
-        <PackageTags>bot</PackageTags>
+        <Description>跨平台聊天机器人框架核心，提供基本交互操作，容易嵌入到已有项目中。</Description>
+        <PackageTags>bot;chatbot;flandre</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>avatar.jpg</PackageIcon>
         <PackageReadmeFile>README.NuGet.md</PackageReadmeFile>

@@ -1,9 +1,8 @@
 ﻿using System.Text.Json;
 using Flandre.Core.Common;
-using Flandre.Core.Events.Bot;
+using Flandre.Core.Events;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
-using Flandre.Core.Utils;
 
 namespace Flandre.Adapters.OneBot;
 
@@ -18,21 +17,17 @@ public abstract class OneBotBot : Bot
     public override string SelfId { get; }
 
     internal readonly OneBotGuildBot GuildBot;
-    internal readonly Logger Logger;
 
     /// <summary>
     /// 内部 Bot，包含大量 OneBot 平台专属方法
     /// </summary>
     public OneBotInternalBot Internal { get; }
 
-    protected override Logger GetLogger() => Logger;
-
-    internal OneBotBot(string selfId, Logger logger)
+    internal OneBotBot(string selfId)
     {
         SelfId = selfId;
         Internal = new OneBotInternalBot(this);
         GuildBot = new OneBotGuildBot(this);
-        Logger = logger;
     }
 
     internal abstract Task<JsonElement> SendApiRequest(string action, object? @params = null);

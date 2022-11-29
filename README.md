@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/FlandreDevs/Flandre/dev/assets/avatar.jpg" width="200" />
+<img src="https://ghproxy.com/https://raw.githubusercontent.com/FlandreDevs/Flandre/dev/assets/avatar.jpg" width="200" />
 
 # Flandre
 
@@ -9,9 +9,9 @@
 
 [![License](https://img.shields.io/github/license/FlandreDevs/Flandre?label=License&style=flat&color=42a5f5)](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE)
 [![Stars](https://img.shields.io/github/stars/FlandreDevs/Flandre?label=Stars&style=flat&color=1976d2)](https://github.com/FlandreDevs/Flandre/stargazers)
-[![Contributors](https://img.shields.io/github/contributors/FlandreDevs/Flandre?label=Contributors&style=flat&color=ab47bc)](https://github.com/FlandreDevs/Flandre/graphs/contributors)
-[![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=NuGet&color=f06292)](https://www.nuget.org/packages/Flandre.Core/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Core?style=flat&label=Downloads&color=ffb300)](https://www.nuget.org/packages/Flandre.Core/)
+[![Contributors](https://img.shields.io/github/contributors/FlandreDevs/Flandre?label=Contributors&style=flat&color=9866ca)](https://github.com/FlandreDevs/Flandre/graphs/contributors)
+[![Flandre.Framework Version](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=Framework&color=f06292)](https://www.nuget.org/packages/Flandre.Core/)
+[![Flandre.Core Version](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=Core&color=e65943)](https://www.nuget.org/packages/Flandre.Core/)
 [![.NET Version](https://img.shields.io/badge/.NET-6-ffe57f?style=flat)](https://www.nuget.org/packages/Flandre.Core/)
 [![Codecov](https://img.shields.io/codecov/c/gh/FlandreDevs/Flandre/dev?style=flat&color=a5d6a7&label=Coverage)](https://app.codecov.io/gh/FlandreDevs/Flandre)
 
@@ -44,9 +44,27 @@ Flandre 为跨平台而生，对聊天平台的结构进行抽象化，采用适
 | Telegram | 计划中... |
 | Discord | 计划中... |
 
+### 🧩 灵活的开发方式
+Flandre 提供两种开发方式，分别是完整的开发框架 `Framework`，以及易于嵌入已有程序的 `Core`。
+#### Flandre.Framework
+[![NuGet](https://img.shields.io/nuget/vpre/Flandre.Framework?style=flat&label=NuGet&color=9866ca)](https://www.nuget.org/packages/Flandre.Framework/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Framework?style=flat&label=Downloads&color=42a5f5)](https://www.nuget.org/packages/Flandre.Framework/)
+
+`Flandre.Framework` 是一个使用方便、功能全面的 Bot 开发框架，在核心包 `Core` 的基础上集成了插件、指令、中间件等系统，并提供依赖注入、日志管理等等实用功能。对于一个全新的 Bot 项目，我们推荐您直接使用 `Framework` 进行开发。
+
+#### Flandre.Core
+[![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=NuGet&color=9866ca)](https://www.nuget.org/packages/Flandre.Core/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Core?style=flat&label=Downloads&color=42a5f5)](https://www.nuget.org/packages/Flandre.Core/)
+
+`Flandre.Core` 是整个框架的核心组件，包含了适配器、机器人等重要内容，提供直接操作 Bot 进行平台交互的功能。相比 `Framework`，`Core` 作为一个轻量化的模块，能更容易地嵌入进已有项目中，成为功能的一部分。
+
+> 不需要代入 .NET Framework / Core 命名方式的意义。在 Flandre 中，两者只意味着开发方式的不同，都处于积极维护中。
+
+下文将主要介绍 `Flandre.Framework` 的各类特性。如果你需要关于 `Flandre.Core` 的详细说明，请~~参照这里的文档~~。(还没写x)
+
 ### 📦 开箱即用的指令系统
 
-Flandre 实现了一套开箱即用的指令解析系统，而无需开发者自己造轮子。
+Flandre.Framework 实现了一套开箱即用的指令解析系统，而无需开发者自己造轮子。
 开发者可以方便地掌控指令的参数信息，包括但不限于参数数量检查，类型检查，参数默认值等等。而所有的定义可以在一个字符串内完成，例如：
 
 ```csharp
@@ -59,7 +77,9 @@ Flandre 内部采用各类事件控制，开发者可以轻松地通过订阅事
 
 ## 🚀 起步
 
-遵循不知道哪里来的惯例，我们以一个复读小程序开始：
+遵循不知道哪里来的惯例，我们以一个复读小程序开始。
+
+首先通过 NuGet 包管理器引用 `Flandre.Framework` 和 `Flandre.Adapters.Konata` 包，然后：
 
 ```csharp
 using Flandre.Core;
@@ -81,12 +101,12 @@ app
 
 class ExamplePlugin : Plugin
 {
-    public override void OnMessageReceived(MessageContext ctx)
-        => ctx.Bot.SendMessage(ctx.Message);
+    public override async Task OnMessageReceived(MessageContext ctx)
+        => await ctx.Bot.SendMessage(ctx.Message);
 }
 ```
 
-运行程序，向我们 bot 的 QQ 号发送一条消息，bot 会将消息原封不动地发回来。 ~~复读不仅仅是人类的本质.jpg~~
+运行程序，向我们 Bot 的 QQ 号发送一条消息，bot 会将消息原封不动地发回来。 ~~复读不仅仅是人类的本质.jpg~~
 
 ### 基本指令解析
 

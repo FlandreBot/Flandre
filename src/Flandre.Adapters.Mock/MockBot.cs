@@ -1,8 +1,7 @@
 ﻿using Flandre.Core.Common;
-using Flandre.Core.Events.Bot;
+using Flandre.Core.Events;
 using Flandre.Core.Messaging;
 using Flandre.Core.Models;
-using Flandre.Core.Utils;
 
 #pragma warning disable CS1998
 
@@ -17,18 +16,9 @@ public class MockBot : Bot
 
     public override string SelfId => _selfId;
 
-    private readonly Logger _logger;
-
     private readonly string _selfId = Guid.NewGuid().ToString();
 
     private readonly Dictionary<string, TaskCompletionSource<MessageContent?>> _tcsDict = new();
-
-    protected override Logger GetLogger() => _logger;
-
-    internal MockBot(Logger logger)
-    {
-        _logger = logger;
-    }
 
     internal void ReceiveMessage(Message message, TaskCompletionSource<MessageContent?> tcs, TimeSpan timeout)
     {

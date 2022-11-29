@@ -3,10 +3,11 @@
     <PropertyGroup>
         <Title>Flandre.Adapters.Mock</Title>
         <Product>$(Title)</Product>
-        <PackageVersion>0.5.0</PackageVersion>
+        <PackageVersion>0.7.0</PackageVersion>
         <Version>$(PackageVersion)</Version>
         <Authors>b1acksoil</Authors>
         <Description>Mock client for Project Flandre.</Description>
+        <PackageTags>bot;chatbot;flandre;adapter</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>avatar.jpg</PackageIcon>
 
@@ -15,6 +16,7 @@
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>CS1591</NoWarn>
 
         <PackageProjectUrl>https://github.com/FlandreDevs/Flandre</PackageProjectUrl>
         <RepositoryUrl>https://github.com/FlandreDevs/Flandre.git</RepositoryUrl>

@@ -1,5 +1,4 @@
 ﻿using Flandre.Core.Common;
-using Flandre.Core.Utils;
 
 namespace Flandre.Adapters.OneBot;
 
@@ -8,8 +7,6 @@ public class OneBotAdapter : IAdapter
     private readonly List<Bot> _bots = new();
 
     private readonly OneBotAdapterConfig _config;
-
-    private readonly Logger _logger = new("OneBotAdapter");
 
     public OneBotAdapter(OneBotAdapterConfig config)
     {
@@ -20,14 +17,14 @@ public class OneBotAdapter : IAdapter
             {
                 case "websocket":
                 case "ws":
-                    var obb = new OneBotWebSocketBot(bot, _logger);
+                    var obb = new OneBotWebSocketBot(bot);
                     _bots.Add(obb);
                     _bots.Add(obb.GuildBot);
                     break;
 
                 default:
-                    _logger.Warning($"OneBotAdapter 仅支持 websocket / ws 协议。正在跳过 Bot {bot.SelfId} 的初始化。");
-                    break;
+                    throw new NotSupportedException(
+                        $"OneBot adapter only supports \"websocket\" / \"ws\" protocol. Skipping initialization of bot {bot.SelfId}...");
             }
     }
 

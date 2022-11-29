@@ -5,7 +5,7 @@ on:
     branches: [ dev ]
   pull_request:
     branches: [ dev ]
-    
+
 jobs:
   unit-test:
     name: Unit Test
@@ -17,14 +17,18 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.x.x
-          
+
       - name: Test Flandre.Core
         run: |
           dotnet test tests/Flandre.Core.Tests/ --collect:"XPlat Code Coverage" -r code-coverage/
           mv code-coverage/**/coverage.cobertura.xml code-coverage/core.xml
-          
+
+      - name: Test Flandre.Framework
+        run: |
+          dotnet test tests/Flandre.Framework.Tests/ --collect:"XPlat Code Coverage" -r code-coverage/
+          mv code-coverage/**/coverage.cobertura.xml code-coverage/fx.xml
+
       - name: Upload Code Coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: code-coverage/core.xml
-          fail_ci_if_error: true
+          files: code-coverage/core.xml,code-coverage/fx.xml
