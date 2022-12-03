@@ -69,7 +69,7 @@ public sealed partial class FlandreApp
         {
             bot.OnMessageReceived += (_, e) => Task.Run(() =>
             {
-                var middlewareCtx = new MiddlewareContext(bot, e.Message, null);
+                var middlewareCtx = new MiddlewareContext(this, bot, e.Message, null);
                 ExecuteMiddlewares(middlewareCtx, 0); // Wait for all middlewares' execution
                 if (middlewareCtx.Response is not null)
                     bot.SendMessage(e.Message, middlewareCtx.Response);

@@ -177,7 +177,7 @@ public class Command
         return (args, null);
     }
 
-    internal MessageContent? InvokeCommand(Plugin plugin, MessageContext ctx, ParsedArgs args, ILogger logger)
+    internal MessageContent? InvokeCommand(Plugin plugin, CommandContext ctx, ParsedArgs args, ILogger logger)
     {
         try
         {

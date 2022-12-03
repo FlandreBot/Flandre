@@ -39,11 +39,12 @@ public sealed partial class FlandreApp
 
     internal void ParseCommandMiddleware(MiddlewareContext ctx, Action next)
     {
-        ctx.Response = ParseCommand(ctx);
+        var cmdCtx = new CommandContext(ctx.App, ctx.Bot, ctx.Message);
+        ctx.Response = ParseCommand(cmdCtx);
         next();
     }
 
-    internal MessageContent? ParseCommand(MessageContext ctx)
+    internal MessageContent? ParseCommand(CommandContext ctx)
     {
         MessageContent? ParseAndInvoke(Command cmd, StringParser p)
         {
