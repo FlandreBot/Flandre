@@ -195,13 +195,13 @@ public sealed partial class FlandreApp
 
         // Subscribe bots' logging event
         foreach (var adapter in _adapters)
-        foreach (var bot in adapter.GetBots())
         {
-            var bt = bot.GetType();
-            bot.OnLogging += (_, e) =>
-                Services.GetRequiredService<ILoggerFactory>()
-                    .CreateLogger(bt.FullName ?? bt.Name)
-                    .Log((LogLevel)e.LogLevel, e.LogMessage);
+            var at = adapter.GetType();
+            foreach (var bot in adapter.GetBots())
+                bot.OnLogging += (_, e) =>
+                    Services.GetRequiredService<ILoggerFactory>()
+                        .CreateLogger(at.FullName ?? at.Name)
+                        .Log((LogLevel)e.LogLevel, e.LogMessage);
         }
 
         Task.WaitAll(_adapters.Select(adapter => adapter.Start()).ToArray());
