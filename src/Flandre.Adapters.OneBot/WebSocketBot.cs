@@ -49,7 +49,8 @@ public class OneBotWebSocketBot : OneBotBot
 
         _wsClient.ReconnectionHappened.Subscribe(_ =>
         {
-            Log(BotLogLevel.Information, "Successfully connected to WebSocket server.");
+            Log(BotLogLevel.Information,
+                $"Successfully connected to WebSocket server {config.Endpoint}.");
         });
     }
 

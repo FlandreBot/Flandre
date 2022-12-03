@@ -17,6 +17,7 @@
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>CS1591</NoWarn>
 
         <PackageProjectUrl>https://github.com/FlandreDevs/Flandre</PackageProjectUrl>
         <RepositoryUrl>https://github.com/FlandreDevs/Flandre.git</RepositoryUrl>

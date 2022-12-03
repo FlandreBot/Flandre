@@ -193,6 +193,17 @@ public sealed partial class FlandreApp
         Logger.LogDebug("Total bots: {BotCount}, total plugins: {PluginCount}",
             _bots.Count, _pluginTypes.Count);
 
+        // Subscribe bots' logging event
+        foreach (var adapter in _adapters)
+        foreach (var bot in adapter.GetBots())
+        {
+            var bt = bot.GetType();
+            bot.OnLogging += (_, e) =>
+                Services.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger(bt.FullName ?? bt.Name)
+                    .Log((LogLevel)e.LogLevel, e.LogMessage);
+        }
+
         Task.WaitAll(_adapters.Select(adapter => adapter.Start()).ToArray());
 
         SubscribeEvents();
