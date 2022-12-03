@@ -202,7 +202,7 @@ public sealed partial class FlandreApp
         UseMiddleware(PluginMessageEventMiddleware);
         UseMiddleware(CheckGuildAssigneeMiddleware);
 
-        Logger.LogDebug("App started.");
+        Logger.LogInformation("App started.");
         OnReady?.Invoke(this, new AppReadyEvent());
 
         _exitEvent.WaitOne();
@@ -214,7 +214,8 @@ public sealed partial class FlandreApp
     public void Stop()
     {
         Task.WaitAll(_adapters.Select(adapter => adapter.Stop()).ToArray());
-        _exitEvent.Set();
+        Logger.LogInformation("App stopped.");
         OnStopped?.Invoke(this, new AppStoppedEvent());
+        _exitEvent.Set();
     }
 }

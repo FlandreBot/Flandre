@@ -26,8 +26,6 @@ public sealed class CommandAttribute : Attribute
     /// <param name="pattern">指令格式定义</param>
     public CommandAttribute(string pattern)
     {
-        FlandreApp.InternalLogger?.LogWarning(pattern);
-
         var parser = new StringParser(pattern);
         Command = CommandUtils.NormalizeCommandDefinition(parser.Read(' '));
         parser.SkipSpaces();
