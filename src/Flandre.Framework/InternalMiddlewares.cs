@@ -85,9 +85,9 @@ public sealed partial class FlandreApp
             root = $"{root}.{parser.Read(' ')}";
         }
 
-        if (string.IsNullOrWhiteSpace(_config.CommandPrefix)) return null;
-        ctx.Bot.SendMessage(ctx.Message, $"未找到指令：{root}。").Wait();
+        if (string.IsNullOrWhiteSpace(_config.CommandPrefix))
+            return null;
 
-        return null;
+        return $"未找到指令：{root}。";
     }
 }
