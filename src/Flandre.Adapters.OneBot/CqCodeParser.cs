@@ -37,7 +37,7 @@ public static class CqCodeParser
             else
             {
                 var text = parser.Read('[');
-                segments.Add(new TextSegment(text));
+                segments.Add(new TextSegment(OneBotUtils.UnescapeCqCode(text)));
             }
 
         return new MessageContent(segments);
@@ -56,7 +56,7 @@ public static class CqCodeParser
         switch (segment)
         {
             case TextSegment ts:
-                return ts.Text;
+                return OneBotUtils.EscapeCqCode(ts.Text);
 
             case FaceSegment fs:
                 return $"[CQ:face,id={fs.FaceId}]";
