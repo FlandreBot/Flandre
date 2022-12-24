@@ -150,7 +150,7 @@ public sealed partial class FlandreApp
         try
         {
             if (_middlewares.Count < index + 1) return;
-            _middlewares[index].Invoke(ctx, () => ExecuteMiddlewares(ctx, index + 1)).Wait();
+            _middlewares[index].Invoke(ctx, () => ExecuteMiddlewares(ctx, index + 1)).GetAwaiter().GetResult();
         }
         catch (Exception e)
         {
@@ -165,7 +165,7 @@ public sealed partial class FlandreApp
     /// <param name="middleware">中间件方法</param>
     public FlandreApp UseMiddleware(Func<MiddlewareContext, Action, Task> middleware)
     {
-        _middlewares.Insert(0, middleware);
+        _middlewares.Add(middleware);
         return this;
     }
 
@@ -175,7 +175,7 @@ public sealed partial class FlandreApp
     /// <param name="middleware">中间件方法</param>
     public FlandreApp UseMiddleware(Action<MiddlewareContext, Action> middleware)
     {
-        _middlewares.Insert(0, (ctx, next) =>
+        _middlewares.Add((ctx, next) =>
         {
             middleware.Invoke(ctx, next);
             return Task.CompletedTask;
@@ -209,9 +209,9 @@ public sealed partial class FlandreApp
         SubscribeEvents();
         MapCommands();
 
-        UseMiddleware(ParseCommandMiddleware);
-        UseMiddleware(PluginMessageEventMiddleware);
         UseMiddleware(CheckGuildAssigneeMiddleware);
+        UseMiddleware(PluginMessageEventMiddleware);
+        UseMiddleware(ParseCommandMiddleware);
 
         Logger.LogInformation("App started.");
         OnReady?.Invoke(this, new AppReadyEvent());

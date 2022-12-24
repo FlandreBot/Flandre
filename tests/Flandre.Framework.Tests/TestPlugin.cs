@@ -14,6 +14,12 @@ public class TestPlugin : Plugin
             await ctx.Bot.SendMessage(ctx.Message);
     }
 
+    [Command("test [str: text = TestStr]")]
+    public async Task OnTest(MessageContext ctx, ParsedArgs args)
+    {
+        await ctx.Bot.SendMessage(ctx.Message, args.GetArgument<string>("str"));
+    }
+
     [Command("test1 <arg1:bool>")]
     [Option("opt", "-o <opt:double>")]
     [Option("boolopt", "-b <:bool>")]
