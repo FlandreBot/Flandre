@@ -45,7 +45,7 @@ public class FlandreAppTests
             app.Stop();
         };
 
-        app.Run();
+        app.Start();
     }
 
     [Fact]
@@ -90,6 +90,6 @@ public class FlandreAppTests
             app.Stop();
         };
 
-        app.Run();
+        app.Start();
     }
 }

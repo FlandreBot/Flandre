@@ -186,7 +186,7 @@ public sealed partial class FlandreApp
     /// <summary>
     /// 运行应用实例，阻塞当前线程。
     /// </summary>
-    public void Run()
+    public void Start()
     {
         OnStarting?.Invoke(this, new AppStartingEvent());
         Logger.LogDebug("Starting app...");
@@ -218,6 +218,9 @@ public sealed partial class FlandreApp
 
         _exitEvent.WaitOne();
     }
+
+    [Obsolete("Use FlandreApp.Start() instead.")]
+    public void Run() => Start();
 
     /// <summary>
     /// 停止应用实例

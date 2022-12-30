@@ -34,7 +34,7 @@ public class AppEventsTests
         app.OnCommandInvoking += (_, e) => cmdInfo = e.Command.CommandInfo;
         app.OnCommandInvoked += (_, e) => { ex = e.Exception; };
 
-        app.Run();
+        app.Start();
 
         Assert.Equal(111, count);
         Assert.Equal("throw-ex", cmdInfo?.Command);

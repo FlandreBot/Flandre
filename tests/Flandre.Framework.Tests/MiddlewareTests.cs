@@ -81,6 +81,6 @@ public class MiddlewareTests
             Assert.Equal(1, count1Out);
         };
 
-        app.Run();
+        app.Start();
     }
 }
