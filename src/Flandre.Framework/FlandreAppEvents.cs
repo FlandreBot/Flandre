@@ -12,4 +12,8 @@ public sealed partial class FlandreApp
     public event AppEventHandler<AppReadyEvent>? OnReady;
 
     public event AppEventHandler<AppStoppedEvent>? OnStopped;
+
+    public event AppEventHandler<CommandInvokingEvent>? OnCommandInvoking;
+
+    public event AppEventHandler<CommandInvokedEvent>? OnCommandInvoked;
 }

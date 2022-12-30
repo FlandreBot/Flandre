@@ -2,6 +2,7 @@
 using Flandre.Core.Messaging.Segments;
 using Flandre.Core.Utils;
 using Flandre.Framework.Common;
+using Flandre.Framework.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -54,7 +55,10 @@ public sealed partial class FlandreApp
             var plugin = (Plugin)Services.GetRequiredService(cmd.PluginType);
             var pluginLogger = Services.GetRequiredService<ILoggerFactory>().CreateLogger(cmd.PluginType);
 
-            return cmd.InvokeCommand(plugin, ctx, args, pluginLogger);
+            OnCommandInvoking?.Invoke(this, new CommandInvokingEvent(cmd));
+            var (content, ex) = cmd.InvokeCommand(plugin, ctx, args, pluginLogger);
+            OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(cmd, ex));
+            return content;
         }
 
         var commandStr = ctx.Message.GetText().Trim();

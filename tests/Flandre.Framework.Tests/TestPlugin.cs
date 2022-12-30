@@ -49,4 +49,8 @@ public class TestPlugin : Plugin
 
     [Command("...sub....sub..sub......test..")]
     public static MessageContent? OnSubSubSubTest(MessageContext ctx, ParsedArgs args) => null;
+
+    [Command("throw-ex")]
+    public static MessageContent? OnThrowEx(MessageContext ctx, ParsedArgs args) =>
+        throw new Exception("Test Exception");
 }

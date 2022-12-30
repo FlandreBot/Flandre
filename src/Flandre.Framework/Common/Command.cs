@@ -177,22 +177,24 @@ public class Command
         return (args, null);
     }
 
-    internal MessageContent? InvokeCommand(Plugin plugin, CommandContext ctx, ParsedArgs args, ILogger logger)
+    internal (MessageContent?, Exception?) InvokeCommand(Plugin plugin, CommandContext ctx, ParsedArgs args,
+        ILogger logger)
     {
         try
         {
             var cmdResult = InnerMethod.Invoke(
                 plugin, new object[] { ctx, args }[..InnerMethod.GetParameters().Length]);
-            var content = cmdResult as MessageContent ?? (cmdResult as Task<MessageContent>)?.Result ?? null;
+            var content = cmdResult as MessageContent ??
+                          (cmdResult as Task<MessageContent>)?.GetAwaiter().GetResult() ?? null;
 
-            return content;
+            return (content, null);
         }
         catch (Exception e)
         {
             logger.LogError(e.InnerException ?? e,
                 "Error occurred while invoking command {CommandName} (method {MethodName}).",
                 CommandInfo.Command, InnerMethod.Name);
-            return null;
+            return (null, e.InnerException ?? e);
         }
     }
 }

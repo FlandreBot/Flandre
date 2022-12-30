@@ -63,7 +63,7 @@ public class FlandreAppTests
 
         app.OnReady += (_, _) =>
         {
-            Assert.Equal(7, app.CommandMap.Count);
+            Assert.Equal(8, app.CommandMap.Count);
             Assert.Equal(2, app.ShortcutMap.Count);
 
             Assert.NotNull(app.CommandMap.GetValueOrDefault("test1"));
