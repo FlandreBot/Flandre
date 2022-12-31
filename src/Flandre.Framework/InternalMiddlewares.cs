@@ -78,7 +78,9 @@ public sealed partial class FlandreApp
         root = root.TrimStart(_config.CommandPrefix);
         parser.SkipSpaces();
 
-        while (true)
+        var notFound = root;
+
+        for (var count = 0;; count++)
         {
             if (CommandMap.TryGetValue(root, out command) &&
                 (parser.IsEnd() || !CommandMap.Keys.Any(cmd =>
@@ -87,11 +89,13 @@ public sealed partial class FlandreApp
 
             if (parser.SkipSpaces().IsEnd()) break;
             root = $"{root}.{parser.Read(' ')}";
+
+            if (count < 4) notFound = root;
         }
 
         if (string.IsNullOrWhiteSpace(_config.CommandPrefix))
             return null;
 
-        return $"未找到指令：{root}。";
+        return $"未找到指令：{notFound}。";
     }
 }
