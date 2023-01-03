@@ -51,13 +51,21 @@ public class MockBot : Bot
     public override async Task<string?> SendChannelMessage(string channelId, MessageContent content,
         string? guildId = null)
     {
-        await SendMessage(new Message { Content = content });
+        await SendMessage(new Message
+        {
+            Platform = Platform,
+            Content = content
+        });
         return null;
     }
 
     public override async Task<string?> SendPrivateMessage(string userId, MessageContent content)
     {
-        await SendMessage(new Message { Content = content });
+        await SendMessage(new Message
+        {
+            Platform = Platform,
+            Content = content
+        });
         return null;
     }
 

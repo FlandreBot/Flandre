@@ -232,12 +232,12 @@ public sealed class KonataBot : FlandreBot
 
     private void InnerOnFriendMessage(KonataInternalBot bot, FriendMessageEvent e)
     {
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage()));
+        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage(Platform)));
     }
 
     private void InnerOnGroupMessage(KonataInternalBot bot, GroupMessageEvent e)
     {
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage()));
+        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage(Platform)));
     }
 
     private void InnerOnGroupInvite(KonataInternalBot bot, GroupInviteEvent e)

@@ -18,7 +18,7 @@ internal static class CommonUtils
 
 internal static class MessageUtils
 {
-    internal static Message ToFlandreMessage(this MessageStruct message)
+    internal static Message ToFlandreMessage(this MessageStruct message, string platform)
     {
         var mb = new FlandreMessageBuilder();
 
@@ -41,6 +41,7 @@ internal static class MessageUtils
         return new Message
         {
             Time = DateTimeOffset.FromUnixTimeSeconds(message.Time).LocalDateTime,
+            Platform = platform,
             SourceType = message.Type == MessageStruct.SourceType.Group
                 ? MessageSourceType.Channel
                 : MessageSourceType.Private,

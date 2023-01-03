@@ -15,6 +15,11 @@ public class Message
     public DateTime Time { get; init; } = DateTime.Now;
 
     /// <summary>
+    /// 平台 ID
+    /// </summary>
+    public string Platform { get; init; } = string.Empty;
+
+    /// <summary>
     /// 消息来源类型
     /// </summary>
     public MessageSourceType SourceType { get; init; }
@@ -22,7 +27,7 @@ public class Message
     /// <summary>
     /// 消息 ID
     /// </summary>
-    public string MessageId { get; init; } = "";
+    public string MessageId { get; init; } = string.Empty;
 
     /// <summary>
     /// Guild ID

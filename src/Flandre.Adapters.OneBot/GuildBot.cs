@@ -43,6 +43,7 @@ public class OneBotGuildBot : Bot
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(new Message
         {
             Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,
+            Platform = Platform,
             SourceType = MessageSourceType.Channel,
             MessageId = e.MessageId!,
             GuildId = e.GuildId,
