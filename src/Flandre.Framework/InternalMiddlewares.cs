@@ -55,7 +55,17 @@ public sealed partial class FlandreApp
             var plugin = (Plugin)Services.GetRequiredService(cmd.PluginType);
             var pluginLogger = Services.GetRequiredService<ILoggerFactory>().CreateLogger(cmd.PluginType);
 
-            OnCommandInvoking?.Invoke(this, new CommandInvokingEvent(cmd, ctx.Message));
+            var invocationCancelled = false;
+            if (OnCommandInvoking is not null)
+            {
+                var invokingEvent = new CommandInvokingEvent(cmd, ctx.Message);
+                OnCommandInvoking.Invoke(this, invokingEvent);
+                invocationCancelled = invokingEvent.IsCancelled;
+            }
+
+            if (invocationCancelled)
+                return null;
+
             var (content, ex) = cmd.InvokeCommand(plugin, ctx, args, pluginLogger);
             OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(cmd, ctx.Message, ex));
             return content;

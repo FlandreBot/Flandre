@@ -28,9 +28,13 @@ public class CommandInvokingEvent : BaseEvent
     /// </summary>
     public string? ChannelId => Message.ChannelId;
 
+    internal bool IsCancelled { get; private set; }
+
     internal CommandInvokingEvent(Command command, Message message)
     {
         Command = command;
         Message = message;
     }
+
+    public void Cancel() => IsCancelled = true;
 }
