@@ -6,7 +6,9 @@ namespace Flandre.Adapters.OneBot.Models;
 
 public class OneBotLoginInfo
 {
-    [JsonPropertyName("user_id")] public long UserId { get; set; }
+    [JsonPropertyName("user_id")]
+    public long UserId { get; set; }
 
-    [JsonPropertyName("nickname")] public string Nickname { get; set; }
+    [JsonPropertyName("nickname")]
+    public string Nickname { get; set; }
 }

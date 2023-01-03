@@ -7,15 +7,21 @@ namespace Flandre.Adapters.OneBot.Models;
 
 internal class OneBotApiResponse
 {
-    [JsonPropertyName("status")] public string Status { get; set; }
+    [JsonPropertyName("status")]
+    public string Status { get; set; }
 
-    [JsonPropertyName("retcode")] public int RetCode { get; set; }
+    [JsonPropertyName("retcode")]
+    public int RetCode { get; set; }
 
-    [JsonPropertyName("msg")] public string? Msg { get; set; }
+    [JsonPropertyName("msg")]
+    public string? Msg { get; set; }
 
-    [JsonPropertyName("wording")] public string? Wording { get; set; }
+    [JsonPropertyName("wording")]
+    public string? Wording { get; set; }
 
-    [JsonPropertyName("data")] public JsonElement Data { get; set; }
+    [JsonPropertyName("data")]
+    public JsonElement Data { get; set; }
 
-    [JsonPropertyName("echo")] public string Echo { get; set; }
+    [JsonPropertyName("echo")]
+    public string Echo { get; set; }
 }
