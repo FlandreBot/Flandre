@@ -67,7 +67,7 @@ public sealed partial class FlandreApp
                 return null;
 
             var (content, ex) = cmd.InvokeCommand(plugin, ctx, args, pluginLogger);
-            OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(cmd, ctx.Message, ex));
+            OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(cmd, ctx.Message, ex, content));
             return content;
         }
 

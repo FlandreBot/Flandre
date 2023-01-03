@@ -17,6 +17,8 @@ public class CommandInvokedEvent : BaseEvent
 
     public bool IsSucceed => Exception is null;
 
+    public MessageContent? Response { get; }
+
     /// <summary>
     /// 用户 ID，等同于 Message.Sender.UserId
     /// </summary>
@@ -32,10 +34,11 @@ public class CommandInvokedEvent : BaseEvent
     /// </summary>
     public string? ChannelId => Message.ChannelId;
 
-    internal CommandInvokedEvent(Command command, Message message, Exception? exception)
+    internal CommandInvokedEvent(Command command, Message message, Exception? exception, MessageContent? resp)
     {
         Command = command;
         Message = message;
         Exception = exception;
+        Response = resp;
     }
 }
