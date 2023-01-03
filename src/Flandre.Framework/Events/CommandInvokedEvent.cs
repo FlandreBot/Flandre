@@ -15,7 +15,7 @@ public class CommandInvokedEvent : BaseEvent
 
     public Exception? Exception { get; }
 
-    public bool IsSucceed => Exception is null;
+    public bool IsSucceeded => Exception is null;
 
     public MessageContent? Response { get; }
 
