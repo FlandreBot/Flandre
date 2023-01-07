@@ -1,10 +1,9 @@
 ﻿using Flandre.Core.Common;
 using Flandre.Core.Messaging;
-using Flandre.Framework.Interfaces;
 
 namespace Flandre.Framework.Common;
 
-public class MiddlewareContext : MessageContext, IAppContext
+public class MiddlewareContext : MessageContext
 {
     public FlandreApp App { get; }
 

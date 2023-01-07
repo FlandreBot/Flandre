@@ -3,7 +3,7 @@
 /// <summary>
 /// 应用配置
 /// </summary>
-public class FlandreAppConfig
+public sealed class FlandreAppOptions
 {
     /// <summary>
     /// 全局指令前缀

@@ -5,36 +5,40 @@ using Flandre.Framework.Attributes;
 using Flandre.Framework.Common;
 using Flandre.Framework.Events;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Flandre.Framework;
 
-public sealed partial class FlandreApp
+public sealed partial class FlandreApp : IHost
 {
-    public IServiceProvider Services { get; }
-    public ILogger<FlandreApp> Logger { get; }
-
-    internal static ILogger<FlandreApp>? InternalLogger { get; private set; }
-
-    private readonly FlandreAppConfig _config;
-
+    private readonly IHost _hostApp;
+    private readonly IOptionsMonitor<FlandreAppOptions> _appOptions;
     private readonly List<IAdapter> _adapters;
     private readonly List<Bot> _bots = new();
     private readonly List<Type> _pluginTypes;
     private readonly List<Func<MiddlewareContext, Action, Task>> _middlewares = new();
+    private bool _isInternalMiddlewaresAdded;
 
+    private int _commandCount;
+    private int _aliasCount;
+    private int _shortcutCount;
+
+    public IServiceProvider Services => _hostApp.Services;
+    public ILogger<FlandreApp> Logger { get; }
+
+    internal static ILogger<FlandreApp>? InternalLogger { get; private set; }
     internal readonly Dictionary<string, Command> CommandMap = new();
     internal readonly Dictionary<string, Command> ShortcutMap = new();
-
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
 
-    private readonly ManualResetEvent _exitEvent = new(false);
+    public static FlandreAppBuilder CreateBuilder(string[]? args = null) => new(args);
 
-    internal FlandreApp(FlandreAppConfig config, IServiceProvider serviceProvider,
-        List<Type> pluginTypes, List<IAdapter> adapters)
+    internal FlandreApp(IHost hostApp, List<Type> pluginTypes, List<IAdapter> adapters)
     {
-        _config = config;
-        Services = serviceProvider;
+        _hostApp = hostApp;
+        _appOptions = _hostApp.Services.GetRequiredService<IOptionsMonitor<FlandreAppOptions>>();
         _pluginTypes = pluginTypes;
         _adapters = adapters;
 
@@ -44,7 +48,8 @@ public sealed partial class FlandreApp
         Logger = Services.GetRequiredService<ILogger<FlandreApp>>();
         InternalLogger ??= Logger;
 
-        Console.CancelKeyPress += (_, _) => Stop();
+        SubscribeEvents();
+        MapCommands();
     }
 
     #region 初始化步骤
@@ -91,51 +96,51 @@ public sealed partial class FlandreApp
                     plugin => plugin.OnFriendRequested(ctx, e),
                     nameof(bot.OnFriendRequested));
             }
-
-            Logger.LogDebug("All bot events subscribed.");
         }
+
+        // Subscribe bots' logging event
+        foreach (var adapter in _adapters)
+        {
+            var adapterType = adapter.GetType();
+            foreach (var bot in adapter.GetBots())
+                bot.OnLogging += (_, e) =>
+                    Services.GetRequiredService<ILoggerFactory>()
+                        .CreateLogger(adapterType.FullName ?? adapterType.Name)
+                        .Log((LogLevel)e.LogLevel, e.LogMessage);
+        }
+
+        Logger.LogDebug("All bot events subscribed.");
     }
 
     private void MapCommands()
     {
-        var pluginCount = 0;
-        var commandCount = 0;
-        var aliasCount = 0;
-        var shortcutCount = 0;
         foreach (var pluginType in _pluginTypes)
+        foreach (var method in pluginType.GetMethods())
         {
-            pluginCount++;
-            foreach (var method in pluginType.GetMethods())
+            var cmdAttr = method.GetCustomAttribute<CommandAttribute>();
+            if (cmdAttr is null) continue;
+
+            var options = method.GetCustomAttributes<OptionAttribute>().ToList();
+            var shortcuts = method.GetCustomAttributes<ShortcutAttribute>().ToList();
+            var aliases = method.GetCustomAttributes<AliasAttribute>().ToList();
+
+            var command = new Command(pluginType, cmdAttr, method, options, shortcuts, aliases);
+
+            CommandMap[cmdAttr.Command] = command;
+            _commandCount++;
+
+            foreach (var shortcut in shortcuts)
             {
-                var cmdAttr = method.GetCustomAttribute<CommandAttribute>();
-                if (cmdAttr is null) continue;
+                ShortcutMap[shortcut.Shortcut] = command;
+                _shortcutCount++;
+            }
 
-                var options = method.GetCustomAttributes<OptionAttribute>().ToList();
-                var shortcuts = method.GetCustomAttributes<ShortcutAttribute>().ToList();
-                var aliases = method.GetCustomAttributes<AliasAttribute>().ToList();
-
-                var command = new Command(pluginType, cmdAttr, method, options, shortcuts, aliases);
-
-                CommandMap[cmdAttr.Command] = command;
-                commandCount++;
-
-                foreach (var shortcut in shortcuts)
-                {
-                    ShortcutMap[shortcut.Shortcut] = command;
-                    shortcutCount++;
-                }
-
-                foreach (var alias in aliases)
-                {
-                    CommandMap[alias.Alias] = command;
-                    aliasCount++;
-                }
+            foreach (var alias in aliases)
+            {
+                CommandMap[alias.Alias] = command;
+                _aliasCount++;
             }
         }
-
-        Logger.LogDebug(
-            "Total {PluginCount} plugins, {CommandCount} commands, {ShortcutCount} shortcuts, {AliasCount} aliases mapped.",
-            pluginCount, commandCount, shortcutCount, aliasCount);
     }
 
     #endregion
@@ -175,61 +180,63 @@ public sealed partial class FlandreApp
     /// <param name="middleware">中间件方法</param>
     public FlandreApp UseMiddleware(Action<MiddlewareContext, Action> middleware)
     {
-        _middlewares.Add((ctx, next) =>
+        return UseMiddleware((ctx, next) =>
         {
             middleware.Invoke(ctx, next);
             return Task.CompletedTask;
         });
+    }
+
+    /// <summary>
+    /// 使用内置的核心中间件，包括群组代理检查、插件消息事件、以及核心的指令解析触发。
+    /// </summary>
+    /// <remarks>
+    /// 启动应用时若未注册会自动注册，若多次调用只会注册一次。<br/>
+    /// 可以手动调用该方法，并在后面插入新的中间件。
+    /// </remarks>
+    public FlandreApp UseInternalMiddlewares()
+    {
+        if (!_isInternalMiddlewaresAdded)
+        {
+            UseMiddleware(CheckGuildAssigneeMiddleware);
+            UseMiddleware(PluginMessageEventMiddleware);
+            UseMiddleware(ParseCommandMiddleware);
+            _isInternalMiddlewaresAdded = true;
+        }
+
         return this;
     }
 
     /// <summary>
     /// 运行应用实例，阻塞当前线程。
     /// </summary>
-    public void Start()
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         OnStarting?.Invoke(this, new AppStartingEvent());
         Logger.LogDebug("Starting app...");
-        Logger.LogDebug("Total bots: {BotCount}, total plugins: {PluginCount}",
-            _bots.Count, _pluginTypes.Count);
 
-        // Subscribe bots' logging event
-        foreach (var adapter in _adapters)
-        {
-            var at = adapter.GetType();
-            foreach (var bot in adapter.GetBots())
-                bot.OnLogging += (_, e) =>
-                    Services.GetRequiredService<ILoggerFactory>()
-                        .CreateLogger(at.FullName ?? at.Name)
-                        .Log((LogLevel)e.LogLevel, e.LogMessage);
-        }
+        if (!_isInternalMiddlewaresAdded) UseInternalMiddlewares();
 
-        Task.WaitAll(_adapters.Select(adapter => adapter.Start()).ToArray());
-
-        SubscribeEvents();
-        MapCommands();
-
-        UseMiddleware(CheckGuildAssigneeMiddleware);
-        UseMiddleware(PluginMessageEventMiddleware);
-        UseMiddleware(ParseCommandMiddleware);
+        await Task.WhenAll(_adapters.Select(adapter => adapter.Start()).ToArray());
+        await _hostApp.StartAsync(cancellationToken);
 
         Logger.LogInformation("App started.");
+        Logger.LogDebug(
+            "Total {BotCount} bots, {PluginCount} plugins, {CommandCount} commands, {ShortcutCount} shortcuts, {AliasCount} aliases, {MiddlewareCount} middlewares",
+            _bots.Count, _pluginTypes.Count, _commandCount, _shortcutCount, _aliasCount, _middlewares.Count);
         OnReady?.Invoke(this, new AppReadyEvent());
-
-        _exitEvent.WaitOne();
     }
-
-    [Obsolete("Use FlandreApp.Start() instead.")]
-    public void Run() => Start();
 
     /// <summary>
     /// 停止应用实例
     /// </summary>
-    public void Stop()
+    public async Task StopAsync(CancellationToken cancellationToken = default)
     {
-        Task.WaitAll(_adapters.Select(adapter => adapter.Stop()).ToArray());
+        await Task.WhenAll(_adapters.Select(adapter => adapter.Stop()).ToArray());
+        await _hostApp.StopAsync(cancellationToken);
         Logger.LogInformation("App stopped.");
         OnStopped?.Invoke(this, new AppStoppedEvent());
-        _exitEvent.Set();
     }
+
+    public void Dispose() => _hostApp.Dispose();
 }

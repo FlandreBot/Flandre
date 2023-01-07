@@ -5,14 +5,13 @@ namespace Flandre.Framework.Tests;
 public class MiddlewareTests
 {
     [Fact]
-    public void TestMiddleware()
+    public async Task TestMiddleware()
     {
-        var builder = new FlandreAppBuilder();
         var adapter = new MockAdapter();
-
         var client = adapter.GetChannelClient();
 
-        var app = builder
+        var builder = FlandreApp.CreateBuilder();
+        using var app = builder
             .UseAdapter(adapter)
             .UsePlugin<TestPlugin>()
             .Build();
@@ -62,25 +61,21 @@ public class MiddlewareTests
             next();
         });
 
-        app.OnReady += (_, _) =>
-        {
-            var content1 = client.SendForReply("test (1) short me at middleware #1").GetAwaiter().GetResult();
-            Assert.NotNull(content1);
+        await app.StartAsync();
 
-            var content2 = client.SendForReply("test (2) pass me through all middlewares").GetAwaiter().GetResult();
-            Assert.NotNull(content2);
+        var content1 = await client.SendForReply("test (1) short me at middleware #1");
+        Assert.NotNull(content1);
 
-            var content3 = client.SendForReply("test (3) don't pass me", TimeSpan.FromSeconds(2)).GetAwaiter()
-                .GetResult();
-            Assert.Null(content3);
+        var content2 = await client.SendForReply("test (2) pass me through all middlewares");
+        Assert.NotNull(content2);
 
-            app.Stop();
+        var content3 = await client.SendForReply("test (3) don't pass me", TimeSpan.FromSeconds(2));
+        Assert.Null(content3);
 
-            Assert.Equal(2, count1In);
-            Assert.Equal(1, count2);
-            Assert.Equal(1, count1Out);
-        };
+        await app.StopAsync();
 
-        app.Start();
+        Assert.Equal(2, count1In);
+        Assert.Equal(1, count2);
+        Assert.Equal(1, count1Out);
     }
 }

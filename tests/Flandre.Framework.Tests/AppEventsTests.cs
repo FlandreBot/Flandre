@@ -6,12 +6,13 @@ namespace Flandre.Framework.Tests;
 public class AppEventsTests
 {
     [Fact]
-    public void TestEvents()
+    public async Task TestEvents()
     {
         var adapter = new MockAdapter();
         var client = adapter.GetChannelClient();
 
-        var app = new FlandreAppBuilder()
+        var builder = FlandreApp.CreateBuilder();
+        using var app = builder
             .UseAdapter(adapter)
             .UsePlugin<TestPlugin>()
             .Build();
@@ -24,17 +25,15 @@ public class AppEventsTests
         app.OnReady += (_, _) =>
         {
             count += 10;
-
             client.SendForReply("throw-ex").GetAwaiter().GetResult();
-
-            app.Stop();
         };
         app.OnStopped += (_, _) => count += 100;
 
         app.OnCommandInvoking += (_, e) => cmdInfo = e.Command.CommandInfo;
         app.OnCommandInvoked += (_, e) => { ex = e.Exception; };
 
-        app.Start();
+        await app.StartAsync();
+        await app.StopAsync();
 
         Assert.Equal(111, count);
         Assert.Equal("throw-ex", cmdInfo?.Command);
