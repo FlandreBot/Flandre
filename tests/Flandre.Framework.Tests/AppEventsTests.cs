@@ -13,8 +13,8 @@ public class AppEventsTests
 
         var builder = FlandreApp.CreateBuilder();
         using var app = builder
-            .UseAdapter(adapter)
-            .UsePlugin<TestPlugin>()
+            .AddAdapter(adapter)
+            .AddPlugin<TestPlugin>()
             .Build();
 
         var count = 0;

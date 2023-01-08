@@ -12,8 +12,8 @@ public class MiddlewareTests
 
         var builder = FlandreApp.CreateBuilder();
         using var app = builder
-            .UseAdapter(adapter)
-            .UsePlugin<TestPlugin>()
+            .AddAdapter(adapter)
+            .AddPlugin<TestPlugin>()
             .Build();
 
         // Order Note
