@@ -34,6 +34,7 @@ public sealed partial class FlandreApp : IHost
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
 
     public static FlandreAppBuilder CreateBuilder(string[]? args = null) => new(args);
+    public static FlandreAppBuilder CreateBuilder(HostApplicationBuilderSettings? settings) => new(settings);
 
     internal FlandreApp(IHost hostApp, List<Type> pluginTypes, List<IAdapter> adapters)
     {
@@ -61,7 +62,7 @@ public sealed partial class FlandreApp : IHost
             try
             {
                 var plugin = (Plugin)Services.GetRequiredService(pluginType);
-                subscriber.Invoke(plugin).Wait();
+                subscriber.Invoke(plugin).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -219,6 +220,7 @@ public sealed partial class FlandreApp : IHost
 
         await Task.WhenAll(_adapters.Select(adapter => adapter.Start()).ToArray());
         await _hostApp.StartAsync(cancellationToken);
+        Console.CancelKeyPress += StopOnCancelKeyPress;
 
         Logger.LogInformation("App started.");
         Logger.LogDebug(
@@ -234,9 +236,13 @@ public sealed partial class FlandreApp : IHost
     {
         await Task.WhenAll(_adapters.Select(adapter => adapter.Stop()).ToArray());
         await _hostApp.StopAsync(cancellationToken);
+        Console.CancelKeyPress -= StopOnCancelKeyPress;
         Logger.LogInformation("App stopped.");
         OnStopped?.Invoke(this, new AppStoppedEvent());
     }
+
+    private void StopOnCancelKeyPress(object? sender, EventArgs e) =>
+        StopAsync().GetAwaiter().GetResult();
 
     public void Dispose() => _hostApp.Dispose();
 }
