@@ -40,19 +40,18 @@ public sealed partial class FlandreApp
 
     private void ParseCommandMiddleware(MiddlewareContext ctx, Action next)
     {
-        var cmdCtx = new CommandContext(ctx.App, ctx.Bot, ctx.Message);
-        ctx.Response = ParseCommand(cmdCtx);
+        ctx.Response = ParseCommand(ctx);
         next();
     }
 
-    private MessageContent? ParseCommand(CommandContext ctx)
+    private MessageContent? ParseCommand(MiddlewareContext ctx)
     {
         MessageContent? ParseAndInvoke(Command cmd, StringParser p)
         {
             var (args, error) = cmd.ParseCommand(p);
             if (error is not null) return error;
 
-            var plugin = (Plugin)Services.GetRequiredService(cmd.PluginType);
+            var plugin = (Plugin)ctx.Services.GetRequiredService(cmd.PluginType);
             var pluginLogger = Services.GetRequiredService<ILoggerFactory>().CreateLogger(cmd.PluginType);
 
             var invocationCancelled = false;
@@ -66,7 +65,8 @@ public sealed partial class FlandreApp
             if (invocationCancelled)
                 return null;
 
-            var (content, ex) = cmd.InvokeCommand(plugin, ctx, args, pluginLogger);
+            var cmdCtx = new CommandContext(ctx.App, ctx.Bot, ctx.Message);
+            var (content, ex) = cmd.InvokeCommand(plugin, cmdCtx, args, pluginLogger);
             OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(cmd, ctx.Message, ex, content));
             return content;
         }

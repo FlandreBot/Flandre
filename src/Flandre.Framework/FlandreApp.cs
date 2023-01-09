@@ -43,11 +43,11 @@ public sealed partial class FlandreApp : IHost
         _pluginTypes = pluginTypes;
         _adapters = adapters;
 
-        foreach (var adapter in _adapters)
-            _bots.AddRange(adapter.GetBots());
-
         Logger = Services.GetRequiredService<ILogger<FlandreApp>>();
         InternalLogger ??= Logger;
+
+        foreach (var adapter in _adapters)
+            _bots.AddRange(adapter.GetBots());
 
         SubscribeEvents();
         MapCommands();
@@ -77,6 +77,7 @@ public sealed partial class FlandreApp : IHost
             {
                 var middlewareCtx = new MiddlewareContext(this, bot, e.Message, null);
                 ExecuteMiddlewares(middlewareCtx, 0); // Wait for all middlewares' execution
+                middlewareCtx.ServiceScope.Dispose();
                 if (middlewareCtx.Response is not null)
                     bot.SendMessage(e.Message, middlewareCtx.Response);
             });
@@ -220,12 +221,12 @@ public sealed partial class FlandreApp : IHost
 
         await Task.WhenAll(_adapters.Select(adapter => adapter.Start()).ToArray());
         await _hostApp.StartAsync(cancellationToken);
-        Console.CancelKeyPress += StopOnCancelKeyPress;
 
         Logger.LogInformation("App started.");
+        Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, _bots.Count);
         Logger.LogDebug(
-            "Total {BotCount} bots, {PluginCount} plugins, {CommandCount} commands, {ShortcutCount} shortcuts, {AliasCount} aliases, {MiddlewareCount} middlewares",
-            _bots.Count, _pluginTypes.Count, _commandCount, _shortcutCount, _aliasCount, _middlewares.Count);
+            "Total {PluginCount} plugins, {CommandCount} commands, {ShortcutCount} shortcuts, {AliasCount} aliases, {MiddlewareCount} middlewares",
+            _pluginTypes.Count, _commandCount, _shortcutCount, _aliasCount, _middlewares.Count);
         OnReady?.Invoke(this, new AppReadyEvent());
     }
 
@@ -236,13 +237,9 @@ public sealed partial class FlandreApp : IHost
     {
         await Task.WhenAll(_adapters.Select(adapter => adapter.Stop()).ToArray());
         await _hostApp.StopAsync(cancellationToken);
-        Console.CancelKeyPress -= StopOnCancelKeyPress;
         Logger.LogInformation("App stopped.");
         OnStopped?.Invoke(this, new AppStoppedEvent());
     }
-
-    private void StopOnCancelKeyPress(object? sender, EventArgs e) =>
-        StopAsync().GetAwaiter().GetResult();
 
     public void Dispose() => _hostApp.Dispose();
 }

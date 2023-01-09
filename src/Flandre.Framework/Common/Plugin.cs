@@ -1,18 +1,11 @@
 ﻿using Flandre.Core.Common;
 using Flandre.Core.Events;
 using Flandre.Core.Messaging;
-using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
 
 public abstract class Plugin
 {
-    /// <summary>
-    /// 重写此方法，yixiang
-    /// </summary>
-    /// <returns></returns>
-    public virtual ILogger? GetLogger() => null;
-
     /// <summary>
     /// 处理消息事件
     /// </summary>

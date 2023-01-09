@@ -30,12 +30,12 @@ public class OneBotAdapter : IAdapter
 
     public async Task Start()
     {
-        await Task.WhenAll(_bots.ConvertAll(bot => bot.Start()));
+        await Task.WhenAll(_bots.Select(bot => bot.Start()));
     }
 
     public async Task Stop()
     {
-        await Task.WhenAll(_bots.ConvertAll(bot => bot.Stop()));
+        await Task.WhenAll(_bots.Select(bot => bot.Stop()));
     }
 
     public IEnumerable<Bot> GetBots() => _bots;

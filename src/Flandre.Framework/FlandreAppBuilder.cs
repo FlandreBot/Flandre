@@ -3,6 +3,7 @@ using Flandre.Framework.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework;
 
@@ -14,6 +15,13 @@ public sealed class FlandreAppBuilder
 
     public IServiceCollection Services => _hostAppBuilder.Services;
     public ConfigurationManager Configuration => _hostAppBuilder.Configuration;
+    public IHostEnvironment Environment => _hostAppBuilder.Environment;
+    public ILoggingBuilder Logging => _hostAppBuilder.Logging;
+
+    public void ConfigureContainer<TContainerBuilder>(
+        IServiceProviderFactory<TContainerBuilder> factory, Action<TContainerBuilder>? configure = null)
+        where TContainerBuilder : notnull
+        => _hostAppBuilder.ConfigureContainer(factory, configure);
 
     internal FlandreAppBuilder(string[]? args = null)
         : this(new HostApplicationBuilderSettings { Args = args })

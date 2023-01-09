@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Net.WebSockets;
 using System.Text.Json;
 using Flandre.Adapters.OneBot.Models;
 using Flandre.Core.Common;
@@ -11,7 +10,7 @@ using Websocket.Client.Exceptions;
 
 namespace Flandre.Adapters.OneBot;
 
-public class OneBotWebSocketBot : OneBotBot
+public sealed class OneBotWebSocketBot : OneBotBot
 {
     private readonly WebsocketClient _wsClient;
     private bool _clientStopped;
@@ -153,11 +152,11 @@ public class OneBotWebSocketBot : OneBotBot
         _clientStopped = false;
     }
 
-    public override async Task Stop()
+    public override Task Stop()
     {
         _clientStopped = true;
-        await _wsClient.Stop(WebSocketCloseStatus.Empty, "");
         _wsClient.Dispose();
         _apiTasks.Clear();
+        return Task.CompletedTask;
     }
 }
