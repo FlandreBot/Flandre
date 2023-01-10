@@ -25,7 +25,7 @@ public class AppEventsTests
         app.OnReady += (_, _) =>
         {
             count += 10;
-            client.SendForReply("throw-ex").GetAwaiter().GetResult();
+            client.SendMessageForReply("throw-ex").GetAwaiter().GetResult();
         };
         app.OnStopped += (_, _) => count += 100;
 

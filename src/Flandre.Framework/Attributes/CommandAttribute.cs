@@ -52,7 +52,7 @@ public sealed class CommandAttribute : Attribute
             if (info.IsRequired)
             {
                 if (isNotRequiredParamAdded)
-                    FlandreApp.InternalLogger?.LogWarning(
+                    LogUtils.GetTempLogger<FlandreApp>().LogWarning(
                         "The required argument must be places before the optional argument, in command \"{Command}\" definition.",
                         Command);
             }

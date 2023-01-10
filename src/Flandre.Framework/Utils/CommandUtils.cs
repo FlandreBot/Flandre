@@ -28,7 +28,7 @@ internal static class CommandUtils
             if (TryParseType(innerRight[1].Trim(), info.Type, out var result))
                 info.DefaultValue = result;
             else
-                FlandreApp.InternalLogger?.LogWarning(
+                LogUtils.GetTempLogger<FlandreApp>().LogWarning(
                     "The default value's type of argument {ArgumentName} cannot be match, in command {CommandName}.",
                     info.Name, cmdName);
         }
@@ -132,7 +132,7 @@ internal static class CommandUtils
                 break;
 
             default:
-                FlandreApp.InternalLogger?.LogWarning(
+                LogUtils.GetTempLogger<FlandreApp>().LogWarning(
                     "Cannot match the argument type {ArgumentType}, please check the command definition.",
                     type);
                 break;

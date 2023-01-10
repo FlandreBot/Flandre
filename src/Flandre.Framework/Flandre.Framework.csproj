@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Title>Flandre.Framework</Title>
         <Product>$(Title)</Product>
-        <PackageVersion>0.8.0-beta</PackageVersion>
+        <PackageVersion>0.8.0</PackageVersion>
         <Version>$(PackageVersion)</Version>
         <Authors>b1acksoil</Authors>
         <Description>现代化、跨平台的聊天机器人框架，一次编写，多处运行。</Description>

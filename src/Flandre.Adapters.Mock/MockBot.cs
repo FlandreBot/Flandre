@@ -20,7 +20,12 @@ public class MockBot : Bot
 
     private readonly Dictionary<string, TaskCompletionSource<MessageContent?>> _tcsDict = new();
 
-    internal void ReceiveMessage(Message message, TaskCompletionSource<MessageContent?> tcs, TimeSpan timeout)
+    internal void ReceiveMessage(Message message)
+    {
+        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
+    }
+
+    internal void ReceiveMessageToReply(Message message, TaskCompletionSource<MessageContent?> tcs, TimeSpan timeout)
     {
         _tcsDict[message.MessageId] = tcs;
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));

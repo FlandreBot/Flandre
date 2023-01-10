@@ -3,6 +3,7 @@ using Flandre.Core.Messaging.Segments;
 using Flandre.Core.Utils;
 using Flandre.Framework.Common;
 using Flandre.Framework.Events;
+using Flandre.Framework.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -36,6 +37,20 @@ public sealed partial class FlandreApp
             .Select(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceived(ctx))
             .ToArray());
         next();
+    }
+
+    private void CheckCommandSessionMiddleware(MiddlewareContext ctx, Action next)
+    {
+        var mark = ctx.GetUserMark();
+        if (CommandSessions.TryGetValue(mark, out var tcs))
+        {
+            CommandSessions.TryRemove(mark, out _);
+            tcs.TrySetResult(ctx.Message);
+        }
+        else
+        {
+            next();
+        }
     }
 
     private void ParseCommandMiddleware(MiddlewareContext ctx, Action next)

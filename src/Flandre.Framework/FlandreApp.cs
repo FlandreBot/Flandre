@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
 using Flandre.Core.Common;
+using Flandre.Core.Messaging;
 using Flandre.Framework.Attributes;
 using Flandre.Framework.Common;
 using Flandre.Framework.Events;
@@ -28,10 +29,10 @@ public sealed partial class FlandreApp : IHost
     public IServiceProvider Services => _hostApp.Services;
     public ILogger<FlandreApp> Logger { get; }
 
-    internal static ILogger<FlandreApp>? InternalLogger { get; private set; }
     internal readonly Dictionary<string, Command> CommandMap = new();
     internal readonly Dictionary<string, Command> ShortcutMap = new();
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
+    internal ConcurrentDictionary<string, TaskCompletionSource<Message?>> CommandSessions { get; } = new();
 
     public static FlandreAppBuilder CreateBuilder(string[]? args = null) => new(args);
     public static FlandreAppBuilder CreateBuilder(HostApplicationBuilderSettings? settings) => new(settings);
@@ -44,7 +45,6 @@ public sealed partial class FlandreApp : IHost
         _adapters = adapters;
 
         Logger = Services.GetRequiredService<ILogger<FlandreApp>>();
-        InternalLogger ??= Logger;
 
         foreach (var adapter in _adapters)
             _bots.AddRange(adapter.GetBots());
@@ -190,23 +190,22 @@ public sealed partial class FlandreApp : IHost
     }
 
     /// <summary>
-    /// 使用内置的核心中间件，包括群组代理检查、插件消息事件、以及核心的指令解析触发。
+    /// 使用内置的核心中间件，包括群组代理检查、插件消息事件、Session 触发，以及核心的指令解析触发。
     /// </summary>
     /// <remarks>
     /// 启动应用时若未注册会自动注册，若多次调用只会注册一次。<br/>
     /// 可以手动调用该方法，并在后面插入新的中间件。
     /// </remarks>
-    public FlandreApp UseInternalMiddlewares()
+    public void UseInternalMiddlewares()
     {
-        if (!_isInternalMiddlewaresAdded)
-        {
-            UseMiddleware(CheckGuildAssigneeMiddleware);
-            UseMiddleware(PluginMessageEventMiddleware);
-            UseMiddleware(ParseCommandMiddleware);
-            _isInternalMiddlewaresAdded = true;
-        }
+        if (_isInternalMiddlewaresAdded) return;
 
-        return this;
+        UseMiddleware(CheckGuildAssigneeMiddleware);
+        UseMiddleware(PluginMessageEventMiddleware);
+        UseMiddleware(CheckCommandSessionMiddleware);
+        UseMiddleware(ParseCommandMiddleware);
+
+        _isInternalMiddlewaresAdded = true;
     }
 
     /// <summary>

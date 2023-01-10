@@ -1,6 +1,7 @@
 ﻿using Flandre.Core.Messaging;
 using Flandre.Framework.Attributes;
 using Flandre.Framework.Common;
+using Flandre.Framework.Extensions;
 
 // ReSharper disable StringLiteralTypo
 
@@ -15,7 +16,7 @@ public class TestPlugin : Plugin
     }
 
     [Command("test [str: text = TestStr]")]
-    public async Task OnTest(MessageContext ctx, ParsedArgs args)
+    public async Task OnTest(CommandContext ctx, ParsedArgs args)
     {
         await ctx.Bot.SendMessage(ctx.Message, args.GetArgument<string>("str"));
     }
@@ -26,7 +27,7 @@ public class TestPlugin : Plugin
     [Option("trueopt", "-t <:bool=true>")]
     [Shortcut("测试")]
     [Alias("..test111.11..45...14...")] // test normalize
-    public static MessageContent OnTest1(MessageContext ctx, ParsedArgs args)
+    public static MessageContent OnTest1(CommandContext ctx, ParsedArgs args)
     {
         var arg1 = args.GetArgument<bool>("arg1");
         var opt = args.GetOption<double>("opt");
@@ -36,7 +37,7 @@ public class TestPlugin : Plugin
     }
 
     [Command("test2 <arg1:text>")]
-    public static MessageContent OnTest2(MessageContext _, ParsedArgs args)
+    public static MessageContent OnTest2(CommandContext _, ParsedArgs args)
     {
         var arg1 = args.GetArgument<string>("arg1");
         return arg1;
@@ -45,12 +46,19 @@ public class TestPlugin : Plugin
     [Command("sub.test")]
     [Alias("sssuuubbb")]
     [Shortcut("子测试")]
-    public static MessageContent? OnSubTest(MessageContext ctx, ParsedArgs args) => null;
+    public static MessageContent? OnSubTest(CommandContext ctx) => null;
 
     [Command("...sub....sub..sub......test..")]
-    public static MessageContent? OnSubSubSubTest(MessageContext ctx, ParsedArgs args) => null;
+    public static MessageContent? OnSubSubSubTest(CommandContext ctx) => null;
 
     [Command("throw-ex")]
-    public static MessageContent? OnThrowEx(MessageContext ctx, ParsedArgs args) =>
+    public static MessageContent? OnThrowEx(CommandContext ctx) =>
         throw new Exception("Test Exception");
+
+    [Command("start-session")]
+    public static async Task<MessageContent?> OnStartSession(CommandContext ctx)
+    {
+        var nextMsg = await ctx.StartSession(TimeSpan.FromSeconds(2));
+        return nextMsg?.Content;
+    }
 }

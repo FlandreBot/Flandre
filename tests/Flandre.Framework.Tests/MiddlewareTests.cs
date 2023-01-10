@@ -63,13 +63,13 @@ public class MiddlewareTests
 
         await app.StartAsync();
 
-        var content1 = await client.SendForReply("test (1) short me at middleware #1");
+        var content1 = await client.SendMessageForReply("test (1) short me at middleware #1");
         Assert.NotNull(content1);
 
-        var content2 = await client.SendForReply("test (2) pass me through all middlewares");
+        var content2 = await client.SendMessageForReply("test (2) pass me through all middlewares");
         Assert.NotNull(content2);
 
-        var content3 = await client.SendForReply("test (3) don't pass me", TimeSpan.FromSeconds(2));
+        var content3 = await client.SendMessageForReply("test (3) don't pass me", TimeSpan.FromSeconds(2));
         Assert.Null(content3);
 
         await app.StopAsync();

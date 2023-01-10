@@ -24,23 +24,23 @@ public class FlandreAppTests
 
         MessageContent? content;
 
-        content = await channelClient.SendForReply("OMR:114514");
+        content = await channelClient.SendMessageForReply("OMR:114514");
         Assert.Equal("OMR:114514", content?.GetText());
         // throw new Exception();
 
-        content = await friendClient.SendForReply("test1 true --opt 114.514");
+        content = await friendClient.SendMessageForReply("test1 true --opt 114.514");
         Assert.Equal("arg1: True opt: 114.514 b: False t: True",
             content?.GetText());
 
-        content = await friendClient.SendForReply("test1  -o 1919.810  false");
+        content = await friendClient.SendMessageForReply("test1  -o 1919.810  false");
         Assert.Equal("arg1: False opt: 1919.81 b: False t: True",
             content?.GetText());
 
-        content = await friendClient.SendForReply("test1 -bo 111.444 --no-trueopt false");
+        content = await friendClient.SendMessageForReply("test1 -bo 111.444 --no-trueopt false");
         Assert.Equal("arg1: False opt: 111.444 b: True t: False",
             content?.GetText());
 
-        content = await friendClient.SendForReply("test2  some text aaa   bbb   ");
+        content = await friendClient.SendMessageForReply("test2  some text aaa   bbb   ");
         Assert.Equal("some text aaa   bbb",
             content?.GetText());
 
@@ -61,7 +61,7 @@ public class FlandreAppTests
 
         await app.StartAsync();
 
-        Assert.Equal(8, app.CommandMap.Count);
+        Assert.Equal(9, app.CommandMap.Count);
         Assert.Equal(2, app.ShortcutMap.Count);
 
         Assert.NotNull(app.CommandMap.GetValueOrDefault("test1"));
@@ -79,10 +79,10 @@ public class FlandreAppTests
 
         var result = "arg1: True opt: 114.514 b: False t: True";
 
-        var content = await channelClient.SendForReply("test1 true --opt 114.514");
+        var content = await channelClient.SendMessageForReply("test1 true --opt 114.514");
         Assert.Equal(result, content?.GetText());
 
-        content = await channelClient.SendForReply(" 测试  true --opt 114.514");
+        content = await channelClient.SendMessageForReply(" 测试  true --opt 114.514");
         Assert.Equal(result, content?.GetText());
 
         await app.StopAsync();

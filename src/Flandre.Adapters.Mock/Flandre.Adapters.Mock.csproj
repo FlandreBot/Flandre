@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Title>Flandre.Adapters.Mock</Title>
         <Product>$(Title)</Product>
-        <PackageVersion>0.7.0</PackageVersion>
+        <PackageVersion>0.8.0</PackageVersion>
         <Version>$(PackageVersion)</Version>
         <Authors>b1acksoil</Authors>
         <Description>Mock client for Project Flandre.</Description>
