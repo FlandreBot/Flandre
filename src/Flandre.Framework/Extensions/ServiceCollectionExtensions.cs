@@ -5,13 +5,13 @@ namespace Flandre.Framework.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection ConfigureFlandreAppOptions(this IServiceCollection services,
+    public static IServiceCollection ConfigureFlandreApp(this IServiceCollection services,
         IConfiguration configuration)
     {
         return services.Configure<FlandreAppOptions>(configuration);
     }
 
-    public static IServiceCollection ConfigureFlandreAppOptions(this IServiceCollection services,
+    public static IServiceCollection ConfigureFlandreApp(this IServiceCollection services,
         Action<FlandreAppOptions> action)
     {
         return services.Configure(action);
