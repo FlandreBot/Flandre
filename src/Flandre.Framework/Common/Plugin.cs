@@ -1,11 +1,23 @@
 ﻿using Flandre.Core.Common;
 using Flandre.Core.Events;
 using Flandre.Core.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
 
 public abstract class Plugin
 {
+    private static Type? _loggerType;
+
+    internal Type LoggerType
+    {
+        get
+        {
+            _loggerType ??= typeof(ILogger<>).MakeGenericType(GetType());
+            return _loggerType;
+        }
+    }
+
     /// <summary>
     /// 处理消息事件
     /// </summary>

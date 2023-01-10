@@ -52,7 +52,7 @@ public sealed partial class FlandreApp
             if (error is not null) return error;
 
             var plugin = (Plugin)ctx.Services.GetRequiredService(cmd.PluginType);
-            var pluginLogger = Services.GetRequiredService<ILoggerFactory>().CreateLogger(cmd.PluginType);
+            var pluginLogger = (ILogger)Services.GetRequiredService(plugin.LoggerType);
 
             var invocationCancelled = false;
             if (OnCommandInvoking is not null)
