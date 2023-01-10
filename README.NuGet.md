@@ -1,7 +1,7 @@
 # Flandre
 
 .NET 6 实现的跨平台，现代化聊天机器人框架  
-一次编写，多处运行
+一套代码，多平台服务
 
 [![License](https://img.shields.io/github/license/FlandreDevs/Flandre?label=License&style=flat&color=42a5f5)](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE)
 [![Stars](https://img.shields.io/github/stars/FlandreDevs/Flandre?label=Stars&style=flat&color=1976d2)](https://github.com/FlandreDevs/Flandre/stargazers)

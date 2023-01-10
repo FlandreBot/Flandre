@@ -5,12 +5,12 @@
 # Flandre
 
 .NET 6 实现的跨平台，现代化聊天机器人框架  
-一次编写，多处运行
+一套代码，多平台服务
 
 [![License](https://img.shields.io/github/license/FlandreDevs/Flandre?label=License&style=flat&color=42a5f5)](https://github.com/FlandreDevs/Flandre/blob/main/LICENSE)
 [![Stars](https://img.shields.io/github/stars/FlandreDevs/Flandre?label=Stars&style=flat&color=1976d2)](https://github.com/FlandreDevs/Flandre/stargazers)
 [![Contributors](https://img.shields.io/github/contributors/FlandreDevs/Flandre?label=Contributors&style=flat&color=9866ca)](https://github.com/FlandreDevs/Flandre/graphs/contributors)
-[![Flandre.Framework Version](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=Framework&color=f06292)](https://www.nuget.org/packages/Flandre.Core/)
+[![Flandre.Framework Version](https://img.shields.io/nuget/vpre/Flandre.Framework?style=flat&label=Framework&color=f06292)](https://www.nuget.org/packages/Flandre.Framework/)
 [![Flandre.Core Version](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=Core&color=e65943)](https://www.nuget.org/packages/Flandre.Core/)
 [![.NET Version](https://img.shields.io/badge/.NET-6-ffe57f?style=flat)](https://www.nuget.org/packages/Flandre.Core/)
 [![Codecov](https://img.shields.io/codecov/c/gh/FlandreDevs/Flandre/dev?style=flat&color=a5d6a7&label=Coverage)](https://app.codecov.io/gh/FlandreDevs/Flandre)
@@ -50,7 +50,8 @@ Flandre 提供两种开发方式，分别是完整的开发框架 `Framework`，
 [![NuGet](https://img.shields.io/nuget/vpre/Flandre.Framework?style=flat&label=NuGet&color=9866ca)](https://www.nuget.org/packages/Flandre.Framework/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Framework?style=flat&label=Downloads&color=42a5f5)](https://www.nuget.org/packages/Flandre.Framework/)
 
-`Flandre.Framework` 是一个使用方便、功能全面的 Bot 开发框架，在核心包 `Core` 的基础上集成了插件、指令、中间件等系统，并提供依赖注入、日志管理等等实用功能。对于一个全新的 Bot 项目，我们推荐您直接使用 `Framework` 进行开发。
+`Flandre.Framework` 是一个使用方便、功能全面的 Bot 开发框架，在核心包 `Core` 的基础上集成了插件、指令、中间件等系统，并提供依赖注入、日志管理等等实用功能。  
+Framework 基于 [Microsoft.Extensions.Hosting](https://learn.microsoft.com/zh-cn/dotnet/core/extensions/generic-host)，这意味着可以复用大量社区已有的开源库。对于一个全新的 Bot 项目，我们建议直接使用 Framework 开发。
 
 #### Flandre.Core
 [![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=NuGet&color=9866ca)](https://www.nuget.org/packages/Flandre.Core/)
@@ -58,7 +59,7 @@ Flandre 提供两种开发方式，分别是完整的开发框架 `Framework`，
 
 `Flandre.Core` 是整个框架的核心组件，包含了适配器、机器人等重要内容，提供直接操作 Bot 进行平台交互的功能。相比 `Framework`，`Core` 作为一个轻量化的模块，能更容易地嵌入进已有项目中，成为功能的一部分。
 
-> 不需要代入 .NET Framework / Core 命名方式的意义。在 Flandre 中，两者只意味着开发方式的不同，都处于积极维护中。
+> 不需要代入 .NET Framework / Core 命名方式的意义。在 Flandre 中，两者只意味着开发方式的不同，且都处于积极维护中。
 
 下文将主要介绍 `Flandre.Framework` 的各类特性。如果你需要关于 `Flandre.Core` 的详细说明，请~~参照这里的文档~~。(还没写x)
 
@@ -85,9 +86,11 @@ Flandre 内部采用各类事件控制，开发者可以轻松地通过订阅事
 using Flandre.Framework;
 using Flandre.Framework.Common;
 using Flandre.Adapters.Konata;
+using Flandre.Core.Messaging;
 using Konata.Core.Common;
+using Microsoft.Extensions.Hosting;
 
-var builder = new FlandreAppBuilder();
+var builder = FlandreApp.CreateBuilder(args);
 
 // 添加 Bot 配置
 var config = new KonataAdapterConfig();
@@ -96,9 +99,10 @@ config.Bots.Add(new KonataBotConfig
     KeyStore = new BotKeyStore("<QQ 号>", "<密码>")
 });
 
+// 构造应用实例
 var app = builder
-    .UseAdapter(new KonataAdapter(config))
-    .UsePlugin<ExamplePlugin>()
+    .AddAdapter(new KonataAdapter(config))
+    .AddPlugin<ExamplePlugin>()
     .Build();
 
 app.Run();
@@ -118,7 +122,7 @@ class ExamplePlugin : Plugin
 来个高级点的例子，我们定义一条指令：
 
 ```csharp
-class ExamplePlugin2 : Plugin
+class AnotherExamplePlugin : Plugin
 {
     [Command("example <foo> [bar]")]
     public MessageContent OnExample(MessageContext ctx, ParsedArgs args)
@@ -194,7 +198,7 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 - [x] 指令的选项系统
 - [x] 编写单元测试
 - [x] OneBot 协议适配
-- [ ] Session 系统
+- [x] Session 系统
 
 ## 💻 分支
 
