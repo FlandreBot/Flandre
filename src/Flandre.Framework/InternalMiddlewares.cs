@@ -11,68 +11,150 @@ namespace Flandre.Framework;
 
 public sealed partial class FlandreApp
 {
-    private void CheckGuildAssigneeMiddleware(MiddlewareContext ctx, Action next)
+    private bool _assigneeCheckerUsed;
+    private bool _pluginMessageEventUsed;
+    private bool _commandSessionUsed;
+    private bool _commandParserUsed;
+    private bool _commandInvokerUsed;
+
+    public FlandreApp UseAssigneeCheckerMiddleware()
     {
-        var segment = ctx.Message.Content.Segments.FirstOrDefault();
-        if (segment is AtSegment ats)
+        if (_assigneeCheckerUsed) return this;
+        _assigneeCheckerUsed = true;
+        UseMiddleware((ctx, next) =>
         {
-            if (ats.UserId == ctx.SelfId)
+            var segment = ctx.Message.Content.Segments.FirstOrDefault();
+            if (segment is AtSegment ats)
+            {
+                if (ats.UserId == ctx.SelfId)
+                    next();
+            }
+            // 如果没找到群组的 assignee
+            else if (!GuildAssignees.TryGetValue($"{ctx.Platform}:{ctx.GuildId}", out var assignee))
+            {
                 next();
-        }
-        // 如果没找到群组的 assignee
-        else if (!GuildAssignees.TryGetValue($"{ctx.Platform}:{ctx.GuildId}", out var assignee))
+            }
+            // 如果找到了群组的 assignee，且是自己
+            else if (ctx.SelfId == assignee)
+            {
+                next();
+            }
+        });
+        return this;
+    }
+
+    public FlandreApp UsePluginMessageEventMiddleware()
+    {
+        if (_pluginMessageEventUsed) return this;
+        _pluginMessageEventUsed = true;
+        UseMiddleware(async (ctx, next) =>
         {
+            await Task.WhenAll(_pluginTypes
+                .Select(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceived(ctx))
+                .ToArray());
             next();
-        }
-        // 如果找到了群组的 assignee，且是自己
-        else if (ctx.SelfId == assignee)
+        });
+        return this;
+    }
+
+    public FlandreApp UseCommandSessionMiddleware()
+    {
+        if (_commandSessionUsed) return this;
+        _commandSessionUsed = true;
+        UseMiddleware((ctx, next) =>
         {
+            var mark = ctx.GetUserMark();
+            if (CommandSessions.TryGetValue(mark, out var tcs))
+            {
+                CommandSessions.TryRemove(mark, out _);
+                tcs.TrySetResult(ctx.Message);
+            }
+            else
+            {
+                next();
+            }
+        });
+        return this;
+    }
+
+    public FlandreApp UseCommandParserMiddleware()
+    {
+        if (_commandParserUsed) return this;
+        _commandParserUsed = true;
+
+        Command? ParseCommand(MiddlewareContext ctx)
+        {
+            var commandStr = ctx.Message.GetText().Trim();
+            var commandPrefix = _appOptions.CurrentValue.CommandPrefix;
+            if (commandStr == commandPrefix)
+                return null;
+
+            ctx.CommandStringParser = new StringParser(commandStr);
+
+            var root = ctx.CommandStringParser.SkipSpaces().Read(' ');
+
+            if (ShortcutMap.TryGetValue(root, out var command))
+                return command;
+
+            if (!string.IsNullOrWhiteSpace(commandPrefix)
+                && !root.StartsWith(commandPrefix))
+                return null;
+
+            root = root.TrimStart(commandPrefix);
+            ctx.CommandStringParser.SkipSpaces();
+
+            var notFound = root;
+
+            for (var count = 0;; count++)
+            {
+                var next = $"{root}.{ctx.CommandStringParser.Peek(' ')}";
+                // ReSharper disable once AccessToModifiedClosure
+                if (CommandMap.TryGetValue(root, out command) &&
+                    (ctx.CommandStringParser.IsEnd() || !CommandMap.Keys.Any(cmd =>
+                        cmd.StartsWith(next))))
+                {
+                    return command;
+                }
+
+                if (ctx.CommandStringParser.SkipSpaces().IsEnd()) break;
+                root = $"{root}.{ctx.CommandStringParser.Read(' ')}";
+
+                if (count < 4) notFound = root;
+            }
+
+            if (!string.IsNullOrWhiteSpace(commandPrefix))
+                ctx.Response = $"未找到指令：{notFound}。";
+            return null;
+        }
+
+        UseMiddleware((ctx, next) =>
+        {
+            ctx.Command = ParseCommand(ctx);
             next();
-        }
+        });
+        return this;
     }
 
-    private async Task PluginMessageEventMiddleware(MiddlewareContext ctx, Action next)
+    public FlandreApp UseCommandInvokerMiddleware()
     {
-        await Task.WhenAll(_pluginTypes
-            .Select(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceived(ctx))
-            .ToArray());
-        next();
-    }
+        if (_commandInvokerUsed) return this;
+        _commandInvokerUsed = true;
 
-    private void CheckCommandSessionMiddleware(MiddlewareContext ctx, Action next)
-    {
-        var mark = ctx.GetUserMark();
-        if (CommandSessions.TryGetValue(mark, out var tcs))
+        MessageContent? InvokeCommand(MiddlewareContext ctx)
         {
-            CommandSessions.TryRemove(mark, out _);
-            tcs.TrySetResult(ctx.Message);
-        }
-        else
-        {
-            next();
-        }
-    }
+            if (ctx.Command is null || ctx.CommandStringParser is null)
+                return null;
 
-    private void ParseCommandMiddleware(MiddlewareContext ctx, Action next)
-    {
-        ctx.Response = ParseCommand(ctx);
-        next();
-    }
-
-    private MessageContent? ParseCommand(MiddlewareContext ctx)
-    {
-        MessageContent? ParseAndInvoke(Command cmd, StringParser p)
-        {
-            var (args, error) = cmd.ParseCommand(p);
+            var (args, error) = ctx.Command.ParseCommand(ctx.CommandStringParser);
             if (error is not null) return error;
 
-            var plugin = (Plugin)ctx.Services.GetRequiredService(cmd.PluginType);
+            var plugin = (Plugin)ctx.Services.GetRequiredService(ctx.Command.PluginType);
             var pluginLogger = (ILogger)Services.GetRequiredService(plugin.LoggerType);
 
             var invocationCancelled = false;
             if (OnCommandInvoking is not null)
             {
-                var invokingEvent = new CommandInvokingEvent(cmd, ctx.Message);
+                var invokingEvent = new CommandInvokingEvent(ctx.Command, ctx.Message);
                 OnCommandInvoking.Invoke(this, invokingEvent);
                 invocationCancelled = invokingEvent.IsCancelled;
             }
@@ -81,47 +163,16 @@ public sealed partial class FlandreApp
                 return null;
 
             var cmdCtx = new CommandContext(ctx.App, ctx.Bot, ctx.Message);
-            var (content, ex) = cmd.InvokeCommand(plugin, cmdCtx, args, pluginLogger);
-            OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(cmd, ctx.Message, ex, content));
+            var (content, ex) = ctx.Command.InvokeCommand(plugin, cmdCtx, args, pluginLogger);
+            OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ex, content));
             return content;
         }
 
-        var commandStr = ctx.Message.GetText().Trim();
-        var commandPrefix = _appOptions.CurrentValue.CommandPrefix;
-        if (commandStr == commandPrefix)
-            return null;
-
-        var parser = new StringParser(commandStr);
-
-        var root = parser.SkipSpaces().Read(' ');
-
-        if (ShortcutMap.TryGetValue(root, out var command))
-            return ParseAndInvoke(command, parser);
-
-        if (!string.IsNullOrWhiteSpace(commandPrefix)
-            && !root.StartsWith(commandPrefix))
-            return null;
-        root = root.TrimStart(commandPrefix);
-        parser.SkipSpaces();
-
-        var notFound = root;
-
-        for (var count = 0;; count++)
+        UseMiddleware((ctx, next) =>
         {
-            if (CommandMap.TryGetValue(root, out command) &&
-                (parser.IsEnd() || !CommandMap.Keys.Any(cmd =>
-                    cmd.StartsWith($"{root}.{parser.Peek(' ')}"))))
-                return ParseAndInvoke(command, parser);
-
-            if (parser.SkipSpaces().IsEnd()) break;
-            root = $"{root}.{parser.Read(' ')}";
-
-            if (count < 4) notFound = root;
-        }
-
-        if (string.IsNullOrWhiteSpace(commandPrefix))
-            return null;
-
-        return $"未找到指令：{notFound}。";
+            ctx.Response = InvokeCommand(ctx);
+            next();
+        });
+        return this;
     }
 }

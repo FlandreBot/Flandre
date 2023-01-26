@@ -1,5 +1,6 @@
 ﻿using Flandre.Core.Common;
 using Flandre.Core.Messaging;
+using Flandre.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Flandre.Framework.Common;
@@ -16,6 +17,10 @@ public sealed class MiddlewareContext : MessageContext
     public IServiceProvider Services => ServiceScope.ServiceProvider;
 
     public MessageContent? Response { get; set; }
+    
+    public Command? Command { get; internal set; }
+
+    internal StringParser? CommandStringParser { get; set; }
 
     internal MiddlewareContext(FlandreApp app, Bot bot, Message message, MessageContent? resp)
         : base(bot, message)

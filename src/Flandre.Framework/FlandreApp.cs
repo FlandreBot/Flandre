@@ -20,7 +20,6 @@ public sealed partial class FlandreApp : IHost
     private readonly List<Bot> _bots = new();
     private readonly List<Type> _pluginTypes;
     private readonly List<Func<MiddlewareContext, Action, Task>> _middlewares = new();
-    private bool _isInternalMiddlewaresAdded;
 
     private int _commandCount;
     private int _aliasCount;
@@ -29,8 +28,10 @@ public sealed partial class FlandreApp : IHost
     public IServiceProvider Services => _hostApp.Services;
     public ILogger<FlandreApp> Logger { get; }
 
-    internal readonly Dictionary<string, Command> CommandMap = new();
-    internal readonly Dictionary<string, Command> ShortcutMap = new();
+    public Dictionary<string, Command> CommandMap { get; } = new();
+
+    public Dictionary<string, Command> ShortcutMap { get; } = new();
+
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
     internal ConcurrentDictionary<string, TaskCompletionSource<Message?>> CommandSessions { get; } = new();
 
@@ -190,25 +191,6 @@ public sealed partial class FlandreApp : IHost
     }
 
     /// <summary>
-    /// 使用内置的核心中间件，包括群组代理检查、插件消息事件、Session 触发，以及核心的指令解析触发。
-    /// </summary>
-    /// <remarks>
-    /// 启动应用时若未注册会自动注册，若多次调用只会注册一次。<br/>
-    /// 可以手动调用该方法，并在后面插入新的中间件。
-    /// </remarks>
-    public void UseInternalMiddlewares()
-    {
-        if (_isInternalMiddlewaresAdded) return;
-
-        UseMiddleware(CheckGuildAssigneeMiddleware);
-        UseMiddleware(PluginMessageEventMiddleware);
-        UseMiddleware(CheckCommandSessionMiddleware);
-        UseMiddleware(ParseCommandMiddleware);
-
-        _isInternalMiddlewaresAdded = true;
-    }
-
-    /// <summary>
     /// 运行应用实例，阻塞当前线程。
     /// </summary>
     public async Task StartAsync(CancellationToken cancellationToken = default)
@@ -216,7 +198,11 @@ public sealed partial class FlandreApp : IHost
         OnStarting?.Invoke(this, new AppStartingEvent());
         Logger.LogDebug("Starting app...");
 
-        if (!_isInternalMiddlewaresAdded) UseInternalMiddlewares();
+        UseAssigneeCheckerMiddleware();
+        UsePluginMessageEventMiddleware();
+        UseCommandSessionMiddleware();
+        UseCommandParserMiddleware();
+        UseCommandInvokerMiddleware();
 
         await Task.WhenAll(_adapters.Select(adapter => adapter.Start()).ToArray());
         await _hostApp.StartAsync(cancellationToken);
