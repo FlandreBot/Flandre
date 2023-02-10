@@ -8,7 +8,10 @@ namespace Flandre.Core.Messaging;
 /// </summary>
 public class MessageContent : IEnumerable<MessageSegment>
 {
-    internal IEnumerable<MessageSegment> Segments { get; }
+    /// <summary>
+    /// 消息内容包含的消息段
+    /// </summary>
+    public IEnumerable<MessageSegment> Segments { get; }
 
     /// <summary>
     /// 使用消息段构造消息内容
