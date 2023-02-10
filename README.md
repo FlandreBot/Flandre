@@ -218,6 +218,10 @@ Flandre 内置的指令解析器允许留下空格。如果你觉得参数的各
 
 （按字母排序）
 
+另外，感谢 [JetBrains](https://www.jetbrains.com/) 对本项目的支持，以及免费授权的产品开源使用许可！
+
+<img height="150" width="150" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo (Main) logo.">
+
 ## 💬 交流
 
 GitHub 是我们的主要活动场地。您也可以加入我们的 QQ 群进行项目相关的交流：
