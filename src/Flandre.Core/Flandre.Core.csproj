@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Title>Flandre.Core</Title>
         <Product>$(Title)</Product>
-        <PackageVersion>0.8.0</PackageVersion>
+        <PackageVersion>0.9.0</PackageVersion>
         <Version>$(PackageVersion)</Version>
         <Authors>b1acksoil</Authors>
         <Description>跨平台聊天机器人框架核心，提供基本交互操作，容易嵌入到已有项目中。</Description>

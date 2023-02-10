@@ -2,14 +2,14 @@
 
 namespace Flandre.Core.Common;
 
+/// <summary>
+/// Bot 事件委托
+/// </summary>
+/// <typeparam name="TEvent">事件类型</typeparam>
+public delegate void BotEventHandler<in TEvent>(Bot bot, TEvent e) where TEvent : BaseEvent;
+
 public abstract partial class Bot
 {
-    /// <summary>
-    /// Bot 事件委托
-    /// </summary>
-    /// <typeparam name="TEvent">事件类型</typeparam>
-    public delegate void BotEventHandler<in TEvent>(Bot bot, TEvent e) where TEvent : BaseEvent;
-
     /// <summary>
     /// 日志记录
     /// </summary>
