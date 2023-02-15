@@ -1,24 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core", "src\Flandre.Core\Flandre.Core.csproj", "{347EE5CE-CAB6-4FFA-AAF1-D7AA7BC6AFF7}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Core", "src\Flandre.Core\Flandre.Core.csproj", "{347EE5CE-CAB6-4FFA-AAF1-D7AA7BC6AFF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Konata", "src\Flandre.Adapters.Konata\Flandre.Adapters.Konata.csproj", "{723E8DD2-55F1-4095-93D7-E6AD600A63EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Adapters.Konata", "src\Flandre.Adapters.Konata\Flandre.Adapters.Konata.csproj", "{723E8DD2-55F1-4095-93D7-E6AD600A63EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Mock", "src\Flandre.Adapters.Mock\Flandre.Adapters.Mock.csproj", "{18C926FE-1F45-421C-A19B-BB914DBD7437}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Adapters.Mock", "src\Flandre.Adapters.Mock\Flandre.Adapters.Mock.csproj", "{18C926FE-1F45-421C-A19B-BB914DBD7437}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.OneBot", "src\Flandre.Adapters.OneBot\Flandre.Adapters.OneBot.csproj", "{49047181-70A7-44F9-BC70-992BD0289C97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Adapters.OneBot", "src\Flandre.Adapters.OneBot\Flandre.Adapters.OneBot.csproj", "{49047181-70A7-44F9-BC70-992BD0289C97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Framework", "src\Flandre.Framework\Flandre.Framework.csproj", "{76195FF7-5683-451D-9D22-955CE0CA20EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Framework", "src\Flandre.Framework\Flandre.Framework.csproj", "{76195FF7-5683-451D-9D22-955CE0CA20EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Framework.Tests", "tests\Flandre.Framework.Tests\Flandre.Framework.Tests.csproj", "{23B5856D-C230-4EC6-A3C0-A31E56AABFC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Framework.Tests", "tests\Flandre.Framework.Tests\Flandre.Framework.Tests.csproj", "{23B5856D-C230-4EC6-A3C0-A31E56AABFC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core.Tests", "tests\Flandre.Core.Tests\Flandre.Core.Tests.csproj", "{99CA905D-7B6C-4615-BF50-F06CAB14941D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Core.Tests", "tests\Flandre.Core.Tests\Flandre.Core.Tests.csproj", "{99CA905D-7B6C-4615-BF50-F06CAB14941D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core.Reactive", "src\Flandre.Core.Reactive\Flandre.Core.Reactive.csproj", "{B8597CBB-A7A0-4F0F-BA49-3B2D34557327}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Core.Reactive", "src\Flandre.Core.Reactive\Flandre.Core.Reactive.csproj", "{B8597CBB-A7A0-4F0F-BA49-3B2D34557327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Framework.Reactive", "src\Flandre.Framework.Reactive\Flandre.Framework.Reactive.csproj", "{85F42336-C536-45F8-BFFD-A75E1E56B4AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Framework.Reactive", "src\Flandre.Framework.Reactive\Flandre.Framework.Reactive.csproj", "{85F42336-C536-45F8-BFFD-A75E1E56B4AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Core.Reactive.Tests", "tests\Flandre.Core.Reactive.Tests\Flandre.Core.Reactive.Tests.csproj", "{43701E39-49AD-4342-B66F-773D76B35438}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flandre.Core.Reactive.Tests", "tests\Flandre.Core.Reactive.Tests\Flandre.Core.Reactive.Tests.csproj", "{43701E39-49AD-4342-B66F-773D76B35438}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{D59B439D-ECB9-460B-9F28-FE913CCFA6E5}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+		README.NuGet.md = README.NuGet.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,5 +77,11 @@ Global
 		{43701E39-49AD-4342-B66F-773D76B35438}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43701E39-49AD-4342-B66F-773D76B35438}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43701E39-49AD-4342-B66F-773D76B35438}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F1C8B6A9-12B8-430E-BEA3-62D7C5161683}
 	EndGlobalSection
 EndGlobal
