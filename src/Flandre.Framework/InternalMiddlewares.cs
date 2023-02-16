@@ -89,41 +89,39 @@ public sealed partial class FlandreApp
             if (commandStr == commandPrefix)
                 return null;
 
-            ctx.CommandStringParser = new StringParser(commandStr);
+            var parser = ctx.CommandStringParser = new StringParser(commandStr);
 
-            var root = ctx.CommandStringParser.SkipSpaces().Read(' ');
+            var root = parser.SkipSpaces().Read(' ');
 
-            if (ShortcutMap.TryGetValue(root, out var command))
+            if (PluginLoadContext.StringShortcuts.TryGetValue(root, out var command))
                 return command;
+
+            // TODO: support regex variables
+            // ReSharper disable once AccessToModifiedClosure
+            var matchedRegex = PluginLoadContext.RegexShortcuts.Keys.FirstOrDefault(regex => regex.IsMatch(root));
+            if (matchedRegex is not null)
+                return PluginLoadContext.RegexShortcuts[matchedRegex];
 
             if (!string.IsNullOrWhiteSpace(commandPrefix)
                 && !root.StartsWith(commandPrefix))
                 return null;
 
-            root = root.TrimStart(commandPrefix);
-            ctx.CommandStringParser.SkipSpaces();
+            var path = new List<string>();
+            var current = root.TrimStart(commandPrefix);
 
-            var notFound = root;
-
-            for (var count = 0;; count++)
+            var node = PluginLoadContext.RootCommandNode;
+            while (!parser.IsEnd())
             {
-                var next = $"{root}.{ctx.CommandStringParser.Peek(' ')}";
-                // ReSharper disable once AccessToModifiedClosure
-                if (CommandMap.TryGetValue(root, out command) &&
-                    (ctx.CommandStringParser.IsEnd() || !CommandMap.Keys.Any(cmd =>
-                        cmd.StartsWith(next))))
-                {
-                    return command;
-                }
-
-                if (ctx.CommandStringParser.SkipSpaces().IsEnd()) break;
-                root = $"{root}.{ctx.CommandStringParser.Read(' ')}";
-
-                if (count < 4) notFound = root;
+                if (node.Subcommands.TryGetValue(current, out var subNode))
+                    node = subNode;
+                else if (!node.HasCommand)
+                    break;
+                path.Add(current);
+                current = parser.SkipSpaces().Read(' ');
             }
 
-            if (!string.IsNullOrWhiteSpace(commandPrefix))
-                ctx.Response = $"未找到指令：{notFound}。";
+            if (!node.HasCommand && !string.IsNullOrWhiteSpace(commandPrefix))
+                ctx.Response = $"未找到指令：{string.Join('.', path)}。";
             return null;
         }
 
@@ -145,8 +143,8 @@ public sealed partial class FlandreApp
             if (ctx.Command is null || ctx.CommandStringParser is null)
                 return null;
 
-            var (args, error) = ctx.Command.ParseCommand(ctx.CommandStringParser);
-            if (error is not null) return error;
+            if (!ctx.Command.TryParse(ctx.CommandStringParser, out var result))
+                return result.ErrorText!;
 
             var plugin = (Plugin)ctx.Services.GetRequiredService(ctx.Command.PluginType);
             var pluginLogger = (ILogger)Services.GetRequiredService(plugin.LoggerType);
@@ -163,14 +161,25 @@ public sealed partial class FlandreApp
                 return null;
 
             var cmdCtx = new CommandContext(ctx.App, ctx.Bot, ctx.Message);
-            var (content, ex) = ctx.Command.InvokeCommand(plugin, cmdCtx, args, pluginLogger);
+            MessageContent? content = null;
+            Exception? ex = null;
+            try
+            {
+                content = ctx.Command.Invoke(plugin, cmdCtx, result);
+            }
+            catch (Exception e)
+            {
+                pluginLogger.LogError("Error occurred in ");
+                ex = e;
+            }
+
             OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ex, content));
             return content;
         }
 
         UseMiddleware((ctx, next) =>
         {
-            ctx.Response = InvokeCommand(ctx);
+            ctx.Response = InvokeCommand(ctx) ?? ctx.Response;
             next();
         });
         return this;

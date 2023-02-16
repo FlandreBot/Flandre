@@ -1,5 +1,4 @@
 ﻿using Flandre.Adapters.Mock;
-using Flandre.Framework.Attributes;
 
 namespace Flandre.Framework.Tests;
 
@@ -18,7 +17,7 @@ public class AppEventsTests
             .Build();
 
         var count = 0;
-        CommandAttribute? cmdInfo = null;
+        string? cmdName = null;
         Exception? ex = null;
 
         app.OnStarting += (_, _) => count += 1;
@@ -29,14 +28,14 @@ public class AppEventsTests
         };
         app.OnStopped += (_, _) => count += 100;
 
-        app.OnCommandInvoking += (_, e) => cmdInfo = e.Command.CommandInfo;
+        app.OnCommandInvoking += (_, e) => cmdName = e.Command.Name;
         app.OnCommandInvoked += (_, e) => { ex = e.Exception; };
 
         await app.StartAsync();
         await app.StopAsync();
 
         Assert.Equal(111, count);
-        Assert.Equal("throw-ex", cmdInfo?.Command);
+        Assert.Equal("throw-ex", cmdName);
         Assert.Equal("Test Exception", ex?.Message);
     }
 }

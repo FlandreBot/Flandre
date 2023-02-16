@@ -61,23 +61,25 @@ public class FlandreAppTests
 
         await app.StartAsync();
 
-        Assert.Equal(9, app.CommandMap.Count);
-        Assert.Equal(2, app.ShortcutMap.Count);
+        Assert.Equal(9, app.PluginLoadContext.CommandCount);
+        Assert.Equal(2, app.PluginLoadContext.StringShortcuts.Count);
 
-        Assert.NotNull(app.CommandMap.GetValueOrDefault("test1"));
-        Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.test"));
-        Assert.NotNull(app.CommandMap.GetValueOrDefault("sub.sub.sub.test"));
+        Assert.NotNull(app.PluginLoadContext.RootCommandNode.GetNodeByPath("test1"));
+        Assert.NotNull(app.PluginLoadContext.RootCommandNode.GetNodeByPath("sub.test"));
+        Assert.NotNull(app.PluginLoadContext.RootCommandNode.GetNodeByPath("sub.sub.sub.test"));
 
         // shortcut
-        Assert.NotNull(app.ShortcutMap.GetValueOrDefault("测试"));
-        Assert.NotNull(app.ShortcutMap.GetValueOrDefault("子测试"));
-        Assert.Equal(app.ShortcutMap["测试"], app.CommandMap["test1"]);
+        Assert.NotNull(app.PluginLoadContext.StringShortcuts.GetValueOrDefault("测试"));
+        Assert.NotNull(app.PluginLoadContext.StringShortcuts.GetValueOrDefault("子测试"));
+        Assert.Equal(app.PluginLoadContext.StringShortcuts["测试"],
+            app.PluginLoadContext.RootCommandNode.GetNodeByPath("test1")?.Command);
 
         // alias
-        Assert.NotNull(app.CommandMap.GetValueOrDefault("test111.11.45.14"));
-        Assert.Equal(app.CommandMap["sssuuubbb"], app.CommandMap["sub.test"]);
+        Assert.NotNull(app.PluginLoadContext.RootCommandNode.GetNodeByPath("test111.11.45.14"));
+        Assert.Equal(app.PluginLoadContext.RootCommandNode.GetNodeByPath("sssuuubbb"),
+            app.PluginLoadContext.RootCommandNode.GetNodeByPath("sub.test"));
 
-        var result = "arg1: True opt: 114.514 b: False t: True";
+        const string result = "arg1: True opt: 114.514 b: False t: True";
 
         var content = await channelClient.SendMessageForReply("test1 true --opt 114.514");
         Assert.Equal(result, content?.GetText());
