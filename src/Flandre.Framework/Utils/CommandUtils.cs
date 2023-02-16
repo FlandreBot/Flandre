@@ -1,149 +1,105 @@
 ﻿using Flandre.Core.Utils;
-using Flandre.Framework.Attributes;
-using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Utils;
 
 internal static class CommandUtils
 {
-    internal static ParameterInfo ParseParameterSection(string section, string defaultType = "string",
-        string cmdName = "")
+    internal static bool TryParseValue(string section, Type type, out object result)
     {
-        var info = new ParameterInfo();
-        section = section.Trim();
+        result = null!;
 
-        if (section[0] == '<')
-            info.IsRequired = true;
-
-        var innerRight = section[1..^1].Split('=');
-        var innerLeft = innerRight[0].Split(':');
-        info.Name = innerLeft[0].Trim();
-        info.Type = innerLeft.Length > 1 ? innerLeft[1].Trim().ToLower() : defaultType;
-
-        info.DefaultValue = GetTypeDefaultValue(info.Type, defaultType);
-
-        // 默认值
-        if (innerRight.Length > 1)
+        if (type == typeof(int) && int.TryParse(section, out var intVal))
         {
-            if (TryParseType(innerRight[1].Trim(), info.Type, out var result))
-                info.DefaultValue = result;
-            else
-                LogUtils.GetTempLogger<FlandreApp>().LogWarning(
-                    "The default value's type of argument {ArgumentName} cannot be match, in command {CommandName}.",
-                    info.Name, cmdName);
+            result = intVal;
+            return true;
         }
 
-        return info;
-    }
-
-    internal static object GetTypeDefaultValue(string type, string fallbackType = "string")
-    {
-        return type switch
+        if (type == typeof(long) && long.TryParse(section, out var longVal))
         {
-            "bool" => default(bool),
-            "byte" => default(byte),
-            "char" => default(char),
-            "double" => default(double),
-            "float" => default(float),
-            "int" => default(int),
-            "long" => default(long),
-            "sbyte" => default(sbyte),
-            "short" => default(short),
-            "uint" => default(uint),
-            "ulong" => default(ulong),
-            "ushort" => default(ushort),
-            "string" => "",
-
-            // string or other
-            _ => GetTypeDefaultValue(fallbackType)
-        };
-    }
-
-    internal static bool TryParseType(string section, string type, out object result, bool parseString = true)
-    {
-        result = section;
-
-        switch (type)
-        {
-            case "string":
-                if (!parseString) break;
-                var parser = new StringParser(section);
-                result = parser.ReadQuoted();
-                break;
-
-            case "bool":
-                if (bool.TryParse(section, out var boolVal)) result = boolVal;
-                else return false;
-                break;
-
-            case "byte":
-                if (byte.TryParse(section, out var byteVal)) result = byteVal;
-                else return false;
-                break;
-
-            case "char":
-                if (char.TryParse(section, out var charVal)) result = charVal;
-                else return false;
-                break;
-
-            case "double":
-                if (double.TryParse(section, out var doubleVal)) result = doubleVal;
-                else return false;
-                break;
-
-            case "float":
-                if (float.TryParse(section, out var floatVal)) result = floatVal;
-                else return false;
-                break;
-
-            case "int":
-                if (int.TryParse(section, out var intVal)) result = intVal;
-                else return false;
-                break;
-
-            case "long":
-                if (long.TryParse(section, out var longVal)) result = longVal;
-                else return false;
-                break;
-
-            case "sbyte":
-                if (sbyte.TryParse(section, out var sbyteVal)) result = sbyteVal;
-                else return false;
-                break;
-
-            case "short":
-                if (short.TryParse(section, out var shortVal)) result = shortVal;
-                else return false;
-                break;
-
-            case "uint":
-                if (uint.TryParse(section, out var uintVal)) result = uintVal;
-                else return false;
-                break;
-
-            case "ulong":
-                if (ulong.TryParse(section, out var ulongVal)) result = ulongVal;
-                else return false;
-                break;
-
-            case "ushort":
-                if (ushort.TryParse(section, out var ushortVal)) result = ushortVal;
-                else return false;
-                break;
-
-            default:
-                LogUtils.GetTempLogger<FlandreApp>().LogWarning(
-                    "Cannot match the argument type {ArgumentType}, please check the command definition.",
-                    type);
-                break;
+            result = longVal;
+            return true;
         }
 
-        return true;
+        if (type == typeof(double) && double.TryParse(section, out var doubleVal))
+        {
+            result = doubleVal;
+            return true;
+        }
+
+        if (type == typeof(float) && float.TryParse(section, out var floatVal))
+        {
+            result = floatVal;
+            return true;
+        }
+
+        if (type == typeof(bool) && bool.TryParse(section, out var boolVal))
+        {
+            result = boolVal;
+            return true;
+        }
+
+        if (type == typeof(byte) && byte.TryParse(section, out var byteVal))
+        {
+            result = byteVal;
+            return true;
+        }
+
+        if (type == typeof(char) && char.TryParse(section, out var charVal))
+        {
+            result = charVal;
+            return true;
+        }
+
+        if (type == typeof(sbyte) && sbyte.TryParse(section, out var sbyteVal))
+        {
+            result = sbyteVal;
+            return true;
+        }
+
+        if (type == typeof(short) && short.TryParse(section, out var shortVal))
+        {
+            result = shortVal;
+            return true;
+        }
+
+        if (type == typeof(uint) && uint.TryParse(section, out var uintVal))
+        {
+            result = uintVal;
+            return true;
+        }
+
+        if (type == typeof(ulong) && ulong.TryParse(section, out var ulongVal))
+        {
+            result = ulongVal;
+            return true;
+        }
+
+        if (type == typeof(string))
+        {
+            // 如果可以最好在外部就 parse 掉字符串，不然会产生多余对象
+            result = new StringParser(section).ReadQuoted();
+            return true;
+        }
+
+        return false;
     }
 
-    internal static string NormalizeCommandDefinition(string source)
+    internal static string GetTypeDescription(Type type)
     {
-        return string.Join('.', source.Split('.',
-            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+        if (type == typeof(int) || type == typeof(long) || type == typeof(byte)
+            || type == typeof(sbyte) || type == typeof(short))
+            return "整数";
+
+        if (type == typeof(double) || type == typeof(float)) return "小数";
+
+        if (type == typeof(uint) || type == typeof(ulong)) return "正整数";
+
+        if (type == typeof(bool)) return "\"true\"或\"false\"";
+
+        if (type == typeof(char)) return "字符";
+
+        if (type == typeof(string)) return "文本";
+
+        return type.Name;
     }
 }

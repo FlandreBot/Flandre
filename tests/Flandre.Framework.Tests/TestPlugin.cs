@@ -15,19 +15,25 @@ public class TestPlugin : Plugin
             await ctx.Bot.SendMessage(ctx.Message);
     }
 
-    [Command("test [str: text = TestStr]")]
-    public async Task OnTest(CommandContext ctx, ParsedArgs args)
+    protected internal override Task OnLoading(PluginLoadContext ctx)
     {
-        await ctx.Bot.SendMessage(ctx.Message, args.GetArgument<string>("str"));
+        ctx.AddCommand("test")
+            .WithAction<string>(OnTest);
+    }
+
+    [Command("test")]
+    public async Task OnTest(CommandContext ctx, string str)
+    {
+        await ctx.Bot.SendMessage(ctx.Message, str);
     }
 
     [Command("test1 <arg1:bool>")]
-    [Option("opt", "-o <opt:double>")]
-    [Option("boolopt", "-b <:bool>")]
-    [Option("trueopt", "-t <:bool=true>")]
+    [Option("opt")]
+    [Option("boolopt")]
+    [Option("trueopt")]
     [Shortcut("测试")]
     [Alias("..test111.11..45...14...")] // test normalize
-    public static MessageContent OnTest1(CommandContext ctx, ParsedArgs args)
+    public static MessageContent OnTest1(CommandContext ctx)
     {
         var arg1 = args.GetArgument<bool>("arg1");
         var opt = args.GetOption<double>("opt");

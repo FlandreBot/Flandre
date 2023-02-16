@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Reflection;
 using Flandre.Core.Common;
 using Flandre.Core.Messaging;
-using Flandre.Framework.Attributes;
 using Flandre.Framework.Common;
 using Flandre.Framework.Events;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,20 +15,15 @@ public sealed partial class FlandreApp : IHost
     private readonly IHost _hostApp;
     private readonly IOptionsMonitor<FlandreAppOptions> _appOptions;
     private readonly List<IAdapter> _adapters;
-    private readonly List<Bot> _bots = new();
     private readonly List<Type> _pluginTypes;
     private readonly List<Func<MiddlewareContext, Action, Task>> _middlewares = new();
-
-    private int _commandCount;
-    private int _aliasCount;
-    private int _shortcutCount;
+    public List<Bot> Bots { get; } = new();
 
     public IServiceProvider Services => _hostApp.Services;
     public ILogger<FlandreApp> Logger { get; }
 
-    public Dictionary<string, Command> CommandMap { get; } = new();
 
-    public Dictionary<string, Command> ShortcutMap { get; } = new();
+    internal PluginLoadContext PluginLoadContext = new();
 
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
     internal ConcurrentDictionary<string, TaskCompletionSource<Message?>> CommandSessions { get; } = new();
@@ -48,10 +41,10 @@ public sealed partial class FlandreApp : IHost
         Logger = Services.GetRequiredService<ILogger<FlandreApp>>();
 
         foreach (var adapter in _adapters)
-            _bots.AddRange(adapter.GetBots());
+            Bots.AddRange(adapter.GetBots());
 
         SubscribeEvents();
-        MapCommands();
+        LoadPlugins();
     }
 
     #region 初始化步骤
@@ -72,7 +65,7 @@ public sealed partial class FlandreApp : IHost
             }
         });
 
-        foreach (var bot in _bots)
+        foreach (var bot in Bots)
         {
             bot.OnMessageReceived += (_, e) => Task.Run(() =>
             {
@@ -115,35 +108,19 @@ public sealed partial class FlandreApp : IHost
         Logger.LogDebug("All bot events subscribed.");
     }
 
-    private void MapCommands()
+    private void LoadPlugins()
     {
+        PluginLoadContext = new PluginLoadContext();
+
         foreach (var pluginType in _pluginTypes)
-        foreach (var method in pluginType.GetMethods())
         {
-            var cmdAttr = method.GetCustomAttribute<CommandAttribute>();
-            if (cmdAttr is null) continue;
-
-            var options = method.GetCustomAttributes<OptionAttribute>().ToList();
-            var shortcuts = method.GetCustomAttributes<ShortcutAttribute>().ToList();
-            var aliases = method.GetCustomAttributes<AliasAttribute>().ToList();
-
-            var command = new Command(pluginType, cmdAttr, method, options, shortcuts, aliases);
-
-            CommandMap[cmdAttr.Command] = command;
-            _commandCount++;
-
-            foreach (var shortcut in shortcuts)
-            {
-                ShortcutMap[shortcut.Shortcut] = command;
-                _shortcutCount++;
-            }
-
-            foreach (var alias in aliases)
-            {
-                CommandMap[alias.Alias] = command;
-                _aliasCount++;
-            }
+            PluginLoadContext.CurrentPluginType = pluginType;
+            var plugin = (Plugin)Services.GetRequiredService(pluginType);
+            plugin.OnLoading(PluginLoadContext).GetAwaiter().GetResult();
         }
+
+        PluginLoadContext.LoadCommandAliases();
+        PluginLoadContext.LoadCommandShortcuts();
     }
 
     #endregion
@@ -191,7 +168,7 @@ public sealed partial class FlandreApp : IHost
     }
 
     /// <summary>
-    /// 运行应用实例，阻塞当前线程。
+    /// 运行应用实例
     /// </summary>
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
@@ -208,10 +185,12 @@ public sealed partial class FlandreApp : IHost
         await _hostApp.StartAsync(cancellationToken);
 
         Logger.LogInformation("App started.");
-        Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, _bots.Count);
+        Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, Bots.Count);
         Logger.LogDebug(
             "Total {PluginCount} plugins, {CommandCount} commands, {ShortcutCount} shortcuts, {AliasCount} aliases, {MiddlewareCount} middlewares",
-            _pluginTypes.Count, _commandCount, _shortcutCount, _aliasCount, _middlewares.Count);
+            _pluginTypes.Count, PluginLoadContext.CommandCount,
+            PluginLoadContext.StringShortcuts.Count + PluginLoadContext.RegexShortcuts.Count,
+            PluginLoadContext.AliasCount, _middlewares.Count);
         OnReady?.Invoke(this, new AppReadyEvent());
     }
 

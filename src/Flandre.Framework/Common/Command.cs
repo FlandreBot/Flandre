@@ -1,200 +1,141 @@
 ﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using Flandre.Core.Messaging;
-using Flandre.Core.Utils;
 using Flandre.Framework.Attributes;
-using Flandre.Framework.Utils;
-using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
 
-/// <summary>
-/// 指令
-/// </summary>
-public class Command
+public sealed class Command
 {
-    /// <summary>
-    /// 指令信息
-    /// </summary>
-    public CommandAttribute CommandInfo { get; }
+    public string Path { get; }
+    public string Name => Path.Split('.')[^1];
+
+    internal readonly List<CommandParameter> Parameters = new();
+    internal readonly List<CommandOption> Options = new();
 
     /// <summary>
-    /// 指令依赖方法
+    /// Contains alias command path
     /// </summary>
-    public MethodInfo InnerMethod { get; }
+    internal readonly List<string> Aliases = new();
 
-    /// <summary>
-    /// 指令选项
-    /// </summary>
-    public List<OptionAttribute> Options { get; }
+    internal readonly List<string> StringShortcuts = new();
+    internal readonly List<Regex> RegexShortcuts = new();
 
-    /// <summary>
-    /// 指令快捷方式
-    /// </summary>
-    public List<ShortcutAttribute> Shortcuts { get; }
+    internal MethodInfo? InnerMethod { get; private set; }
+    internal Type PluginType { get; set; }
 
-    /// <summary>
-    /// 指令别名
-    /// </summary>
-    public List<AliasAttribute> Aliases { get; }
+    private readonly CommandNode _currentNode;
 
-    internal Type PluginType { get; }
-
-    internal Command(Type pluginType, CommandAttribute info, MethodInfo innerMethod,
-        List<OptionAttribute> options, List<ShortcutAttribute> shortcuts, List<AliasAttribute> aliases)
+    internal Command(CommandNode currentNode, Type pluginType, string path)
     {
+        _currentNode = currentNode;
         PluginType = pluginType;
-        CommandInfo = info;
-        InnerMethod = innerMethod;
-        Options = options;
-        Shortcuts = shortcuts;
-        Aliases = aliases;
+        Path = path;
     }
 
-    internal (ParsedArgs, string?) ParseCommand(StringParser parser)
+    #region FluentAPI
+
+    public Command AddParameter<TValue>(string name)
     {
-        var args = new ParsedArgs();
-
-        var argIndex = 0;
-        var providedArgs = new List<string>();
-
-        while (!parser.IsEnd())
-        {
-            var peek = parser.SkipSpaces().Peek(' ');
-
-            if (peek.StartsWith("--")) // option (full)
-            {
-                var optName = parser.Read(' ').TrimStart('-');
-                var optNo = false;
-
-                if (optName.Length > 3 && optName.StartsWith("no-"))
-                {
-                    optName = optName[3..];
-                    optNo = true;
-                }
-
-                var option = Options.FirstOrDefault(opt => opt.Alias == optName)
-                             ?? Options.FirstOrDefault(opt => opt.Name == optName);
-                if (option is null)
-                    return (args, $"未知选项：{optName}。");
-
-                parser.SkipSpaces();
-
-                switch (option.Type)
-                {
-                    case "bool":
-                        args.Options.OptionsDict[option.Name] = !optNo;
-                        break;
-
-                    case "string":
-                        args.Options.OptionsDict[option.Name] = parser.ReadQuoted();
-                        break;
-
-                    default:
-                        if (CommandUtils.TryParseType(parser.Read(' '),
-                                option.Type, out var result, false))
-                            args.Options.OptionsDict[option.Name] = result;
-                        else return (args, $"选项 {option.Name} 类型错误，应为 {option.Type}。");
-                        break;
-                }
-            }
-            else if (peek.StartsWith('-')) // option (short)
-            {
-                var opts = parser.Read(' ').TrimStart('-');
-
-                parser.SkipSpaces();
-
-                for (var i = 0; i < opts.Length; i++)
-                {
-                    var optName = opts[i];
-                    var option = Options.FirstOrDefault(opt => opt.ShortName == optName);
-                    if (option is null)
-                        return (args, $"未知选项：{optName}。");
-
-                    if (option.Type == "bool")
-                    {
-                        args.Options.OptionsDict[option.Name] = true;
-                    }
-                    else
-                    {
-                        if (i < opts.Length - 1)
-                            return (args, $"选项 {option.Name} 类型错误，应为 {option.Type}。");
-
-                        if (option.Type == "string")
-                            args.Options.OptionsDict[option.Name] = parser.ReadQuoted();
-                        else if (CommandUtils.TryParseType(parser.Read(' '),
-                                     option.Type, out var result, false))
-                            args.Options.OptionsDict[option.Name] = result;
-                        else return (args, $"选项 {option.Name} 类型错误，应为 {option.Type}。");
-                    }
-                }
-            }
-            else // argument
-            {
-                if (argIndex >= CommandInfo.Parameters.Count)
-                    return (args, "参数过多，请检查指令格式。");
-
-                var param = CommandInfo.Parameters[argIndex];
-
-                switch (param.Type)
-                {
-                    case "string":
-                        args.Arguments.ArgumentList.Add(
-                            new KeyValuePair<string, object>(param.Name, parser.ReadQuoted()));
-                        break;
-
-                    case "text":
-                        args.Arguments.ArgumentList.Add(
-                            new KeyValuePair<string, object>(param.Name, parser.ReadToEnd()));
-                        break;
-
-                    default:
-                        if (CommandUtils.TryParseType(parser.Read(' '),
-                                param.Type, out var result, false))
-                            args.Arguments.ArgumentList.Add(new KeyValuePair<string, object>(param.Name, result));
-                        else return (args, $"参数 {param.Name} 类型错误，应为 {param.Type}。");
-                        break;
-                }
-
-                providedArgs.Add(param.Name);
-                argIndex++;
-            }
-        }
-
-        // 默认值
-        foreach (var param in CommandInfo.Parameters)
-        {
-            var provided = providedArgs.Contains(param.Name);
-            if (param.IsRequired && !provided)
-                return (args, $"参数 {param.Name} 缺失。");
-            if (param.IsRequired || provided) continue;
-            args.Arguments.ArgumentList.Add(new KeyValuePair<string, object>(param.Name, param.DefaultValue));
-        }
-
-        foreach (var opt in Options)
-            if (!args.Options.OptionsDict.ContainsKey(opt.Name))
-                args.Options.OptionsDict[opt.Name] = opt.DefaultValue;
-
-        return (args, null);
+        Parameters.Add(new CommandParameter(name, typeof(TValue), null));
+        return this;
     }
 
-    internal (MessageContent?, Exception?) InvokeCommand(Plugin plugin, CommandContext ctx, ParsedArgs args,
-        ILogger logger)
+    public Command AddParameter<TValue>(string name, TValue defaultValue)
     {
-        try
-        {
-            var cmdResult = InnerMethod.Invoke(
-                plugin, new object[] { ctx, args }[..InnerMethod.GetParameters().Length]);
-            var content = cmdResult as MessageContent ??
-                          (cmdResult as Task<MessageContent>)?.GetAwaiter().GetResult() ?? null;
+        Parameters.Add(new CommandParameter(name, typeof(TValue), defaultValue));
+        return this;
+    }
 
-            return (content, null);
-        }
-        catch (Exception e)
+    public Command AddOption<TValue>(string name, char shortName, TValue defaultValue)
+    {
+        Options.Add(new CommandOption(name, shortName, defaultValue ?? default(TValue)!));
+        return this;
+    }
+
+    public Command AddOption<TValue>(string name, TValue defaultValue)
+    {
+        Options.Add(new CommandOption(name, defaultValue ?? default(TValue)!));
+        return this;
+    }
+
+    public Command AddAlias(string aliasPath)
+    {
+        Aliases.Add(aliasPath);
+        return this;
+    }
+
+    public Command AddShortcut(string shortcut)
+    {
+        StringShortcuts.Add(shortcut);
+        return this;
+    }
+
+    public Command AddShortcut(Regex shortcut)
+    {
+        RegexShortcuts.Add(shortcut);
+        return this;
+    }
+
+    public Command WithAction(MethodInfo methodInfo)
+    {
+        InnerMethod = methodInfo;
+        return this;
+    }
+
+    /// <summary>
+    /// Auto gets information from method definition.
+    /// </summary>
+    public Command EnrichFromAction()
+    {
+        if (InnerMethod is not null)
         {
-            logger.LogError(e.InnerException ?? e,
-                "Error occurred while invoking command {CommandName} (method {MethodName}).",
-                CommandInfo.Command, InnerMethod.Name);
-            return (null, e.InnerException ?? e);
+            var parameters = InnerMethod.GetParameters();
+            foreach (var param in parameters)
+            {
+                // TODO
+            }
         }
+
+        return this;
+    }
+
+    public Command AddSubcommand(string path)
+    {
+        return _currentNode.AddCommand(PluginType, path);
+    }
+
+    #endregion
+
+    internal MessageContent? Invoke(Plugin plugin, CommandContext ctx, CommandParser.CommandParseResult parsed)
+    {
+        if (InnerMethod is null) return null;
+
+        var args = new List<object> { ctx };
+        var index = 0;
+        foreach (var param in InnerMethod.GetParameters())
+        {
+            if (index > parsed.ParsedArguments.Count - 1)
+                throw new CommandInvokeException("Too many arguments requested.");
+            var attr = param.GetCustomAttribute<OptionAttribute>();
+            if (attr is null)
+            {
+                // argument
+                args.Add(parsed.ParsedArguments[index]);
+                index++;
+            }
+            else
+            {
+                if (!parsed.ParsedOptions.TryGetValue(attr.Name, out var obj))
+                    throw new CommandInvokeException($"No such option named {attr.Name}.");
+                args.Add(obj);
+            }
+        }
+
+        var cmdResult = InnerMethod?.Invoke(plugin, args.ToArray());
+        var content = cmdResult as MessageContent ??
+                      (cmdResult as Task<MessageContent>)?.GetAwaiter().GetResult() ?? null;
+
+        return content;
     }
 }
