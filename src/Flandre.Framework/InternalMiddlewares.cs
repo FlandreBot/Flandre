@@ -1,4 +1,4 @@
-﻿using Flandre.Core.Messaging;
+using Flandre.Core.Messaging;
 using Flandre.Core.Messaging.Segments;
 using Flandre.Core.Utils;
 using Flandre.Framework.Common;
@@ -91,7 +91,7 @@ public sealed partial class FlandreApp
 
             var parser = ctx.CommandStringParser = new StringParser(commandStr);
 
-            var root = parser.SkipSpaces().Read(' ');
+            var root = parser.SkipWhiteSpaces().Read(' ');
 
             if (PluginLoadContext.StringShortcuts.TryGetValue(root, out var command))
                 return command;
@@ -117,7 +117,7 @@ public sealed partial class FlandreApp
                 else if (!node.HasCommand)
                     break;
                 path.Add(current);
-                current = parser.SkipSpaces().Read(' ');
+                current = parser.SkipWhiteSpaces().Read(' ');
             }
 
             if (!node.HasCommand && !string.IsNullOrWhiteSpace(commandPrefix))
