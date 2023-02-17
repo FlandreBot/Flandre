@@ -22,6 +22,10 @@ public class StringParser
     public StringParser(string str, HashSet<char> quoteChars, HashSet<(char Left, char Right)> quotePairs)
     {
         _str = str;
+        // 理论上应该先克隆再修改
+        _ = quoteChars.Add('\'');
+        _ = quoteChars.Add('"');
+        _ = quoteChars.Add('`');
         _leftQuotes = quotePairs.Select(t => t.Left).Concat(quoteChars).Where(c => !char.IsWhiteSpace(c)).ToArray();
         _rightQuotes = quotePairs.Select(t => t.Right).Concat(quoteChars).Where(c => !char.IsWhiteSpace(c)).ToArray();
     }
@@ -62,11 +66,11 @@ public class StringParser
     /// <summary>
     /// 跳到指定的字符位置
     /// </summary>
-    /// <param name="predicate">true时停止</param>
+    /// <param name="predicate">false时停止</param>
     /// <param name="includeTerminator"></param>
     public StringParser SkipWhen(Func<char, bool> predicate, bool includeTerminator = false)
     {
-        while (!(IsEnd || predicate(Current)))
+        while (!(IsEnd || !predicate(Current)))
             ++_pos;
         if (includeTerminator)
             ++_pos;
@@ -100,12 +104,12 @@ public class StringParser
     /// <summary>
     /// 读取字符串，但不移动解析器指针
     /// </summary>
-    /// <param name="predicate"></param>
+    /// <param name="predicate">false时停止</param>
     /// <param name="includeTerminator"></param>
     public string PeekWhen(Func<char, bool> predicate, bool includeTerminator = false)
     {
         var end = _pos;
-        while (!(IsEnd || predicate(Current)))
+        while (!(IsEnd || !predicate(Current)))
             ++end;
         if (includeTerminator)
             ++end;
@@ -127,7 +131,7 @@ public class StringParser
     /// <summary>
     /// 读取字符串，且移动解析器指针
     /// </summary>
-    /// <param name="predicate">true时停止读取</param>
+    /// <param name="predicate">false时停止</param>
     /// <param name="includeTerminator">同时读取终点字符，解析器指针指向下一字符</param>
     public string ReadWhen(Func<char, bool> predicate, bool includeTerminator = false)
     {
@@ -139,7 +143,7 @@ public class StringParser
     /// <summary>
     /// 读取字符串，且移动解析器指针，直至空白字符
     /// </summary>
-    public string ReadToWhiteSpace() => ReadWhen(char.IsWhiteSpace);
+    public string ReadToWhiteSpace() => ReadWhen(t => !char.IsWhiteSpace(t));
 
     /// <summary>
     /// 读取字符串的剩余部分
@@ -161,7 +165,10 @@ public class StringParser
 
         var index = Array.IndexOf(_leftQuotes, Current);
 
-        return index is not -1 ? Read(_rightQuotes[index], true)[1..^1] : ReadToWhiteSpace();
+        if (index is -1)
+            return ReadToWhiteSpace();
+        ++_pos;
+        return Read(_rightQuotes[index], true)[..^1];
     }
 
     private int IndexOfOrEnd(char value)
