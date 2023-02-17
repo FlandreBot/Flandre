@@ -1,4 +1,4 @@
-﻿using Flandre.Core.Messaging;
+using Flandre.Core.Messaging;
 using Flandre.Framework.Attributes;
 using Flandre.Framework.Common;
 using Flandre.Framework.Extensions;
@@ -19,6 +19,11 @@ public class TestPlugin : Plugin
     {
         ctx.AddCommand("test")
             .WithAction<string>(OnTest);
+
+        // 根据CmdAttribute添加Command
+        ctx.AddCommandFromAttributes();
+
+        return Task.CompletedTask;
     }
 
     [Command("test")]
@@ -27,19 +32,20 @@ public class TestPlugin : Plugin
         await ctx.Bot.SendMessage(ctx.Message, str);
     }
 
-    [Command("test1 <arg1:bool>")]
-    [Option("opt")]
-    [Option("boolopt")]
-    [Option("trueopt")]
     [Shortcut("测试")]
     [Alias("..test111.11..45...14...")] // test normalize
-    public static MessageContent OnTest1(CommandContext ctx)
+
+
+    [Cmd(nameof(OnTest1), "Alias1", "Alias2", Father = nameof(OnTest))]
+    public static MessageContent OnTest1(
+        CommandContext ctx,
+        int arg1,
+        double arg2,
+        [Option] object arg3,
+        [Option] double arg4
+        )
     {
-        var arg1 = args.GetArgument<bool>("arg1");
-        var opt = args.GetOption<double>("opt");
-        var boolOpt = args.GetOption<bool>("boolopt");
-        var trueOpt = args.GetOption<bool>("trueopt");
-        return $"arg1: {arg1} opt: {opt} b: {boolOpt} t: {trueOpt}";
+
     }
 
     [Command("test2 <arg1:text>")]
@@ -52,7 +58,10 @@ public class TestPlugin : Plugin
     [Command("sub.test")]
     [Alias("sssuuubbb")]
     [Shortcut("子测试")]
-    public static MessageContent? OnSubTest(CommandContext ctx) => null;
+    public static MessageContent? OnSubTest(CommandContext ctx)
+    {
+        return null;
+    }
 
     [Command("...sub....sub..sub......test..")]
     public static MessageContent? OnSubSubSubTest(CommandContext ctx) => null;
