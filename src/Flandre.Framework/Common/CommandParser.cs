@@ -29,7 +29,7 @@ internal static class CommandParser
 
         while (!parser.IsEnd())
         {
-            var peek = parser.SkipSpaces().Peek(' ');
+            var peek = parser.SkipWhiteSpaces().Peek(' ');
 
             // option (full)
             if (peek.StartsWith("--", StringComparison.OrdinalIgnoreCase))
@@ -59,7 +59,7 @@ internal static class CommandParser
                 }
                 else
                 {
-                    if (CommandUtils.TryParseValue(parser.SkipSpaces().Read(' '), option.Type, out var obj))
+                    if (CommandUtils.TryParseValue(parser.SkipWhiteSpaces().Read(' '), option.Type, out var obj))
                         result.ParsedOptions[option.Name] = obj;
                     else return TypeNotMatch(result, option);
                 }
@@ -68,7 +68,7 @@ internal static class CommandParser
             {
                 var opts = parser.Read(' ').TrimStart('-');
 
-                parser.SkipSpaces();
+                parser.SkipWhiteSpaces();
 
                 // 逐字符读取短选项，最后一个如果是非 bool 选项就读取一个参数给它，前面的全部赋值为 true
                 for (var i = 0; i < opts.Length; i++)
