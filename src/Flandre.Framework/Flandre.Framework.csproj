@@ -38,4 +38,8 @@
         <None Include="../../assets/avatar.jpg" Pack="true" PackagePath="/" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Types\" />
+    </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Flandre.Framework.Common;
+namespace Flandre.Framework.Common;
 
 public sealed class CommandOption
 {
@@ -11,6 +11,8 @@ public sealed class CommandOption
     public Type Type { get; }
 
     public object DefaultValue { get; }
+
+    public string Description { get; init; } = "";
 
     internal CommandOption(string name, char shortName, object defaultValue)
     {
