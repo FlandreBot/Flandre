@@ -1,4 +1,4 @@
-﻿using Flandre.Core.Utils;
+using Flandre.Core.Utils;
 
 namespace Flandre.Core.Tests.UtilsTests;
 
@@ -18,7 +18,7 @@ public class StringParserTests
         parser.Skip('r');
         Assert.Equal('r', parser.Current);
 
-        parser.Skip(1).SkipSpaces(); // skip 'r' and skip spaces
+        parser.Skip(1).SkipWhiteSpaces(); // skip 'r' and skip spaces
         Assert.Equal('i', parser.Current);
 
         Assert.Equal("ing", parser.Peek(3));
@@ -28,7 +28,7 @@ public class StringParserTests
         Assert.Equal("ing", parser.Read(' '));
         Assert.Equal(' ', parser.Current);
 
-        Assert.Equal("Parser_[Tests]", parser.SkipSpaces().ReadToEnd());
+        Assert.Equal("Parser_[Tests]", parser.SkipWhiteSpaces().ReadToEnd());
     }
 
     [Fact]
@@ -38,10 +38,10 @@ public class StringParserTests
         var parser = new StringParser(str);
 
         Assert.Equal("alpha", parser.ReadQuoted());
-        parser.SkipSpaces();
+        parser.SkipWhiteSpaces();
 
         Assert.Equal("beta", parser.ReadQuoted());
-        parser.SkipSpaces();
+        parser.SkipWhiteSpaces();
 
         Assert.Equal("gamma", parser.ReadQuoted());
 
