@@ -1,4 +1,4 @@
-﻿using Flandre.Core.Utils;
+using Flandre.Core.Utils;
 using Flandre.Framework.Utils;
 
 namespace Flandre.Framework.Common;
