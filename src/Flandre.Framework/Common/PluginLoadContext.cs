@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
+using Flandre.Core.Messaging;
+using Flandre.Framework.Utils;
 
 namespace Flandre.Framework.Common;
 
@@ -82,5 +84,10 @@ public sealed class PluginLoadContext
 
         CountNodeCommands(RootCommandNode);
         return count;
+    }
+
+    public void AddCommandFromAttributes()
+    {
+        CmdParser.Parse<MessageContent>(RootCommandNode, CurrentPluginType);
     }
 }

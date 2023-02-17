@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Flandre.Core.Messaging;
 using Flandre.Framework.Attributes;
@@ -10,19 +10,22 @@ public sealed class Command
     public string Path { get; }
     public string Name => Path.Split('.')[^1];
 
-    internal readonly List<CommandParameter> Parameters = new();
-    internal readonly List<CommandOption> Options = new();
+    internal List<CommandParameter> Parameters { get; init; } = new();
+    internal List<CommandOption> Options { get; init; } = new();
 
     /// <summary>
     /// Contains alias command path
     /// </summary>
-    internal readonly List<string> Aliases = new();
+    internal List<string> Aliases { get; } = new();
 
-    internal readonly List<string> StringShortcuts = new();
-    internal readonly List<Regex> RegexShortcuts = new();
+    internal List<string> StringShortcuts { get; } = new();
+    internal List<Regex> RegexShortcuts { get; } = new();
 
     internal MethodInfo? InnerMethod { get; private set; }
     internal Type PluginType { get; set; }
+
+    internal bool IsObsoleted { get; set; }
+    internal string Description { get; set; }
 
     private readonly CommandNode _currentNode;
 

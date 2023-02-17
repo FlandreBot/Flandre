@@ -1,4 +1,4 @@
-﻿namespace Flandre.Framework.Common;
+namespace Flandre.Framework.Common;
 
 public sealed class CommandParameter
 {
@@ -7,6 +7,8 @@ public sealed class CommandParameter
     public Type Type { get; }
 
     public object? DefaultValue { get; }
+
+    public string Description { get; init; } = "";
 
     public bool IsRequired => DefaultValue is null;
 
