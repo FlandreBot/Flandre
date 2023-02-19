@@ -3,21 +3,29 @@
 namespace Flandre.Framework.Attributes;
 
 /// <summary>
-/// 为指令添加快捷方式
+/// 为指令添加前缀式快捷方式
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class ShortcutAttribute : Attribute
+public class StringShortcutAttribute : Attribute
 {
-    public string? StringShortcut { get; set; }
-    public Regex? RegexShortcut { get; set; }
+    public string StringShortcut { get; }
 
-    public ShortcutAttribute(string shortcut)
+    public StringShortcutAttribute(string shortcut)
     {
         StringShortcut = shortcut;
     }
+}
 
-    public ShortcutAttribute(Regex shortcut)
+/// <summary>
+/// 为指令添加正则表达式式快捷方式
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+public class RegexShortcutAttribute : Attribute
+{
+    public Regex RegexShortcut { get; }
+
+    public RegexShortcutAttribute(string pattern)
     {
-        RegexShortcut = shortcut;
+        RegexShortcut = new Regex(pattern);
     }
 }

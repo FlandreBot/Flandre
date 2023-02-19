@@ -7,33 +7,32 @@ namespace Flandre.Framework.Common;
 
 public sealed class Command
 {
-    public string Path { get; }
-    public string Name => Path.Split('.')[^1];
+    public string Name { get; }
 
-    internal List<CommandParameter> Parameters { get; init; } = new();
-    internal List<CommandOption> Options { get; init; } = new();
+    internal List<CommandParameter> Parameters { get; set; } = new();
+    internal List<CommandOption> Options { get; set; } = new();
 
     /// <summary>
     /// Contains alias command path
     /// </summary>
     internal List<string> Aliases { get; } = new();
 
-    internal List<string> StringShortcuts { get; } = new();
-    internal List<Regex> RegexShortcuts { get; } = new();
+    internal List<string> StringShortcuts { get; set; } = new();
+    internal List<Regex> RegexShortcuts { get; set; } = new();
 
     internal MethodInfo? InnerMethod { get; private set; }
-    internal Type PluginType { get; set; }
+    internal Type PluginType { get; }
 
     internal bool IsObsoleted { get; set; }
-    internal string Description { get; set; }
+    internal string? Description { get; set; }
 
     private readonly CommandNode _currentNode;
 
-    internal Command(CommandNode currentNode, Type pluginType, string path)
+    internal Command(CommandNode currentNode, Type pluginType, string name)
     {
         _currentNode = currentNode;
         PluginType = pluginType;
-        Path = path;
+        Name = name;
     }
 
     #region FluentAPI
@@ -58,7 +57,7 @@ public sealed class Command
 
     public Command AddOption<TValue>(string name, TValue defaultValue)
     {
-        Options.Add(new CommandOption(name, defaultValue ?? default(TValue)!));
+        Options.Add(new CommandOption(name, default, defaultValue!));
         return this;
     }
 
@@ -86,23 +85,6 @@ public sealed class Command
         return this;
     }
 
-    /// <summary>
-    /// Auto gets information from method definition.
-    /// </summary>
-    public Command EnrichFromAction()
-    {
-        if (InnerMethod is not null)
-        {
-            var parameters = InnerMethod.GetParameters();
-            foreach (var param in parameters)
-            {
-                // TODO
-            }
-        }
-
-        return this;
-    }
-
     public Command AddSubcommand(string path)
     {
         return _currentNode.AddCommand(PluginType, path);
@@ -115,29 +97,40 @@ public sealed class Command
         if (InnerMethod is null) return null;
 
         var args = new List<object> { ctx };
-        var index = 0;
-        foreach (var param in InnerMethod.GetParameters())
+        var parsedArgIndex = 0;
+        var methodParams = InnerMethod.GetParameters();
+        for (var i = 1; i < methodParams.Length; i++)
         {
-            if (index > parsed.ParsedArguments.Count - 1)
+            var param = methodParams[i];
+            if (parsedArgIndex > parsed.ParsedArguments.Count)
                 throw new CommandInvokeException("Too many arguments requested.");
             var attr = param.GetCustomAttribute<OptionAttribute>();
             if (attr is null)
             {
                 // argument
-                args.Add(parsed.ParsedArguments[index]);
-                index++;
+                args.Add(parsed.ParsedArguments[parsedArgIndex]);
+                parsedArgIndex++;
             }
             else
             {
-                if (!parsed.ParsedOptions.TryGetValue(attr.Name, out var obj))
-                    throw new CommandInvokeException($"No such option named {attr.Name}.");
+                // option
+                if (param.Name is null)
+                    throw new CommandInvokeException("Option parameter must have a name.");
+                if (!parsed.ParsedOptions.TryGetValue(param.Name, out var obj))
+                    throw new CommandInvokeException($"No such option named {param.Name}.");
                 args.Add(obj);
             }
         }
 
         var cmdResult = InnerMethod?.Invoke(plugin, args.ToArray());
-        var content = cmdResult as MessageContent ??
-                      (cmdResult as Task<MessageContent>)?.GetAwaiter().GetResult() ?? null;
+
+        MessageContent? content;
+
+        if (cmdResult is ValueTask<MessageContent?> valueTask)
+            content = valueTask.GetAwaiter().GetResult();
+        else
+            content = cmdResult as MessageContent ??
+                      (cmdResult as Task<MessageContent?>)?.GetAwaiter().GetResult();
 
         return content;
     }

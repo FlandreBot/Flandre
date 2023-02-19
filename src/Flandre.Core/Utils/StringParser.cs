@@ -7,13 +7,26 @@ public class StringParser
 {
     private readonly string _str;
     private int _pos;
-    private readonly char[] _leftQuotes;
-    private readonly char[] _rightQuotes;
+
+    /// <summary>
+    /// 左侧引号
+    /// </summary>
+    public char[] LeftQuotes { get; }
+
+    /// <summary>
+    /// 右侧引号
+    /// </summary>
+    public char[] RightQuotes { get; }
 
     /// <summary>
     /// 当前字符
     /// </summary>
     public char Current => _str[_pos];
+
+    /// <summary>
+    /// 字符串是否解析完
+    /// </summary>
+    public bool IsEnd => _pos >= _str.Length;
 
     // ReSharper disable SuggestBaseTypeForParameterInConstructor
     /// <summary>
@@ -26,20 +39,18 @@ public class StringParser
         _ = quoteChars.Add('\'');
         _ = quoteChars.Add('"');
         _ = quoteChars.Add('`');
-        _leftQuotes = quotePairs.Select(t => t.Left).Concat(quoteChars).Where(c => !char.IsWhiteSpace(c)).ToArray();
-        _rightQuotes = quotePairs.Select(t => t.Right).Concat(quoteChars).Where(c => !char.IsWhiteSpace(c)).ToArray();
+        LeftQuotes = quotePairs.Select(t => t.Left).Concat(quoteChars).Where(c => !char.IsWhiteSpace(c)).ToArray();
+        RightQuotes = quotePairs.Select(t => t.Right).Concat(quoteChars).Where(c => !char.IsWhiteSpace(c)).ToArray();
     }
     // ReSharper restore SuggestBaseTypeForParameterInConstructor
 
     /// <summary>
     /// 使用字符串构造解析器
     /// </summary>
-    public StringParser(string str, params char[] quoteChars) : this(str, quoteChars.ToHashSet(), new HashSet<(char Left, char Right)>()) { }
-
-    /// <summary>
-    /// 字符串是否解析完
-    /// </summary>
-    public bool IsEnd => _pos >= _str.Length;
+    public StringParser(string str, params char[] quoteChars)
+        : this(str, quoteChars.ToHashSet(), new HashSet<(char Left, char Right)>())
+    {
+    }
 
     /// <summary>
     /// 跳过指定长度
@@ -163,12 +174,12 @@ public class StringParser
         if (IsEnd)
             return "";
 
-        var index = Array.IndexOf(_leftQuotes, Current);
+        var index = Array.IndexOf(LeftQuotes, Current);
 
         if (index is -1)
             return ReadToWhiteSpace();
         ++_pos;
-        return Read(_rightQuotes[index], true)[..^1];
+        return Read(RightQuotes[index], true)[..^1];
     }
 
     private int IndexOfOrEnd(char value)

@@ -26,7 +26,7 @@ internal sealed class CommandNode
 
         var finalName = segments[^1];
         var command = new Command(node, pluginType, finalName);
-        node.Subcommands[finalName].Command = command;
+        node.Command = command;
         return command;
     }
 
@@ -39,5 +39,20 @@ internal sealed class CommandNode
             else return null;
 
         return node;
+    }
+
+    public int CountCommands()
+    {
+        var count = 0;
+
+        void CountNodeCommands(CommandNode node)
+        {
+            if (node.HasCommand) count++;
+            foreach (var (_, subNode) in node.Subcommands)
+                CountNodeCommands(subNode);
+        }
+
+        CountNodeCommands(this);
+        return count;
     }
 }
