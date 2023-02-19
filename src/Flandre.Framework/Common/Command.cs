@@ -94,7 +94,8 @@ public sealed class Command
 
     internal MessageContent? Invoke(Plugin plugin, CommandContext ctx, CommandParser.CommandParseResult parsed)
     {
-        if (InnerMethod is null) return null;
+        if (InnerMethod is null)
+            return null;
 
         var args = new List<object> { ctx };
         var parsedArgIndex = 0;
@@ -124,14 +125,10 @@ public sealed class Command
 
         var cmdResult = InnerMethod?.Invoke(plugin, args.ToArray());
 
-        MessageContent? content;
-
-        if (cmdResult is ValueTask<MessageContent?> valueTask)
-            content = valueTask.GetAwaiter().GetResult();
-        else
-            content = cmdResult as MessageContent ??
+        var content = cmdResult is ValueTask<MessageContent?> valueTask
+            ? valueTask.GetAwaiter().GetResult()
+            : cmdResult as MessageContent ??
                       (cmdResult as Task<MessageContent?>)?.GetAwaiter().GetResult();
-
         return content;
     }
 }

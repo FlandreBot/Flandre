@@ -14,7 +14,8 @@ public static class CqCodeParser
     /// <param name="message">含有 CQ 码的消息</param>
     public static MessageContent ParseCqMessage(string message)
     {
-        if (string.IsNullOrEmpty(message)) return "";
+        if (string.IsNullOrEmpty(message))
+            return "";
 
         var parser = new StringParser(message);
         var segments = new List<MessageSegment>();
