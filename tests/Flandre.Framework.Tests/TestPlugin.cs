@@ -15,49 +15,21 @@ public class TestPlugin : Plugin
             await ctx.Bot.SendMessage(ctx.Message);
     }
 
-    protected internal override Task OnLoading(PluginLoadContext ctx)
+    [Command("test1")]
+    public static MessageContent OnTest1(CommandContext ctx, bool arg1, [Option] double opt = 0)
     {
-        ctx.AddCommand("test")
-            .WithAction<string>(OnTest);
-
-        // 根据CmdAttribute添加Command
-        ctx.AddCommandFromAttributes();
-
-        return Task.CompletedTask;
+        return $"{arg1} {opt + 200}";
     }
 
-    [Command("test")]
-    public async Task OnTest(CommandContext ctx, string str)
+    [Command("test2")]
+    public static MessageContent OnTest2(CommandContext ctx, int arg1, float arg2,
+        [Option] bool opt1 = true, [Option(ShortName = 'o')] bool opt2 = false)
     {
-        await ctx.Bot.SendMessage(ctx.Message, str);
-    }
-
-    [Shortcut("测试")]
-    [Alias("..test111.11..45...14...")] // test normalize
-
-
-    [Cmd(nameof(OnTest1), "Alias1", "Alias2", Father = nameof(OnTest))]
-    public static MessageContent OnTest1(
-        CommandContext ctx,
-        int arg1,
-        double arg2,
-        [Option] object arg3,
-        [Option] double arg4
-        )
-    {
-
-    }
-
-    [Command("test2 <arg1:text>")]
-    public static MessageContent OnTest2(CommandContext _, ParsedArgs args)
-    {
-        var arg1 = args.GetArgument<string>("arg1");
-        return arg1;
+        return $"{arg1} {arg2} {opt1} {opt2}";
     }
 
     [Command("sub.test")]
-    [Alias("sssuuubbb")]
-    [Shortcut("子测试")]
+    [StringShortcut("子测试")]
     public static MessageContent? OnSubTest(CommandContext ctx)
     {
         return null;

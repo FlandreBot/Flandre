@@ -93,14 +93,14 @@ public sealed partial class FlandreApp
 
             var root = parser.SkipWhiteSpaces().Read(' ');
 
-            if (PluginLoadContext.StringShortcuts.TryGetValue(root, out var command))
+            if (StringShortcuts.TryGetValue(root, out var command))
                 return command;
 
             // TODO: support regex variables
             // ReSharper disable once AccessToModifiedClosure
-            var matchedRegex = PluginLoadContext.RegexShortcuts.Keys.FirstOrDefault(regex => regex.IsMatch(root));
+            var matchedRegex = RegexShortcuts.Keys.FirstOrDefault(regex => regex.IsMatch(root));
             if (matchedRegex is not null)
-                return PluginLoadContext.RegexShortcuts[matchedRegex];
+                return RegexShortcuts[matchedRegex];
 
             if (!string.IsNullOrWhiteSpace(commandPrefix)
                 && !root.StartsWith(commandPrefix))
@@ -108,19 +108,29 @@ public sealed partial class FlandreApp
 
             var path = new List<string>();
             var current = root.TrimStart(commandPrefix);
+            var node = RootCommandNode;
+            var temp = false;
 
-            var node = PluginLoadContext.RootCommandNode;
-            while (!parser.IsEnd())
+            while (!parser.SkipWhiteSpaces().IsEnd)
             {
-                if (node.Subcommands.TryGetValue(current, out var subNode))
-                    node = subNode;
-                else if (!node.HasCommand)
-                    break;
                 path.Add(current);
-                current = parser.SkipWhiteSpaces().Read(' ');
+                if (node.Subcommands.TryGetValue(current, out var subNode))
+                {
+                    node = subNode;
+                    if (temp) parser.Read(' ');
+                    else temp = true;
+                    current = parser.SkipWhiteSpaces().Peek(' ');
+                }
+                else
+                {
+                    break;
+                }
             }
 
-            if (!node.HasCommand && !string.IsNullOrWhiteSpace(commandPrefix))
+            if (node.HasCommand)
+                return node.Command;
+
+            if (!string.IsNullOrWhiteSpace(commandPrefix))
                 ctx.Response = $"未找到指令：{string.Join('.', path)}。";
             return null;
         }

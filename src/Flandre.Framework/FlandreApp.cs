@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 using Flandre.Core.Common;
 using Flandre.Core.Messaging;
 using Flandre.Framework.Common;
@@ -22,8 +23,13 @@ public sealed partial class FlandreApp : IHost
     public IServiceProvider Services => _hostApp.Services;
     public ILogger<FlandreApp> Logger { get; }
 
+    #region 指令解析相关
 
-    internal PluginLoadContext PluginLoadContext = new();
+    internal CommandNode RootCommandNode { get; } = new(true);
+    internal Dictionary<string, Command> StringShortcuts { get; } = new();
+    internal Dictionary<Regex, Command> RegexShortcuts { get; } = new();
+
+    #endregion
 
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
     internal ConcurrentDictionary<string, TaskCompletionSource<Message?>> CommandSessions { get; } = new();
@@ -110,17 +116,19 @@ public sealed partial class FlandreApp : IHost
 
     private void LoadPlugins()
     {
-        PluginLoadContext = new PluginLoadContext();
-
+        var logger = Services.GetRequiredService<ILogger<PluginLoadContext>>();
         foreach (var pluginType in _pluginTypes)
         {
-            PluginLoadContext.CurrentPluginType = pluginType;
+            var loadCtx = new PluginLoadContext(RootCommandNode, pluginType, logger);
             var plugin = (Plugin)Services.GetRequiredService(pluginType);
-            plugin.OnLoading(PluginLoadContext).GetAwaiter().GetResult();
-        }
 
-        PluginLoadContext.LoadCommandAliases();
-        PluginLoadContext.LoadCommandShortcuts();
+            loadCtx.LoadFromAttributes();
+            // Fluent API can override attributes
+            plugin.OnLoading(loadCtx).GetAwaiter().GetResult();
+
+            loadCtx.LoadCommandAliases();
+            loadCtx.LoadCommandShortcuts(StringShortcuts, RegexShortcuts);
+        }
     }
 
     #endregion
@@ -187,10 +195,9 @@ public sealed partial class FlandreApp : IHost
         Logger.LogInformation("App started.");
         Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, Bots.Count);
         Logger.LogDebug(
-            "Total {PluginCount} plugins, {CommandCount} commands, {ShortcutCount} shortcuts, {AliasCount} aliases, {MiddlewareCount} middlewares",
-            _pluginTypes.Count, PluginLoadContext.CommandCount,
-            PluginLoadContext.StringShortcuts.Count + PluginLoadContext.RegexShortcuts.Count,
-            PluginLoadContext.AliasCount, _middlewares.Count);
+            "Total {PluginCount} plugins, {CommandCount} commands, {StringShortcutCount} string shortcuts, {RegexShortcutCount} regex shortcuts, {MiddlewareCount} middlewares",
+            _pluginTypes.Count, RootCommandNode.CountCommands(),
+            StringShortcuts.Count, RegexShortcuts.Count, _middlewares.Count);
         OnReady?.Invoke(this, new AppReadyEvent());
     }
 
@@ -205,5 +212,9 @@ public sealed partial class FlandreApp : IHost
         OnStopped?.Invoke(this, new AppStoppedEvent());
     }
 
-    public void Dispose() => _hostApp.Dispose();
+    public void Dispose()
+    {
+        StopAsync().GetAwaiter().GetResult();
+        _hostApp.Dispose();
+    }
 }

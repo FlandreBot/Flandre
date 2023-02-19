@@ -24,7 +24,7 @@ public abstract class Plugin
     /// </summary>
     /// <param name="ctx"></param>
     /// <returns></returns>
-    protected internal virtual Task OnLoading(PluginLoadContext ctx) => Task.CompletedTask;
+    public virtual Task OnLoading(PluginLoadContext ctx) => Task.CompletedTask;
 
     /// <summary>
     /// 处理消息事件

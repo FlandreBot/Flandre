@@ -19,7 +19,7 @@ public static class CqCodeParser
         var parser = new StringParser(message);
         var segments = new List<MessageSegment>();
 
-        while (!parser.IsEnd())
+        while (!parser.IsEnd)
             if (parser.Current == '[')
             {
                 // CQCode

@@ -8,18 +8,11 @@ public sealed class CommandParameter
 
     public object? DefaultValue { get; }
 
-    public string Description { get; init; } = "";
+    public string? Description { get; init; }
 
     public bool IsRequired => DefaultValue is null;
 
-    internal CommandParameter(string name, Type type, object? defaultValue = null)
-    {
-        Name = name;
-        Type = type;
-        DefaultValue = defaultValue;
-    }
-
-    internal CommandParameter(string name, Type type, string? defaultValue = null)
+    internal CommandParameter(string name, Type type, object? defaultValue)
     {
         Name = name;
         Type = type;

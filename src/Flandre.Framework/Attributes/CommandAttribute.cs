@@ -1,18 +1,27 @@
-﻿namespace Flandre.Framework.Attributes;
+using Flandre.Core.Models;
 
-/// <summary>
-/// 指令定义
-/// </summary>
+namespace Flandre.Framework.Attributes;
+
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class CommandAttribute : Attribute
+public class CommandAttribute : Attribute
 {
-    /// <summary>
-    /// 指令路径
-    /// </summary>
-    public string Path { get; }
-
-    public CommandAttribute(string path)
+    public CommandAttribute(string path, params string[] alias)
     {
         Path = path;
+        Alias = alias;
     }
+
+    public string Path { get; }
+
+    public string[] Alias { get; }
+
+    /// <summary>
+    /// Default <see cref="UserRole.Member"/>
+    /// </summary>
+    public UserRole Role { get; init; } = UserRole.Member;
+
+    /// <summary>
+    /// Default <see langword="true"/>
+    /// </summary>
+    public bool IgnoreCase { get; init; } = true;
 }

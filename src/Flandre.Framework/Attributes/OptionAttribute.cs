@@ -4,5 +4,4 @@ namespace Flandre.Framework.Attributes;
 public sealed class OptionAttribute : Attribute
 {
     public char ShortName { get; init; }
-
 }

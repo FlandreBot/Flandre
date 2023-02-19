@@ -27,7 +27,7 @@ internal static class CommandParser
         var argIndex = 0;
         var providedArgs = new List<string>();
 
-        while (!parser.IsEnd())
+        while (!parser.IsEnd)
         {
             var peek = parser.SkipWhiteSpaces().Peek(' ');
 

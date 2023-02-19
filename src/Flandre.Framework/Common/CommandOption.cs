@@ -12,21 +12,13 @@ public sealed class CommandOption
 
     public object DefaultValue { get; }
 
-    public string Description { get; init; } = "";
+    public string? Description { get; init; }
 
     internal CommandOption(string name, char shortName, object defaultValue)
     {
         Name = name;
         ShortName = shortName;
-        HasShortName = true;
-        Type = defaultValue.GetType();
-        DefaultValue = defaultValue;
-    }
-
-    internal CommandOption(string name, object defaultValue)
-    {
-        Name = name;
-        HasShortName = false;
+        HasShortName = shortName == default;
         Type = defaultValue.GetType();
         DefaultValue = defaultValue;
     }
