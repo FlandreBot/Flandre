@@ -19,7 +19,8 @@ public sealed partial class FlandreApp
 
     public FlandreApp UseAssigneeCheckerMiddleware()
     {
-        if (_assigneeCheckerUsed) return this;
+        if (_assigneeCheckerUsed)
+            return this;
         _assigneeCheckerUsed = true;
         UseMiddleware((ctx, next) =>
         {
@@ -45,7 +46,8 @@ public sealed partial class FlandreApp
 
     public FlandreApp UsePluginMessageEventMiddleware()
     {
-        if (_pluginMessageEventUsed) return this;
+        if (_pluginMessageEventUsed)
+            return this;
         _pluginMessageEventUsed = true;
         UseMiddleware(async (ctx, next) =>
         {
@@ -59,7 +61,8 @@ public sealed partial class FlandreApp
 
     public FlandreApp UseCommandSessionMiddleware()
     {
-        if (_commandSessionUsed) return this;
+        if (_commandSessionUsed)
+            return this;
         _commandSessionUsed = true;
         UseMiddleware((ctx, next) =>
         {
@@ -79,7 +82,8 @@ public sealed partial class FlandreApp
 
     public FlandreApp UseCommandParserMiddleware()
     {
-        if (_commandParserUsed) return this;
+        if (_commandParserUsed)
+            return this;
         _commandParserUsed = true;
 
         Command? ParseCommand(MiddlewareContext ctx)
@@ -114,11 +118,13 @@ public sealed partial class FlandreApp
             while (!parser.SkipWhiteSpaces().IsEnd)
             {
                 path.Add(current);
-                if (node.Subcommands.TryGetValue(current, out var subNode))
+                if (node.SubNodes.TryGetValue(current, out var subNode))
                 {
                     node = subNode;
-                    if (temp) parser.Read(' ');
-                    else temp = true;
+                    if (temp)
+                        parser.Read(' ');
+                    else
+                        temp = true;
                     current = parser.SkipWhiteSpaces().Peek(' ');
                 }
                 else
@@ -145,7 +151,8 @@ public sealed partial class FlandreApp
 
     public FlandreApp UseCommandInvokerMiddleware()
     {
-        if (_commandInvokerUsed) return this;
+        if (_commandInvokerUsed)
+            return this;
         _commandInvokerUsed = true;
 
         MessageContent? InvokeCommand(MiddlewareContext ctx)

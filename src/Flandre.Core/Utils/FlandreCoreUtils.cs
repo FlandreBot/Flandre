@@ -24,7 +24,8 @@ public static class FlandreCoreUtils
     /// <param name="resource">资源消息段</param>
     public static async Task<byte[]?> GetOrDownloadDataAsync(this ResourceSegment resource)
     {
-        if (resource.Data is not null) return resource.Data;
+        if (resource.Data is not null)
+            return resource.Data;
 
         if (resource.Path is not null && File.Exists(resource.Path))
             return await File.ReadAllBytesAsync(resource.Path);

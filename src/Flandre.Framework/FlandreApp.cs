@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Flandre.Core.Common;
 using Flandre.Core.Messaging;
@@ -17,7 +17,7 @@ public sealed partial class FlandreApp : IHost
     private readonly IOptionsMonitor<FlandreAppOptions> _appOptions;
     private readonly List<IAdapter> _adapters;
     private readonly List<Type> _pluginTypes;
-    private readonly List<Func<MiddlewareContext, Action, Task>> _middlewares = new();
+    private readonly List<Func<MiddlewareContext, Action, Task>> _middleware = new();
     public List<Bot> Bots { get; } = new();
 
     public IServiceProvider Services => _hostApp.Services;
@@ -25,7 +25,7 @@ public sealed partial class FlandreApp : IHost
 
     #region 指令解析相关
 
-    internal CommandNode RootCommandNode { get; } = new(true);
+    internal CommandNode RootCommandNode { get; } = new();
     internal Dictionary<string, Command> StringShortcuts { get; } = new();
     internal Dictionary<Regex, Command> RegexShortcuts { get; } = new();
 
@@ -76,7 +76,7 @@ public sealed partial class FlandreApp : IHost
             bot.OnMessageReceived += (_, e) => Task.Run(() =>
             {
                 var middlewareCtx = new MiddlewareContext(this, bot, e.Message, null);
-                ExecuteMiddlewares(middlewareCtx, 0); // Wait for all middlewares' execution
+                ExecuteMiddleware(middlewareCtx, 0); // Wait for all middleware' execution
                 middlewareCtx.ServiceScope.Dispose();
                 if (middlewareCtx.Response is not null)
                     bot.SendMessage(e.Message, middlewareCtx.Response);
@@ -138,17 +138,18 @@ public sealed partial class FlandreApp : IHost
     /// </summary>
     /// <param name="ctx">中间件上下文</param>
     /// <param name="index">中间件索引</param>
-    private void ExecuteMiddlewares(MiddlewareContext ctx, int index)
+    private void ExecuteMiddleware(MiddlewareContext ctx, int index)
     {
         try
         {
-            if (_middlewares.Count < index + 1) return;
-            _middlewares[index].Invoke(ctx, () => ExecuteMiddlewares(ctx, index + 1)).GetAwaiter().GetResult();
+            if (_middleware.Count < index + 1)
+                return;
+            _middleware[index].Invoke(ctx, () => ExecuteMiddleware(ctx, index + 1)).GetAwaiter().GetResult();
         }
         catch (Exception e)
         {
             Logger.LogError(e, "Error occurred while processing middleware {MiddlewareName}.",
-                _middlewares[index].Method.Name);
+                _middleware[index].Method.Name);
         }
     }
 
@@ -158,7 +159,7 @@ public sealed partial class FlandreApp : IHost
     /// <param name="middleware">中间件方法</param>
     public FlandreApp UseMiddleware(Func<MiddlewareContext, Action, Task> middleware)
     {
-        _middlewares.Add(middleware);
+        _middleware.Add(middleware);
         return this;
     }
 
@@ -195,9 +196,9 @@ public sealed partial class FlandreApp : IHost
         Logger.LogInformation("App started.");
         Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, Bots.Count);
         Logger.LogDebug(
-            "Total {PluginCount} plugins, {CommandCount} commands, {StringShortcutCount} string shortcuts, {RegexShortcutCount} regex shortcuts, {MiddlewareCount} middlewares",
+            "Total {PluginCount} plugins, {CommandCount} commands, {StringShortcutCount} string shortcuts, {RegexShortcutCount} regex shortcuts, {MiddlewareCount} middleware",
             _pluginTypes.Count, RootCommandNode.CountCommands(),
-            StringShortcuts.Count, RegexShortcuts.Count, _middlewares.Count);
+            StringShortcuts.Count, RegexShortcuts.Count, _middleware.Count);
         OnReady?.Invoke(this, new AppReadyEvent());
     }
 

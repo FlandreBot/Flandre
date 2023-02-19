@@ -18,7 +18,7 @@ public class MiddlewareTests
 
         // Order Note
         //  1,2,3  ↓     ↑  2
-        // [Internal Middlewares]
+        // [Internal Middleware]
         //  1,2,3  ↓     ↑  2
         // [Custom Middleware #1]
         //      2  ↓     ↑  2
@@ -66,7 +66,7 @@ public class MiddlewareTests
         var content1 = await client.SendMessageForReply("test (1) short me at middleware #1");
         Assert.NotNull(content1);
 
-        var content2 = await client.SendMessageForReply("test (2) pass me through all middlewares");
+        var content2 = await client.SendMessageForReply("test (2) pass me through all middleware");
         Assert.NotNull(content2);
 
         var content3 = await client.SendMessageForReply("test (3) don't pass me", TimeSpan.FromSeconds(2));

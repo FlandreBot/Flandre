@@ -33,7 +33,8 @@ public sealed class PluginLoadContext
         {
             _logger.LogTrace("正在加载方法 {PluginType}.{MethodName}", _pluginType, method.Name);
             var cmdAttr = method.GetCustomAttribute<CommandAttribute>();
-            if (cmdAttr is null) continue;
+            if (cmdAttr is null)
+                continue;
 
             // 方法类型不对的
             if (!(method.ReturnType.IsAssignableTo(typeof(MessageContent))
@@ -104,24 +105,24 @@ public sealed class PluginLoadContext
                         StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     for (var i = 0; i < segments.Length; i++)
                     {
-                        currentNode = currentNode.Subcommands.TryGetValue(segments[i], out var nextNode)
+                        currentNode = currentNode.SubNodes.TryGetValue(segments[i], out var nextNode)
                             ? nextNode
-                            : currentNode.Subcommands[segments[i]] = new CommandNode(false);
+                            : currentNode.SubNodes[segments[i]] = new CommandNode();
 
-                        // now current node is the subcommand's node
+                        // now current node is the sub-node's node
                         if (i == segments.Length - 1)
                             currentNode.Command = node.Command;
                     }
                 }
 
-            foreach (var (_, subNode) in node.Subcommands) LoadNodeAliases(subNode);
+            foreach (var (_, subNode) in node.SubNodes)
+                LoadNodeAliases(subNode);
         }
 
         LoadNodeAliases(_rootNode);
     }
 
-    internal void LoadCommandShortcuts(
-        Dictionary<string, Command> stringShortcuts, Dictionary<Regex, Command> regexShortcuts)
+    internal void LoadCommandShortcuts(Dictionary<string, Command> stringShortcuts, Dictionary<Regex, Command> regexShortcuts)
     {
         void LoadNodeShortcuts(CommandNode node)
         {
@@ -133,7 +134,8 @@ public sealed class PluginLoadContext
                     regexShortcuts[regexShortcut] = node.Command;
             }
 
-            foreach (var (_, subNode) in node.Subcommands) LoadNodeShortcuts(subNode);
+            foreach (var (_, subNode) in node.SubNodes)
+                LoadNodeShortcuts(subNode);
         }
 
         LoadNodeShortcuts(_rootNode);

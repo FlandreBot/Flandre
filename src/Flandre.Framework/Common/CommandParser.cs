@@ -61,7 +61,8 @@ internal static class CommandParser
                 {
                     if (CommandUtils.TryParseValue(parser.SkipWhiteSpaces().Read(' '), option.Type, out var obj))
                         result.ParsedOptions[option.Name] = obj;
-                    else return TypeNotMatch(result, option);
+                    else
+                        return TypeNotMatch(result, option);
                 }
             }
             else if (peek.StartsWith('-')) // option (short)

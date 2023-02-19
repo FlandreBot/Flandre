@@ -90,15 +90,20 @@ internal static class CommandUtils
             || type == typeof(sbyte) || type == typeof(short))
             return "整数";
 
-        if (type == typeof(double) || type == typeof(float)) return "小数";
+        if (type == typeof(double) || type == typeof(float))
+            return "小数";
 
-        if (type == typeof(uint) || type == typeof(ulong)) return "正整数";
+        if (type == typeof(uint) || type == typeof(ulong))
+            return "正整数";
 
-        if (type == typeof(bool)) return "\"true\"或\"false\"";
+        if (type == typeof(bool))
+            return "\"true\"或\"false\"";
 
-        if (type == typeof(char)) return "字符";
+        if (type == typeof(char))
+            return "字符";
 
-        if (type == typeof(string)) return "文本";
+        if (type == typeof(string))
+            return "文本";
 
         return type.Name;
     }

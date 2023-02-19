@@ -38,7 +38,8 @@ public sealed class OneBotWebSocketBot : OneBotBot
 
         _wsClient.DisconnectionHappened.Subscribe(_ =>
         {
-            if (_clientStopped) return;
+            if (_clientStopped)
+                return;
             Log(BotLogLevel.Warning,
                 $"WebSocket connection lost, reconnecting in {_config.WebSocketReconnectTimeout}s...");
             foreach (var tcs in _apiTasks.Values)
@@ -112,7 +113,8 @@ public sealed class OneBotWebSocketBot : OneBotBot
         {
             // 请求响应数据
             var resp = json.Deserialize<OneBotApiResponse>()!;
-            if (!_apiTasks.TryGetValue(resp.Echo, out var tcs)) return;
+            if (!_apiTasks.TryGetValue(resp.Echo, out var tcs))
+                return;
 
             if (resp.Status == "failed")
                 tcs.SetException(new OneBotApiException(resp.Msg ?? resp.Wording ?? $"调用 API 失败。({resp.RetCode})"));
