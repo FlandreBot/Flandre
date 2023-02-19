@@ -1,12 +1,13 @@
-﻿using Flandre.Core.Utils;
+using System.Diagnostics.CodeAnalysis;
+using Flandre.Core.Utils;
 
 namespace Flandre.Framework.Utils;
 
 internal static class CommandUtils
 {
-    internal static bool TryParseValue(string section, Type type, out object result)
+    internal static bool TryParseValue(string section, Type type, [NotNullWhen(true)] out object? result)
     {
-        result = null!;
+        result = null;
 
         if (type == typeof(int) && int.TryParse(section, out var intVal))
         {

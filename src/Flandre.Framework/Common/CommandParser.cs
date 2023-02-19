@@ -1,3 +1,4 @@
+using System.Text;
 using Flandre.Core.Utils;
 using Flandre.Framework.Utils;
 
@@ -5,12 +6,59 @@ namespace Flandre.Framework.Common;
 
 internal static class CommandParser
 {
+    internal sealed class CommandSplitResult
+    {
+        public List<string> Arguments { get; } = new();
+
+        public Dictionary<string, string> Options { get; } = new();
+    }
+
     internal sealed class CommandParseResult
     {
-        public List<object> ParsedArguments { get; } = new();
-        public Dictionary<string, object> ParsedOptions { get; } = new();
+        public List<object> Arguments { get; } = new();
 
-        public string? ErrorText { get; internal set; }
+        public Dictionary<string, object> Options { get; } = new();
+
+        public StringBuilder ErrorText { get; } = new();
+    }
+
+    public static List<string> SplitArgs(this StringParser parser)
+    {
+        var args = new List<string>();
+        while (!parser.IsEnd)
+        {
+            args.Add(parser.ReadQuoted());
+            parser.SkipWhiteSpaces();
+        }
+        return args;
+    }
+
+    public static bool TrySplit(this StringParser parser, out CommandSplitResult result)
+    {
+        result = new CommandSplitResult();
+        string? waitForOption = null;
+        foreach (var str in parser.SplitArgs())
+        {
+            if (str.StartsWith("--") || str.StartsWith('-'))
+            {
+                var s = str.TrimStart('-');
+                // 以第一次出现的参数为准，第二次出现忽略
+                if (!result.Options.ContainsKey(str))
+                {
+                    result.Options[str] = "";
+                    waitForOption = str;
+                }
+            }
+            else if (waitForOption is not null)
+            {
+                result.Options[waitForOption] = str;
+                waitForOption = null;
+            }
+            else
+                result.Arguments.Add(str);
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -24,139 +72,93 @@ internal static class CommandParser
     {
         result = new CommandParseResult();
 
-        var argIndex = 0;
-        var providedArgs = new List<string>();
+        if (!parser.TrySplit(out var split))
+            return false;
 
-        while (!parser.IsEnd)
+        if (split.Arguments.Count > command.Parameters.Count)
+            result.ErrorText.AppendLine("参数过多，请检查指令格式。");
+
+        if (split.Arguments.Count < command.Parameters.Count(t => t.IsRequired))
         {
-            var peek = parser.SkipWhiteSpaces().Peek(' ');
-
-            // option (full)
-            if (peek.StartsWith("--", StringComparison.OrdinalIgnoreCase))
-            {
-                var optName = parser.Read(' ').TrimStart('-');
-
-                // 例: `--no-check` 将名为 `check` 的选项设置为 false
-                // 如果者类型不是 bool，无事发生
-                var optNo = false;
-
-                if (optName.Length > 3 && optName.StartsWith("no-", StringComparison.OrdinalIgnoreCase))
-                {
-                    optName = optName[3..];
-                    optNo = true;
-                }
-
-                var option = command.Options.FirstOrDefault(opt => opt.Name == optName);
-                if (option is null)
-                {
-                    result.ErrorText = $"未知选项：{optName}";
-                    return false;
-                }
-
-                if (option.Type == typeof(bool))
-                {
-                    result.ParsedOptions[option.Name] = !optNo;
-                }
-                else
-                {
-                    if (CommandUtils.TryParseValue(parser.SkipWhiteSpaces().Read(' '), option.Type, out var obj))
-                        result.ParsedOptions[option.Name] = obj;
-                    else
-                        return TypeNotMatch(result, option);
-                }
-            }
-            else if (peek.StartsWith('-')) // option (short)
-            {
-                var opts = parser.Read(' ').TrimStart('-');
-
-                parser.SkipWhiteSpaces();
-
-                // 逐字符读取短选项，最后一个如果是非 bool 选项就读取一个参数给它，前面的全部赋值为 true
-                for (var i = 0; i < opts.Length; i++)
-                {
-                    var optName = opts[i];
-                    var option = command.Options.FirstOrDefault(opt => opt.HasShortName && opt.ShortName == optName);
-                    if (option is null)
-                    {
-                        result.ErrorText = $"未知选项：{optName}";
-                        return false;
-                    }
-
-                    if (option.Type == typeof(bool))
-                    {
-                        result.ParsedOptions[option.Name] = true;
-                    }
-                    else
-                    {
-                        // 由于只能赋值给最后一个短选项，前面的必须为 bool
-                        if (i < opts.Length - 1)
-                            return TypeNotMatch(result, option);
-
-                        var nextArg = parser.Read(' ');
-
-                        if (option.Type == typeof(string))
-                            result.ParsedOptions[option.Name] = parser.ReadQuoted();
-                        else if (CommandUtils.TryParseValue(nextArg, option.Type, out var obj))
-                            result.ParsedOptions[option.Name] = obj;
-                        else
-                            return TypeNotMatch(result, option);
-                    }
-                }
-            }
-            else // argument
-            {
-                if (argIndex >= command.Parameters.Count)
-                {
-                    result.ErrorText = "参数过多，请检查指令格式。";
-                    return false;
-                }
-
-                var param = command.Parameters[argIndex];
-
-                if (param.Type == typeof(string))
-                    result.ParsedArguments.Add(parser.ReadQuoted());
-                else if (CommandUtils.TryParseValue(parser.Read(' '), param.Type, out var obj))
-                    result.ParsedArguments.Add(obj);
-                else
-                    return TypeNotMatch(result, param);
-
-                providedArgs.Add(param.Name);
-                argIndex++;
-            }
+            result.ErrorText.AppendLine("参数缺少，请检查指令格式。");
+            return false;
         }
 
-        // 默认值
-        // 由于禁止在必选参数前添加可选参数，可以简单地用索引
-        foreach (var param in command.Parameters)
-        {
-            var provided = providedArgs.Contains(param.Name);
-            if (param.IsRequired && !provided)
+        for (var i = 0; i < command.Parameters.Count; ++i)
+            // --- start parse --- //
+            if (CommandUtils.TryParseValue(split.Arguments[i], command.Parameters[i].Type, out var obj))
+                result.Arguments[i] = obj;
+            else
             {
-                result.ErrorText = $"参数 {param.Name} 缺失。";
+                result.ErrorText.Append("参数").AppendLine(TypeNotMatch(command.Parameters[i]));
                 return false;
             }
+        // ------- end parse --- //
 
-            if (param.IsRequired || provided)
-                continue;
-            result.ParsedArguments.Add(param.DefaultValue!);
-        }
+        if (split.Options.Count > command.Options.Count)
+            result.ErrorText.AppendLine("选项过多，请检查指令格式。");
 
-        foreach (var opt in command.Options)
-            if (!result.ParsedOptions.ContainsKey(opt.Name))
-                result.ParsedOptions[opt.Name] = opt.DefaultValue;
+        foreach (var option in command.Options)
+            // --option
+            if (split.Options.TryGetValue(option.Name, out var str))
+            {
+                if (option.Type == typeof(bool))
+                    result.Options[option.Name] = RedundantOptionValue(str, result.ErrorText);
+                // --- start parse --- //
+                else if (CommandUtils.TryParseValue(str, option.Type, out var obj))
+                    result.Options[option.Name] = obj;
+                else
+                {
+                    result.ErrorText.Append("选项").AppendLine(TypeNotMatch(option));
+                    return false;
+                }
+                // --- end parse --- //
+                split.Options.Remove(str);
+            }
+
+            // --no-option
+            else if (split.Options.TryGetValue("no-" + option.Name, out str))
+            {
+                if (option.Type == typeof(bool))
+                    result.Options[option.Name] = !RedundantOptionValue(str, result.ErrorText);
+                else
+                {
+                    result.ErrorText.Append("选项").AppendLine(TypeNotMatch(option));
+                    return false;
+                }
+                split.Options.Remove(str);
+            }
+
+            // -o
+            else if (option.HasShortName && split.Options.TryGetValue(option.ShortName.ToString(), out str))
+            {
+                if (option.Type == typeof(bool))
+                    result.Options[option.Name] = RedundantOptionValue(str, result.ErrorText);
+                // --- start parse --- //
+                else if (CommandUtils.TryParseValue(str, option.Type, out var obj))
+                    result.Options[option.Name] = obj;
+                else
+                {
+                    result.ErrorText.Append("选项").AppendLine(TypeNotMatch(option));
+                    return false;
+                }
+                // --- end parse --- //
+                split.Options.Remove(str);
+            }
+
+        foreach (var option in split.Options)
+            result.ErrorText.AppendLine($"未知选项 {option.Key}。");
 
         return true;
     }
 
-    private static bool TypeNotMatch(CommandParseResult res, CommandOption option)
-    {
-        res.ErrorText = $"选项 {option.Name} 类型错误，应提供一个{CommandUtils.GetTypeDescription(option.Type)}。";
-        return false;
-    }
+    private static string TypeNotMatch(ICommandParameter parameter)
+        => $" {parameter.Name} 类型错误，应提供一个{CommandUtils.GetTypeDescription(parameter.Type)}。";
 
-    private static bool TypeNotMatch(CommandParseResult res, CommandParameter param)
+    private static bool RedundantOptionValue(string value, StringBuilder warning)
     {
-        res.ErrorText = $"参数 {param.Name} 类型错误，应提供一个{CommandUtils.GetTypeDescription(param.Type)}。";
-        return false;
+        if (value is not "")
+            warning.AppendLine($"选项不应该提供参数 {value}。");
+        return true;
     }
 }

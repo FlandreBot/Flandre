@@ -85,13 +85,13 @@ public sealed class Command
         return this;
     }
 
-    public Command AddSubcommand(string path)
+    public Command AddSubCommand(string path)
     {
         return _currentNode.AddCommand(PluginType, path);
     }
 
     #endregion
-
+    
     internal MessageContent? Invoke(Plugin plugin, CommandContext ctx, CommandParser.CommandParseResult parsed)
     {
         if (InnerMethod is null)
@@ -103,13 +103,13 @@ public sealed class Command
         for (var i = 1; i < methodParams.Length; i++)
         {
             var param = methodParams[i];
-            if (parsedArgIndex > parsed.ParsedArguments.Count)
+            if (parsedArgIndex > parsed.Arguments.Count)
                 throw new CommandInvokeException("Too many arguments requested.");
             var attr = param.GetCustomAttribute<OptionAttribute>();
             if (attr is null)
             {
                 // argument
-                args.Add(parsed.ParsedArguments[parsedArgIndex]);
+                args.Add(parsed.Arguments[parsedArgIndex]);
                 parsedArgIndex++;
             }
             else
@@ -117,7 +117,7 @@ public sealed class Command
                 // option
                 if (param.Name is null)
                     throw new CommandInvokeException("Option parameter must have a name.");
-                if (!parsed.ParsedOptions.TryGetValue(param.Name, out var obj))
+                if (!parsed.Options.TryGetValue(param.Name, out var obj))
                     throw new CommandInvokeException($"No such option named {param.Name}.");
                 args.Add(obj);
             }

@@ -161,7 +161,7 @@ public sealed partial class FlandreApp
                 return null;
 
             if (!ctx.Command.TryParse(ctx.CommandStringParser, out var result))
-                return result.ErrorText!;
+                return result.ErrorText.ToString();
 
             var plugin = (Plugin)ctx.Services.GetRequiredService(ctx.Command.PluginType);
             var pluginLogger = (ILogger)Services.GetRequiredService(plugin.LoggerType);

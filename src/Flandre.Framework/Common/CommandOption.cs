@@ -1,6 +1,6 @@
 namespace Flandre.Framework.Common;
 
-public sealed class CommandOption
+public sealed class CommandOption : ICommandParameter
 {
     public string Name { get; }
 
