@@ -1,0 +1,26 @@
+name: Docs
+description: 文档改进
+title: "Docs: "
+
+labels:
+  - docs
+
+body:
+  - type: textarea
+    attributes:
+      label: Describe which part of the docs is problematic
+      description: 请说明文档的哪一部分存在问题。
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the problem related to this part of the docs
+      description: 请说明文档的这一部分出现了什么问题。
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: 请描述其他想要补充的信息。
