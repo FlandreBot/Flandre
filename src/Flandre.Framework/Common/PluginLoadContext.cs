@@ -75,10 +75,7 @@ public sealed class PluginLoadContext
 
                 // parameter
                 parameters.Add(new CommandParameter(param.Name!, param.ParameterType,
-                    param.HasDefaultValue ? param.DefaultValue : null)
-                {
-                    Description = description
-                });
+                    param.HasDefaultValue ? param.DefaultValue : null) { Description = description });
             }
 
             var cmd = AddCommand(cmdAttr.Path).WithAction(method);
@@ -122,7 +119,8 @@ public sealed class PluginLoadContext
         LoadNodeAliases(_rootNode);
     }
 
-    internal void LoadCommandShortcuts(Dictionary<string, Command> stringShortcuts, Dictionary<Regex, Command> regexShortcuts)
+    internal void LoadCommandShortcuts(Dictionary<string, Command> stringShortcuts,
+        Dictionary<Regex, Command> regexShortcuts)
     {
         void LoadNodeShortcuts(CommandNode node)
         {

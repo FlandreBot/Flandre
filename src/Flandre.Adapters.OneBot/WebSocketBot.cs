@@ -62,7 +62,12 @@ public sealed class OneBotWebSocketBot : OneBotBot
         var echo = Guid.NewGuid().ToString();
 
         _apiTasks.TryAdd(echo, tcs);
-        _wsClient.Send(JsonSerializer.Serialize(new { action, @params, echo }));
+        _wsClient.Send(JsonSerializer.Serialize(new
+        {
+            action,
+            @params,
+            echo
+        }));
 
         return tcs.Task;
     }
@@ -89,21 +94,24 @@ public sealed class OneBotWebSocketBot : OneBotBot
                     {
                         if (requestEvent.SubType == "invite")
                             OnGuildInvited?.Invoke(this, new BotGuildInvitedEvent(
-                                    requestEvent.GroupId?.ToString()!, requestEvent.GroupId?.ToString()!,
-                                    requestEvent.UserId.ToString(), requestEvent.UserId.ToString(), true)
-                                { EventMessage = requestEvent.Flag });
+                                requestEvent.GroupId?.ToString()!, requestEvent.GroupId?.ToString()!,
+                                requestEvent.UserId.ToString(), requestEvent.UserId.ToString(), true)
+                            {
+                                EventMessage = requestEvent.Flag
+                            });
                         else if (requestEvent.SubType == "add")
                             OnGuildJoinRequested?.Invoke(this, new BotGuildJoinRequestedEvent(
-                                    requestEvent.GroupId?.ToString()!, requestEvent.GroupId?.ToString()!,
-                                    requestEvent.UserId.ToString(), requestEvent.UserId.ToString(),
-                                    requestEvent.Comment)
-                                { EventMessage = requestEvent.Flag });
+                                requestEvent.GroupId?.ToString()!, requestEvent.GroupId?.ToString()!,
+                                requestEvent.UserId.ToString(), requestEvent.UserId.ToString(),
+                                requestEvent.Comment) { EventMessage = requestEvent.Flag });
                     }
                     else if (requestEvent.RequestType == "friend")
                     {
                         OnFriendRequested?.Invoke(this, new BotFriendRequestedEvent(
-                                requestEvent.UserId.ToString(), requestEvent.UserId.ToString(), requestEvent.Comment)
-                            { EventMessage = requestEvent.Flag });
+                            requestEvent.UserId.ToString(), requestEvent.UserId.ToString(), requestEvent.Comment)
+                        {
+                            EventMessage = requestEvent.Flag
+                        });
                     }
 
                     break;
@@ -127,23 +135,24 @@ public sealed class OneBotWebSocketBot : OneBotBot
 
     private void OnApiMessageEvent(OneBotApiMessageEvent e)
     {
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(new Message
-        {
-            Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,
-            Platform = Platform,
-            SourceType = e.MessageType == "group" ? MessageSourceType.Channel : MessageSourceType.Private,
-            MessageId = e.MessageId.ToString(),
-            GuildId = e.GroupId?.ToString(),
-            ChannelId = e.GroupId?.ToString(),
-            Sender = new User
+        OnMessageReceived?.Invoke(this,
+            new BotMessageReceivedEvent(new Message
             {
-                Name = e.Sender.Nickname,
-                Nickname = e.Sender.Card,
-                UserId = e.UserId.ToString(),
-                AvatarUrl = OneBotUtils.GetUserAvatar(e.UserId)
-            },
-            Content = CqCodeParser.ParseCqMessage(e.RawMessage)
-        }));
+                Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,
+                Platform = Platform,
+                SourceType = e.MessageType == "group" ? MessageSourceType.Channel : MessageSourceType.Private,
+                MessageId = e.MessageId.ToString(),
+                GuildId = e.GroupId?.ToString(),
+                ChannelId = e.GroupId?.ToString(),
+                Sender = new User
+                {
+                    Name = e.Sender.Nickname,
+                    Nickname = e.Sender.Card,
+                    UserId = e.UserId.ToString(),
+                    AvatarUrl = OneBotUtils.GetUserAvatar(e.UserId)
+                },
+                Content = CqCodeParser.ParseCqMessage(e.RawMessage)
+            }));
     }
 
     #endregion

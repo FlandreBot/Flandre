@@ -244,29 +244,20 @@ public sealed class KonataBot : FlandreBot
     {
         OnGuildInvited?.Invoke(this, new BotGuildInvitedEvent(
             e.GroupName, e.GroupUin.ToString(),
-            e.InviterNick, e.InviterUin.ToString(), e.InviterIsAdmin)
-        {
-            EventMessage = e.Token
-        });
+            e.InviterNick, e.InviterUin.ToString(), e.InviterIsAdmin) { EventMessage = e.Token });
     }
 
     private void InnerOnGroupRequestJoin(KonataInternalBot bot, GroupRequestJoinEvent e)
     {
         OnGuildJoinRequested?.Invoke(this, new BotGuildJoinRequestedEvent(
             e.GroupName, e.GroupUin.ToString(),
-            e.ReqNick, e.ReqUin.ToString(), e.ReqComment)
-        {
-            EventMessage = e.Token
-        });
+            e.ReqNick, e.ReqUin.ToString(), e.ReqComment) { EventMessage = e.Token });
     }
 
     private void InnerOnFriendRequest(KonataInternalBot bot, FriendRequestEvent e)
     {
         OnFriendRequested?.Invoke(this, new BotFriendRequestedEvent(
-            e.ReqNick, e.ReqUin.ToString(), e.ReqComment)
-        {
-            EventMessage = e.Token
-        });
+            e.ReqNick, e.ReqUin.ToString(), e.ReqComment) { EventMessage = e.Token });
     }
 
     private void InnerOnCaptcha(KonataInternalBot bot, CaptchaEvent e)

@@ -12,7 +12,10 @@ internal sealed class CommandNode
     {
         var node = this;
         var segments = path.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        node = segments.Aggregate(node, (current, name) => current.SubNodes.TryGetValue(name, out var nextNode) ? nextNode : (current.SubNodes[name] = new CommandNode()));
+        node = segments.Aggregate(node,
+            (current, name) => current.SubNodes.TryGetValue(name, out var nextNode)
+                ? nextNode
+                : current.SubNodes[name] = new CommandNode());
 
         var finalName = segments[^1];
         var command = new Command(node, pluginType, finalName);

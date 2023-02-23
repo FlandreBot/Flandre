@@ -128,7 +128,7 @@ public sealed class Command
         var content = cmdResult is ValueTask<MessageContent?> valueTask
             ? valueTask.GetAwaiter().GetResult()
             : cmdResult as MessageContent ??
-                      (cmdResult as Task<MessageContent?>)?.GetAwaiter().GetResult();
+              (cmdResult as Task<MessageContent?>)?.GetAwaiter().GetResult();
         return content;
     }
 }
