@@ -37,30 +37,6 @@ public sealed class Command
 
     #region FluentAPI
 
-    public Command AddParameter<TValue>(string name)
-    {
-        Parameters.Add(new CommandParameter(name, typeof(TValue), null));
-        return this;
-    }
-
-    public Command AddParameter<TValue>(string name, TValue defaultValue)
-    {
-        Parameters.Add(new CommandParameter(name, typeof(TValue), defaultValue));
-        return this;
-    }
-
-    public Command AddOption<TValue>(string name, char shortName, TValue defaultValue)
-    {
-        Options.Add(new CommandOption(name, shortName, defaultValue ?? default(TValue)!));
-        return this;
-    }
-
-    public Command AddOption<TValue>(string name, TValue defaultValue)
-    {
-        Options.Add(new CommandOption(name, default, defaultValue!));
-        return this;
-    }
-
     public Command AddAlias(string aliasPath)
     {
         Aliases.Add(aliasPath);
