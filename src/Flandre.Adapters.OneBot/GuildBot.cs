@@ -40,21 +40,22 @@ public class OneBotGuildBot : Bot
             _isSelfIdSet = true;
         }
 
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(new Message
-        {
-            Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,
-            Platform = Platform,
-            SourceType = MessageSourceType.Channel,
-            MessageId = e.MessageId!,
-            GuildId = e.GuildId,
-            ChannelId = e.ChannelId,
-            Sender = new User
+        OnMessageReceived?.Invoke(this,
+            new BotMessageReceivedEvent(new Message
             {
-                Name = e.Sender.Nickname,
-                UserId = e.Sender.TinyId!
-            },
-            Content = CqCodeParser.ParseCqMessage(e.Message!)
-        }));
+                Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,
+                Platform = Platform,
+                SourceType = MessageSourceType.Channel,
+                MessageId = e.MessageId!,
+                GuildId = e.GuildId,
+                ChannelId = e.ChannelId,
+                Sender = new User
+                {
+                    Name = e.Sender.Nickname,
+                    UserId = e.Sender.TinyId!
+                },
+                Content = CqCodeParser.ParseCqMessage(e.Message!)
+            }));
     }
 
     public override async Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,

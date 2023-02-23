@@ -17,12 +17,13 @@ public class OneBotInternalBot
 
     public async Task<int> SendPrivateMessage(long userId, string message, bool autoEscape = false)
     {
-        var resp = await _parent.SendApiRequest("send_private_msg", new
-        {
-            user_id = userId,
-            message = message,
-            auto_escape = autoEscape
-        });
+        var resp = await _parent.SendApiRequest("send_private_msg",
+            new
+            {
+                user_id = userId,
+                message = message,
+                auto_escape = autoEscape
+            });
         return resp.GetProperty("message_id").GetInt32();
     }
 
@@ -33,12 +34,13 @@ public class OneBotInternalBot
 
     public async Task<int> SendGroupMessage(long groupId, string message, bool autoEscape = false)
     {
-        var resp = await _parent.SendApiRequest("send_group_msg", new
-        {
-            group_id = groupId,
-            message = message,
-            auto_escape = autoEscape
-        });
+        var resp = await _parent.SendApiRequest("send_group_msg",
+            new
+            {
+                group_id = groupId,
+                message = message,
+                auto_escape = autoEscape
+            });
         return resp.GetProperty("message_id").GetInt32();
     }
 
@@ -49,14 +51,15 @@ public class OneBotInternalBot
 
     public async Task<int> SendMessage(long? userId, long? groupId, string message, bool autoEscape = false)
     {
-        var resp = await _parent.SendApiRequest("send_msg", new
-        {
-            message_type = userId is not null ? "private" : "group",
-            user_id = userId,
-            group_id = groupId,
-            message = message,
-            auto_escape = autoEscape
-        });
+        var resp = await _parent.SendApiRequest("send_msg",
+            new
+            {
+                message_type = userId is not null ? "private" : "group",
+                user_id = userId,
+                group_id = groupId,
+                message = message,
+                auto_escape = autoEscape
+            });
         return resp.GetProperty("message_id").GetInt32();
     }
 
@@ -67,28 +70,32 @@ public class OneBotInternalBot
 
     public async Task DeleteMessage(int messageId)
     {
-        await _parent.SendApiRequest("delete_msg", new { message_id = messageId });
+        await _parent.SendApiRequest("delete_msg",
+            new { message_id = messageId });
     }
 
     public async Task<OneBotMessage> GetMessage(int messageId)
     {
-        return (await _parent.SendApiRequest("get_msg", new { message_id = messageId }))
+        return (await _parent.SendApiRequest("get_msg",
+                new { message_id = messageId }))
             .Deserialize<OneBotMessage>()!;
     }
 
     public async Task MarkMessageAsRead(int messageId)
     {
-        await _parent.SendApiRequest("mark_msg_as_read", new { message_id = messageId });
+        await _parent.SendApiRequest("mark_msg_as_read",
+            new { message_id = messageId });
     }
 
     public async Task SetGroupKick(long groupId, long userId, bool rejectAddRequest = false)
     {
-        await _parent.SendApiRequest("set_group_kick", new
-        {
-            group_id = groupId,
-            user_id = userId,
-            reject_add_request = rejectAddRequest
-        });
+        await _parent.SendApiRequest("set_group_kick",
+            new
+            {
+                group_id = groupId,
+                user_id = userId,
+                reject_add_request = rejectAddRequest
+            });
     }
 
     public async Task SetGroupBan(long groupId, long userId, int duration = 1800)
@@ -166,14 +173,21 @@ public class OneBotInternalBot
 
     public async Task SetFriendAddRequest(string flag, bool approve = true, string remark = "")
     {
-        await _parent.SendApiRequest("set_friend_add_request", new { flag, approve, remark });
+        await _parent.SendApiRequest("set_friend_add_request", new
+        {
+            flag,
+            approve,
+            remark
+        });
     }
 
     public async Task SetGroupAddRequest(string flag, string subType, bool approve = true, string reason = "")
     {
         await _parent.SendApiRequest("set_group_add_request", new
         {
-            flag, approve, reason,
+            flag,
+            approve,
+            reason,
             sub_type = subType
         });
     }
@@ -188,7 +202,10 @@ public class OneBotInternalBot
     {
         await _parent.SendApiRequest("set_qq_profile", new
         {
-            nickname, company, email, college,
+            nickname,
+            company,
+            email,
+            college,
             personal_note = personalNote
         });
     }
@@ -196,10 +213,11 @@ public class OneBotInternalBot
     public async Task<OneBotUser> GetStrangerInfo(long userId, bool noCache = false)
     {
         return (await _parent.SendApiRequest("get_stranger_info", new
-        {
-            user_id = userId,
-            no_cache = noCache
-        })).Deserialize<OneBotUser>()!;
+            {
+                user_id = userId,
+                no_cache = noCache
+            }))
+            .Deserialize<OneBotUser>()!;
     }
 
     public async Task<OneBotFriend[]> GetFriendList()
@@ -216,10 +234,11 @@ public class OneBotInternalBot
     public async Task<OneBotGroup> GetGroupInfo(long groupId, bool noCache = false)
     {
         return (await _parent.SendApiRequest("get_group_info", new
-        {
-            group_id = groupId,
-            no_cache = noCache
-        })).Deserialize<OneBotGroup>()!;
+            {
+                group_id = groupId,
+                no_cache = noCache
+            }))
+            .Deserialize<OneBotGroup>()!;
     }
 
     public async Task<OneBotGroup[]> GetGroupList()
@@ -241,9 +260,10 @@ public class OneBotInternalBot
     public async Task<OneBotGroupMember[]> GetGroupMemberList(long groupId, bool noCache = false)
     {
         return (await _parent.SendApiRequest("get_group_member_list", new
-        {
-            group_id = groupId,
-            no_cache = noCache
-        })).Deserialize<OneBotGroupMember[]>()!;
+            {
+                group_id = groupId,
+                no_cache = noCache
+            }))
+            .Deserialize<OneBotGroupMember[]>()!;
     }
 }

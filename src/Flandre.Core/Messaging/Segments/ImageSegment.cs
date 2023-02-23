@@ -17,7 +17,11 @@ public class ImageSegment : ResourceSegment
     /// <param name="type">类型</param>
     public static ImageSegment FromData(byte[] data, string? type = null)
     {
-        return new ImageSegment { Data = data, Type = type };
+        return new ImageSegment
+        {
+            Data = data,
+            Type = type
+        };
     }
 
     /// <summary>
@@ -27,7 +31,11 @@ public class ImageSegment : ResourceSegment
     /// <param name="type">类型</param>
     public static ImageSegment FromPath(string path, string? type = null)
     {
-        return new ImageSegment { Path = path, Type = type };
+        return new ImageSegment
+        {
+            Path = path,
+            Type = type
+        };
     }
 
     /// <summary>
@@ -37,6 +45,10 @@ public class ImageSegment : ResourceSegment
     /// <param name="type">类型</param>
     public static ImageSegment FromUrl(string url, string? type = null)
     {
-        return new ImageSegment { Url = url, Type = type };
+        return new ImageSegment
+        {
+            Url = url,
+            Type = type
+        };
     }
 }

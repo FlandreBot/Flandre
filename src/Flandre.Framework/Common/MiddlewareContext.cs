@@ -17,7 +17,7 @@ public sealed class MiddlewareContext : MessageContext
     public IServiceProvider Services => ServiceScope.ServiceProvider;
 
     public MessageContent? Response { get; set; }
-    
+
     public Command? Command { get; internal set; }
 
     internal StringParser? CommandStringParser { get; set; }
