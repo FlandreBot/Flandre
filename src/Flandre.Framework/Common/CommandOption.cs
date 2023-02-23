@@ -18,7 +18,7 @@ public sealed class CommandOption
     {
         Name = name;
         ShortName = shortName;
-        HasShortName = shortName == default;
+        HasShortName = shortName != default;
         Type = defaultValue.GetType();
         DefaultValue = defaultValue;
     }
