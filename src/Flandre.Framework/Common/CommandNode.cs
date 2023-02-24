@@ -8,6 +8,8 @@ internal sealed class CommandNode
 
     public bool HasCommand => Command is not null;
 
+    public bool IsAlias { get; internal set; }
+
     public Command AddCommand(Type pluginType, string path)
     {
         var node = this;
@@ -41,7 +43,7 @@ internal sealed class CommandNode
 
         void CountNodeCommands(CommandNode node)
         {
-            if (node.HasCommand)
+            if (node is { HasCommand: true, IsAlias: false })
                 count++;
             foreach (var (_, subNode) in node.SubNodes)
                 CountNodeCommands(subNode);

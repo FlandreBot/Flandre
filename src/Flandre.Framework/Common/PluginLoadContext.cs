@@ -79,12 +79,17 @@ public sealed class PluginLoadContext
             }
 
             var cmd = AddCommand(cmdAttr.Path).WithAction(method);
+
+            foreach (var alias in cmdAttr.Alias)
+                cmd.AddAlias(alias);
+
             cmd.Parameters = parameters;
             cmd.Options = options;
             cmd.StringShortcuts = method.GetCustomAttributes<StringShortcutAttribute>()
                 .Select(attr => attr.StringShortcut).ToList();
             cmd.RegexShortcuts = method.GetCustomAttributes<RegexShortcutAttribute>()
                 .Select(attr => attr.RegexShortcut).ToList();
+
             cmd.IsObsoleted = method.GetCustomAttribute<ObsoleteAttribute>() is not null;
             cmd.Description = method.GetCustomAttribute<DescriptionAttribute>()?.Description;
         }
@@ -92,31 +97,38 @@ public sealed class PluginLoadContext
 
     internal void LoadCommandAliases()
     {
+        var toBeAdded = new Dictionary<string, Command>();
+
         void LoadNodeAliases(CommandNode node)
         {
             if (node.HasCommand)
                 foreach (var alias in node.Command!.Aliases)
-                {
-                    var currentNode = _rootNode;
-                    var segments = alias.Split('.',
-                        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    for (var i = 0; i < segments.Length; i++)
-                    {
-                        currentNode = currentNode.SubNodes.TryGetValue(segments[i], out var nextNode)
-                            ? nextNode
-                            : currentNode.SubNodes[segments[i]] = new CommandNode();
-
-                        // now current node is the sub-node's node
-                        if (i == segments.Length - 1)
-                            currentNode.Command = node.Command;
-                    }
-                }
+                    toBeAdded[alias] = node.Command;
 
             foreach (var (_, subNode) in node.SubNodes)
                 LoadNodeAliases(subNode);
         }
 
         LoadNodeAliases(_rootNode);
+
+        foreach (var (alias, cmd) in toBeAdded)
+        {
+            var currentNode = _rootNode;
+            var segments = alias.Split('.',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            for (var i = 0; i < segments.Length; i++)
+            {
+                currentNode = currentNode.SubNodes.TryGetValue(segments[i], out var nextNode)
+                    ? nextNode
+                    : currentNode.SubNodes[segments[i]] = new CommandNode();
+
+                if (i == segments.Length - 1)
+                {
+                    currentNode.Command = cmd;
+                    currentNode.IsAlias = true;
+                }
+            }
+        }
     }
 
     internal void LoadCommandShortcuts(Dictionary<string, Command> stringShortcuts,

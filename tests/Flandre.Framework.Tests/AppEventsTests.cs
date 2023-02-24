@@ -11,7 +11,7 @@ public class AppEventsTests
         var client = adapter.GetChannelClient();
 
         var builder = FlandreApp.CreateBuilder();
-        using var app = builder
+        var app = builder
             .AddAdapter(adapter)
             .AddPlugin<TestPlugin>()
             .Build();
@@ -24,14 +24,15 @@ public class AppEventsTests
         app.OnReady += (_, _) =>
         {
             count += 10;
-            client.SendMessageForReply("throw-ex").GetAwaiter().GetResult();
+            client.SendMessage("throw-ex");
         };
         app.OnStopped += (_, _) => count += 100;
 
         app.OnCommandInvoking += (_, e) => cmdName = e.Command.Name;
         app.OnCommandInvoked += (_, e) => { ex = e.Exception; };
 
-        await app.StartAsync();
+        await app.StartWithDefaultsAsync();
+        await Task.Delay(TimeSpan.FromSeconds(1));
         await app.StopAsync();
 
         Assert.Equal(111, count);
