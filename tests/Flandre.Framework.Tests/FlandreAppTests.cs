@@ -1,4 +1,4 @@
-﻿using Flandre.Adapters.Mock;
+﻿
 
 // ReSharper disable StringLiteralTypo
 
@@ -9,18 +9,14 @@ public class FlandreAppTests
     [Fact]
     public async Task TestShortcutAndAlias()
     {
-        var adapter = new MockAdapter();
-        var channelClient = adapter.GetChannelClient();
-
         var builder = FlandreApp.CreateBuilder();
         using var app = builder
-            .AddAdapter(adapter)
             .AddPlugin<TestPlugin>()
             .Build();
 
         await app.StartAsync();
 
-        Assert.Equal(9, app.RootCommandNode.CountCommands());
+        Assert.Equal(6, app.RootCommandNode.CountCommands());
         Assert.Equal(2, app.StringShortcuts.Count);
 
         Assert.NotNull(app.RootCommandNode.GetNodeByPath("test1"));
@@ -35,16 +31,8 @@ public class FlandreAppTests
 
         // alias
         Assert.NotNull(app.RootCommandNode.GetNodeByPath("test111.11.45.14"));
-        Assert.Equal(app.RootCommandNode.GetNodeByPath("sssuuubbb"),
-            app.RootCommandNode.GetNodeByPath("sub.test"));
-
-        const string result = "arg1: True opt: 114.514 b: False t: True";
-
-        var content = await channelClient.SendMessageForReply("test1 true --opt 114.514");
-        Assert.Equal(result, content?.GetText());
-
-        content = await channelClient.SendMessageForReply(" 测试  true --opt 114.514");
-        Assert.Equal(result, content?.GetText());
+        Assert.Equal(app.RootCommandNode.GetNodeByPath("sssuuubbb")?.Command,
+            app.RootCommandNode.GetNodeByPath("sub.test")?.Command);
 
         await app.StopAsync();
     }

@@ -11,17 +11,26 @@ namespace Flandre.Framework;
 
 public sealed partial class FlandreApp
 {
-    private bool _assigneeCheckerUsed;
     private bool _pluginMessageEventUsed;
     private bool _commandSessionUsed;
     private bool _commandParserUsed;
     private bool _commandInvokerUsed;
 
-    public FlandreApp UseAssigneeCheckerMiddleware()
+    private FlandreApp UsePluginMessageHandler()
     {
-        if (_assigneeCheckerUsed)
+        if (_pluginMessageEventUsed)
             return this;
-        _assigneeCheckerUsed = true;
+        _pluginMessageEventUsed = true;
+        UseMiddleware((ctx, next) =>
+        {
+            _pluginTypes.ForEach(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceived(ctx));
+            next();
+        });
+        return this;
+    }
+
+    public FlandreApp UseAssigneeChecker()
+    {
         UseMiddleware((ctx, next) =>
         {
             var segment = ctx.Message.Content.Segments.FirstOrDefault();
@@ -44,22 +53,7 @@ public sealed partial class FlandreApp
         return this;
     }
 
-    public FlandreApp UsePluginMessageEventMiddleware()
-    {
-        if (_pluginMessageEventUsed)
-            return this;
-        _pluginMessageEventUsed = true;
-        UseMiddleware(async (ctx, next) =>
-        {
-            await Task.WhenAll(_pluginTypes
-                .Select(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceived(ctx))
-                .ToArray());
-            next();
-        });
-        return this;
-    }
-
-    public FlandreApp UseCommandSessionMiddleware()
+    public FlandreApp UseCommandSession()
     {
         if (_commandSessionUsed)
             return this;
@@ -80,7 +74,7 @@ public sealed partial class FlandreApp
         return this;
     }
 
-    public FlandreApp UseCommandParserMiddleware()
+    public FlandreApp UseCommandParser()
     {
         if (_commandParserUsed)
             return this;
@@ -114,8 +108,9 @@ public sealed partial class FlandreApp
             var current = root.TrimStart(commandPrefix);
             var node = RootCommandNode;
             var temp = false;
+            parser.SkipWhiteSpaces();
 
-            while (!parser.SkipWhiteSpaces().IsEnd)
+            do
             {
                 path.Add(current);
                 if (node.SubNodes.TryGetValue(current, out var subNode))
@@ -131,7 +126,7 @@ public sealed partial class FlandreApp
                 {
                     break;
                 }
-            }
+            } while (!parser.SkipWhiteSpaces().IsEnd);
 
             if (node.HasCommand)
                 return node.Command;
@@ -149,7 +144,7 @@ public sealed partial class FlandreApp
         return this;
     }
 
-    public FlandreApp UseCommandInvokerMiddleware()
+    public FlandreApp UseCommandInvoker()
     {
         if (_commandInvokerUsed)
             return this;
@@ -187,7 +182,7 @@ public sealed partial class FlandreApp
             catch (Exception e)
             {
                 pluginLogger.LogError("Error occurred in ");
-                ex = e;
+                ex = e.InnerException ?? e;
             }
 
             OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ex, content));

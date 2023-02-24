@@ -18,8 +18,6 @@ public class MiddlewareTests
 
         // Order Note
         //  1,2,3  ↓     ↑  2
-        // [Internal Middleware]
-        //  1,2,3  ↓     ↑  2
         // [Custom Middleware #1]
         //      2  ↓     ↑  2
         // [Custom Middleware #2]
@@ -31,13 +29,13 @@ public class MiddlewareTests
         {
             // 1, 2, 3 pass through
 
-            if (ctx.Message.GetText() == "test (3) don't pass me")
+            if (ctx.Message.GetText().Contains("(3)"))
                 // 3 shorts here
                 return;
 
             count1In++;
 
-            if (ctx.Message.GetText() == "test (1) short me at middleware #1")
+            if (ctx.Message.GetText().Contains("(1)"))
             {
                 ctx.Response = "ok";
                 // 1 shorts here
@@ -52,10 +50,12 @@ public class MiddlewareTests
         });
 
         // Custom Middleware #2
-        app.UseMiddleware((_, next) =>
+        app.UseMiddleware((ctx, next) =>
         {
             // 2 passes through
             count2++;
+
+            ctx.Response = ctx.Message.Content;
 
             // 2 goes out
             next();

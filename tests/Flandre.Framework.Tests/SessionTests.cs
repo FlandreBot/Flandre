@@ -15,7 +15,7 @@ public class SessionTests
             .AddPlugin<TestPlugin>()
             .Build();
 
-        await app.StartAsync();
+        await app.StartWithDefaultsAsync();
 
         var task1 = client.SendMessageForReply("start-session");
         await Task.Delay(TimeSpan.FromSeconds(1));
@@ -26,7 +26,5 @@ public class SessionTests
         await Task.Delay(TimeSpan.FromSeconds(3));
         client.SendMessage("timeout!");
         Assert.Null(await task2);
-
-        await app.StopAsync();
     }
 }

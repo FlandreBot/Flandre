@@ -18,7 +18,7 @@ public class CommandTests
             .AddPlugin<TestPlugin>()
             .Build();
 
-        await app.StartAsync();
+        await app.StartWithDefaultsAsync();
 
         MessageContent? content;
 

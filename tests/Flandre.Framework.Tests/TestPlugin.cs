@@ -16,19 +16,20 @@ public class TestPlugin : Plugin
     }
 
     [Command("test1")]
+    [StringShortcut("测试")]
     public static MessageContent OnTest1(CommandContext ctx, bool arg1, [Option] double opt = 0)
     {
         return $"{arg1} {opt + 200}";
     }
 
-    [Command("test2")]
+    [Command("test2", "..test111.11...45.14.")]
     public static MessageContent OnTest2(CommandContext ctx, int arg1, float arg2,
         [Option] bool opt1 = true, [Option(ShortName = 'o')] bool opt2 = false)
     {
         return $"{arg1} {arg2} {opt1} {opt2}";
     }
 
-    [Command("sub.test")]
+    [Command("sub.test", "sssuuubbb")]
     [StringShortcut("子测试")]
     public static MessageContent? OnSubTest(CommandContext ctx)
     {
