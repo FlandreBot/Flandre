@@ -1,15 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Version>0.9.0</Version>
+        <Title>Flandre.Framework.Reactive</Title>
+        <Version>1.0.0-alpha.1</Version>
+        <Authors>FlandreDevs,b1acksoil</Authors>
+        <Description>Reactive Extensions (Rx.NET) support for Flandre.Framework.</Description>
+        <PackageTags>flandre;rx.net;reactive</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>avatar.jpg</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>CS1591</NoWarn>
+
+        <PackageProjectUrl>https://github.com/FlandreDevs/Flandre</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/FlandreDevs/Flandre.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Copyright>FlandreDevs (C) 2022-present</Copyright>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Flandre.Core.Reactive\Flandre.Core.Reactive.csproj" />
-      <ProjectReference Include="..\Flandre.Framework\Flandre.Framework.csproj" />
+        <ProjectReference Include="..\Flandre.Core.Reactive\Flandre.Core.Reactive.csproj"/>
+        <ProjectReference Include="..\Flandre.Framework\Flandre.Framework.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="/"/>
+        <None Include="../../assets/avatar.jpg" Pack="true" PackagePath="/"/>
     </ItemGroup>
 
 </Project>

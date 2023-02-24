@@ -39,6 +39,8 @@ jobs:
           TAG_COMMIT: true
           TAG_FORMAT: fx_v*
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      
+      # ===== Adapters =====
 
       - name: Publish Adapters.Konata
         id: publish-adapter-konata
@@ -69,6 +71,30 @@ jobs:
           PROJECT_FILE_PATH: src/Flandre.Adapters.Mock/Flandre.Adapters.Mock.csproj
           PACKAGE_NAME: Flandre.Adapters.Mock
           VERSION_FILE_PATH: src/Flandre.Adapters.Mock/Flandre.Adapters.Mock.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      
+      # ===== Reactive Extensions =====
+
+      - name: Publish Core.Reactive
+        id: publish-core-rx
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Core.Reactive/Flandre.Core.Reactive.csproj
+          PACKAGE_NAME: Flandre.Core.Reactive
+          VERSION_FILE_PATH: src/Flandre.Core.Reactive/Flandre.Core.Reactive.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+      - name: Publish Framework.Reactive
+        id: publish-fx-rx
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Framework.Reactive/Flandre.Framework.Reactive.csproj
+          PACKAGE_NAME: Flandre.Framework.Reactive
+          VERSION_FILE_PATH: src/Flandre.Framework.Reactive/Flandre.Framework.Reactive.csproj
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
