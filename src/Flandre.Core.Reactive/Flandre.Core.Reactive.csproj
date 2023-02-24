@@ -2,13 +2,12 @@
 
     <PropertyGroup>
         <Title>Flandre.Core.Reactive</Title>
-        <Version>1.0.0-alpha.1</Version>
+        <PackageVersion>1.0.0-alpha.1</PackageVersion>
         <Authors>FlandreDevs,b1acksoil</Authors>
         <Description>Reactive Extensions (Rx.NET) support for Flandre.Core.</Description>
         <PackageTags>flandre;rx.net;reactive</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>avatar.jpg</PackageIcon>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
 
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -32,7 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="README.md" Pack="true" PackagePath="/"/>
         <None Include="../../assets/avatar.jpg" Pack="true" PackagePath="/"/>
     </ItemGroup>
 
