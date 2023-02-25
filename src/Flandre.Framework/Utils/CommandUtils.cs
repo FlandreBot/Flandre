@@ -1,9 +1,72 @@
+using Flandre.Core.Common;
 using Flandre.Core.Utils;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Flandre.Framework.Utils;
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="raw"></param>
+/// <returns></returns>
+public delegate object? TypeParserDelegate(in string raw);
+
 internal static class CommandUtils
 {
+#if NET7_0_OR_GREATER
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="raw"></param>
+    /// <returns></returns>
+    public delegate object? TypeParserDelegate(in string raw);
+
+    public static Dictionary<Type, TypeParserDelegate> TypeParsers { get; } = new();
+
+    static CommandUtils()
+    {
+        TypeParsers.AddIParseable<int>()
+            .AddIParseable<uint>()
+            .AddIParseable<short>()
+            .AddIParseable<ushort>()
+            .AddIParseable<long>()
+            .AddIParseable<ulong>()
+            .AddIParseable<sbyte>()
+            .AddIParseable<byte>()
+            .AddIParseable<float>()
+            .AddIParseable<double>()
+            .AddIParseable<decimal>()
+            .AddParser<bool>(BoolParser)
+            .AddParser<string>(StringParser);
+
+        object? BoolParser(in string raw) => bool.TryParse(raw, out var tmp) ? tmp : null;
+        object? StringParser(in string raw) => throw new NotImplementedException();
+    }
+
+    public static Dictionary<Type, TypeParserDelegate> AddIParseable<T>(this Dictionary<Type, TypeParserDelegate> dict)
+        where T : IParsable<T> =>
+        dict.AddParser(typeof(T), Parse<T>);
+
+    public static Dictionary<Type, TypeParserDelegate> AddEnum<T>(this Dictionary<Type, TypeParserDelegate> dict)
+        where T : struct, Enum =>
+        dict.AddParser(typeof(T), Enum<T>);
+
+    public static Dictionary<Type, TypeParserDelegate> AddParser<T>(this Dictionary<Type, TypeParserDelegate> dict, TypeParserDelegate parser) =>
+        dict.AddParser(typeof(T), parser);
+
+    public static Dictionary<Type, TypeParserDelegate> AddParser(this Dictionary<Type, TypeParserDelegate> dict, Type type, TypeParserDelegate parser)
+    {
+        dict.Add(type, parser);
+        return dict;
+    }
+
+    public static object? Enum<TEnum>(in string raw) where TEnum : struct, Enum
+        => System.Enum.TryParse(raw, true, out TEnum tmp) && System.Enum.IsDefined(tmp) ? tmp : null;
+
+    public static object? Parse<T>(in string raw) where T : IParsable<T>
+        => T.TryParse(raw, null, out var tmp) ? tmp : null;
+#endif
+
     internal static bool TryParseValue(string section, Type type, out object result)
     {
         result = null!;
