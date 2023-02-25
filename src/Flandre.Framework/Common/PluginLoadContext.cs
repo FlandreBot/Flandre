@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
 
+/// <summary>
+/// 读取插件的上下文
+/// </summary>
 public sealed class PluginLoadContext
 {
     private readonly CommandNode _rootNode;
