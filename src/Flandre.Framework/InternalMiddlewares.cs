@@ -53,6 +53,11 @@ public sealed partial class FlandreApp
         return this;
     }
 
+    /// <summary>
+    /// 添加指令会话中间层
+    /// </summary>
+    /// <remarks>用于指令等待下一条语句</remarks>
+    /// <returns></returns>
     public FlandreApp UseCommandSession()
     {
         if (_commandSessionUsed)
@@ -74,11 +79,24 @@ public sealed partial class FlandreApp
         return this;
     }
 
+    /// <summary>
+    /// 添加指令解析中间层
+    /// </summary>
+    /// <remarks>解析 <see cref="MessageContext.Message"/> 并得到 <see cref="MiddlewareContext.Command"/></remarks>
+    /// <returns></returns>
     public FlandreApp UseCommandParser()
     {
         if (_commandParserUsed)
             return this;
         _commandParserUsed = true;
+
+        UseMiddleware((ctx, next) =>
+        {
+            ctx.Command = ParseCommand(ctx);
+            next();
+        });
+
+        return this;
 
         Command? ParseCommand(MiddlewareContext ctx)
         {
@@ -135,20 +153,26 @@ public sealed partial class FlandreApp
                 ctx.Response = $"未找到指令：{string.Join('.', path)}。";
             return null;
         }
-
-        UseMiddleware((ctx, next) =>
-        {
-            ctx.Command = ParseCommand(ctx);
-            next();
-        });
-        return this;
     }
 
+    /// <summary>
+    /// 添加指令触发中间层
+    /// </summary>
+    /// <remarks>触发 <see cref="MiddlewareContext.Command"/> 并得到 <see cref="MiddlewareContext.Response"/></remarks>
+    /// <returns></returns>
     public FlandreApp UseCommandInvoker()
     {
         if (_commandInvokerUsed)
             return this;
         _commandInvokerUsed = true;
+
+        UseMiddleware((ctx, next) =>
+        {
+            ctx.Response = InvokeCommand(ctx) ?? ctx.Response;
+            next();
+        });
+
+        return this;
 
         MessageContent? InvokeCommand(MiddlewareContext ctx)
         {
@@ -188,12 +212,5 @@ public sealed partial class FlandreApp
             OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ex, content));
             return content;
         }
-
-        UseMiddleware((ctx, next) =>
-        {
-            ctx.Response = InvokeCommand(ctx) ?? ctx.Response;
-            next();
-        });
-        return this;
     }
 }

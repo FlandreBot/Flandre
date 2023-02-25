@@ -5,8 +5,14 @@ using Flandre.Framework.Attributes;
 
 namespace Flandre.Framework.Common;
 
+/// <summary>
+/// 表示一个指令
+/// </summary>
 public sealed class Command
 {
+    /// <summary>
+    /// 指令名
+    /// </summary>
     public string Name { get; }
 
     internal List<CommandParameter> Parameters { get; set; } = new();
@@ -37,31 +43,56 @@ public sealed class Command
 
     #region FluentAPI
 
+    /// <summary>
+    /// 添加别名
+    /// </summary>
+    /// <param name="aliasPath"></param>
+    /// <returns></returns>
     public Command AddAlias(string aliasPath)
     {
         Aliases.Add(aliasPath);
         return this;
     }
 
+    /// <summary>
+    /// 添加前缀式快捷方式
+    /// </summary>
+    /// <param name="shortcut"></param>
+    /// <returns></returns>
     public Command AddShortcut(string shortcut)
     {
         StringShortcuts.Add(shortcut);
         return this;
     }
 
+    /// <summary>
+    /// 添加正则式快捷方式
+    /// </summary>
+    /// <param name="shortcut"></param>
+    /// <returns></returns>
     public Command AddShortcut(Regex shortcut)
     {
         RegexShortcuts.Add(shortcut);
         return this;
     }
 
+    /// <summary>
+    /// 添加指令方法
+    /// </summary>
+    /// <param name="methodInfo"></param>
+    /// <returns></returns>
     public Command WithAction(MethodInfo methodInfo)
     {
         InnerMethod = methodInfo;
         return this;
     }
 
-    public Command AddSubcommand(string path)
+    /// <summary>
+    /// 添加子指令
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public Command AddSubCommand(string path)
     {
         return _currentNode.AddCommand(PluginType, path);
     }
@@ -76,7 +107,7 @@ public sealed class Command
         var args = new List<object> { ctx };
         var parsedArgIndex = 0;
         var methodParams = InnerMethod.GetParameters();
-        for (var i = 1; i < methodParams.Length; i++)
+        for (var i = 1; i < methodParams.Length; ++i)
         {
             var param = methodParams[i];
             if (parsedArgIndex > parsed.ParsedArguments.Count)

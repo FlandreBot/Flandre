@@ -29,13 +29,13 @@ public class StringParser
     public bool IsEnd => _pos >= _str.Length;
 
     // ReSharper disable SuggestBaseTypeForParameterInConstructor
-    /// <summary>
-    /// 使用字符串构造解析器
-    /// </summary>
+    /// <inheritdoc cref="StringParser(string, char[])"/>
+    /// <remarks> <strong>
+    /// 本方法会在 <paramref name="quoteChars"/> 添加 '（直单引号）、"（直双引号）、`（反引号） 三个字符。如果这不是预期的行为，请传入副本
+    /// </strong> </remarks>
     public StringParser(string str, HashSet<char> quoteChars, HashSet<(char Left, char Right)> quotePairs)
     {
         _str = str;
-        // 理论上应该先克隆再修改
         _ = quoteChars.Add('\'');
         _ = quoteChars.Add('"');
         _ = quoteChars.Add('`');
@@ -45,7 +45,7 @@ public class StringParser
     // ReSharper restore SuggestBaseTypeForParameterInConstructor
 
     /// <summary>
-    /// 使用字符串构造解析器
+    /// 构造字符串构造解析器实例
     /// </summary>
     public StringParser(string str, params char[] quoteChars)
         : this(str, quoteChars.ToHashSet(), new HashSet<(char Left, char Right)>())

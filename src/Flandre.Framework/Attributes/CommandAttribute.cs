@@ -2,26 +2,43 @@ using Flandre.Core.Models;
 
 namespace Flandre.Framework.Attributes;
 
+/// <summary>
+/// 指令
+/// </summary>
+/// <remarks>被这条特性指定的方法，会自动作为指令被机器人加载</remarks>
 [AttributeUsage(AttributeTargets.Method)]
 public class CommandAttribute : Attribute
 {
-    public CommandAttribute(string path, params string[] alias)
+    /// <summary>
+    /// 构造特性实例
+    /// </summary>
+    /// <param name="fullName"></param>
+    /// <param name="alias"></param>
+    public CommandAttribute(string fullName, params string[] alias)
     {
-        Path = path;
+        FullName = fullName;
         Alias = alias;
     }
 
-    public string Path { get; }
+    /// <summary>
+    /// 指令的全名
+    /// </summary>
+    public string FullName { get; }
 
+    /// <summary>
+    /// 指令别名（全名）
+    /// </summary>
     public string[] Alias { get; }
 
     /// <summary>
-    /// Default <see cref="UserRole.Member"/>
+    /// 能触发该指令的用户身份
     /// </summary>
+    /// <remarks>默认值为 <see cref="UserRole.Member"/></remarks>
     public UserRole Role { get; init; } = UserRole.Member;
 
     /// <summary>
-    /// Default <see langword="true"/>
+    /// 是否允许忽略大小写
     /// </summary>
+    /// <remarks>默认值为 <see langword="true"/></remarks>
     public bool IgnoreCase { get; init; } = true;
 }

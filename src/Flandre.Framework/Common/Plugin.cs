@@ -1,13 +1,18 @@
-﻿using Flandre.Core.Common;
+using Flandre.Core.Common;
 using Flandre.Core.Events;
 using Flandre.Core.Messaging;
 using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
 
+/// <summary>
+/// 插件
+/// </summary>
 public abstract class Plugin
 {
-    // 缓存日志类型
+    /// <summary>
+    /// 缓存日志类型
+    /// </summary>
     private static Type? _loggerType;
 
     internal Type LoggerType

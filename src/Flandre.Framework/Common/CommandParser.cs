@@ -83,9 +83,7 @@ internal static class CommandParser
                     }
 
                     if (option.Type == typeof(bool))
-                    {
                         result.ParsedOptions[option.Name] = true;
-                    }
                     else
                     {
                         // 由于只能赋值给最后一个短选项，前面的必须为 bool
@@ -121,7 +119,7 @@ internal static class CommandParser
                     return TypeNotMatch(result, param);
 
                 providedArgs.Add(param.Name);
-                argIndex++;
+                ++argIndex;
             }
         }
 
