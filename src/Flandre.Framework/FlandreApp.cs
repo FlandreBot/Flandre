@@ -11,6 +11,9 @@ using Microsoft.Extensions.Options;
 
 namespace Flandre.Framework;
 
+/// <summary>
+/// Flandre 应用
+/// </summary>
 public sealed partial class FlandreApp : IHost
 {
     private readonly IHost _hostApp;
@@ -18,9 +21,20 @@ public sealed partial class FlandreApp : IHost
     private readonly List<IAdapter> _adapters;
     private readonly List<Type> _pluginTypes;
     private readonly List<Func<MiddlewareContext, Action, Task>> _middleware = new();
+
+    /// <summary>
+    /// 机器人实例
+    /// </summary>
     public List<Bot> Bots { get; } = new();
 
+    /// <summary>
+    /// 服务
+    /// </summary>
     public IServiceProvider Services => _hostApp.Services;
+    
+    /// <summary>
+    /// 日志
+    /// </summary>
     public ILogger<FlandreApp> Logger { get; }
 
     #region 指令解析相关
@@ -34,7 +48,18 @@ public sealed partial class FlandreApp : IHost
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
     internal ConcurrentDictionary<string, TaskCompletionSource<Message?>> CommandSessions { get; } = new();
 
+    /// <summary>
+    /// 创建构造器
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
     public static FlandreAppBuilder CreateBuilder(string[]? args = null) => new(args);
+
+    /// <summary>
+    /// 创建构造器
+    /// </summary>
+    /// <param name="settings"></param>
+    /// <returns></returns>
     public static FlandreAppBuilder CreateBuilder(HostApplicationBuilderSettings? settings) => new(settings);
 
     internal FlandreApp(IHost hostApp, List<Type> pluginTypes, List<IAdapter> adapters)
@@ -76,7 +101,7 @@ public sealed partial class FlandreApp : IHost
             bot.OnMessageReceived += (_, e) => Task.Run(() =>
             {
                 var middlewareCtx = new MiddlewareContext(this, bot, e.Message, null);
-                ExecuteMiddleware(middlewareCtx, 0); // Wait for all middleware' execution
+                ExecuteMiddleware(middlewareCtx, 0); // Wait for all middleware's execution
                 middlewareCtx.ServiceScope.Dispose();
                 if (middlewareCtx.Response is not null)
                     bot.SendMessage(e.Message, middlewareCtx.Response);
@@ -228,6 +253,9 @@ public sealed partial class FlandreApp : IHost
         OnStopped?.Invoke(this, new AppStoppedEvent());
     }
 
+    /// <summary>
+    /// 停止应用实例并释放资源
+    /// </summary>
     public void Dispose()
     {
         StopAsync().GetAwaiter().GetResult();

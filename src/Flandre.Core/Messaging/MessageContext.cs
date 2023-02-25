@@ -1,4 +1,4 @@
-﻿using Flandre.Core.Common;
+using Flandre.Core.Common;
 
 namespace Flandre.Core.Messaging;
 
@@ -24,17 +24,17 @@ public class MessageContext : Context
     }
 
     /// <summary>
-    /// 用户 ID，等同于 Message.Sender.UserId
+    /// 用户 ID，等同于 <see cref="Message"/>.Sender.UserId
     /// </summary>
     public string UserId => Message.Sender.UserId;
 
     /// <summary>
-    /// 群组 ID，等同于 Message.GuildId
+    /// 群组 ID，等同于 <see cref="Message"/>.GuildId
     /// </summary>
     public string? GuildId => Message.GuildId;
 
     /// <summary>
-    /// 频道 ID，等同于 Message.ChannelId
+    /// 频道 ID，等同于 <see cref="Message"/>.ChannelId
     /// </summary>
     public string? ChannelId => Message.ChannelId;
 }

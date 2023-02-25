@@ -20,6 +20,11 @@ public sealed class PluginLoadContext
         _logger = logger;
     }
 
+    /// <summary>
+    /// 添加指令
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
     public Command AddCommand(string path)
     {
         return _rootNode.AddCommand(_pluginType, path);
@@ -41,7 +46,7 @@ public sealed class PluginLoadContext
                   || method.ReturnType.IsAssignableTo(typeof(Task<MessageContent>))
                   || method.ReturnType.IsAssignableTo(typeof(ValueTask<MessageContent>))))
             {
-                _logger.LogWarning("命令方法 {PluginType}.{MethodName} 的返回类型不是 MessageContent, 将忽略这个命令。",
+                _logger.LogWarning("指令方法 {PluginType}.{MethodName} 的返回类型不是 MessageContent, 将忽略这个指令。",
                     _pluginType, method.Name);
                 continue;
             }
@@ -61,7 +66,7 @@ public sealed class PluginLoadContext
                     // option
                     if (!param.HasDefaultValue)
                     {
-                        _logger.LogWarning("命令方法 {PluginType}.{MethodName} 中选项参数 {OptionName} 不具有默认值, 将忽略这个命令。",
+                        _logger.LogWarning("指令方法 {PluginType}.{MethodName} 中选项参数 {OptionName} 不具有默认值, 将忽略这个指令。",
                             _pluginType, method.Name, param.Name);
                         continue;
                     }
@@ -78,7 +83,7 @@ public sealed class PluginLoadContext
                     param.HasDefaultValue ? param.DefaultValue : null) { Description = description });
             }
 
-            var cmd = AddCommand(cmdAttr.Path).WithAction(method);
+            var cmd = AddCommand(cmdAttr.FullName).WithAction(method);
 
             foreach (var alias in cmdAttr.Alias)
                 cmd.AddAlias(alias);
