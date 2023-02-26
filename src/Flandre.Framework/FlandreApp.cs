@@ -20,7 +20,7 @@ public sealed partial class FlandreApp : IHost
     private readonly IOptionsMonitor<FlandreAppOptions> _appOptions;
     private readonly List<IAdapter> _adapters;
     private readonly List<Type> _pluginTypes;
-    private readonly List<Func<MiddlewareContext, Action, Task>> _middleware = new();
+    private readonly List<Func<MiddlewareContext, Func<Task>, Task>> _middleware = new();
 
     /// <summary>
     /// 机器人实例
@@ -31,7 +31,7 @@ public sealed partial class FlandreApp : IHost
     /// 服务
     /// </summary>
     public IServiceProvider Services => _hostApp.Services;
-    
+
     /// <summary>
     /// 日志
     /// </summary>
@@ -82,12 +82,12 @@ public sealed partial class FlandreApp : IHost
 
     private void SubscribeEvents()
     {
-        void WithCatch(Type pluginType, Func<Plugin, Task> subscriber, string? eventName = null) => Task.Run(() =>
+        void WithCatch(Type pluginType, Func<Plugin, Task> subscriber, string? eventName = null) => Task.Run(async () =>
         {
             try
             {
                 var plugin = (Plugin)Services.GetRequiredService(pluginType);
-                subscriber.Invoke(plugin).GetAwaiter().GetResult();
+                await subscriber.Invoke(plugin);
             }
             catch (Exception e)
             {
@@ -98,13 +98,13 @@ public sealed partial class FlandreApp : IHost
 
         foreach (var bot in Bots)
         {
-            bot.OnMessageReceived += (_, e) => Task.Run(() =>
+            bot.OnMessageReceived += (_, e) => Task.Run(async () =>
             {
                 var middlewareCtx = new MiddlewareContext(this, bot, e.Message, null);
-                ExecuteMiddleware(middlewareCtx, 0); // Wait for all middleware's execution
+                await ExecuteMiddleware(middlewareCtx, 0); // Wait for all middleware's execution
                 middlewareCtx.ServiceScope.Dispose();
                 if (middlewareCtx.Response is not null)
-                    bot.SendMessage(e.Message, middlewareCtx.Response);
+                    await bot.SendMessage(e.Message, middlewareCtx.Response);
             });
 
             var ctx = new Context(bot);
@@ -163,13 +163,13 @@ public sealed partial class FlandreApp : IHost
     /// </summary>
     /// <param name="ctx">中间件上下文</param>
     /// <param name="index">中间件索引</param>
-    private void ExecuteMiddleware(MiddlewareContext ctx, int index)
+    private async Task ExecuteMiddleware(MiddlewareContext ctx, int index)
     {
         try
         {
             if (_middleware.Count < index + 1)
                 return;
-            _middleware[index].Invoke(ctx, () => ExecuteMiddleware(ctx, index + 1)).GetAwaiter().GetResult();
+            await _middleware[index].Invoke(ctx, () => ExecuteMiddleware(ctx, index + 1));
         }
         catch (Exception e)
         {
@@ -182,23 +182,10 @@ public sealed partial class FlandreApp : IHost
     /// 在最外层插入异步中间件
     /// </summary>
     /// <param name="middleware">中间件方法</param>
-    public FlandreApp UseMiddleware(Func<MiddlewareContext, Action, Task> middleware)
+    public FlandreApp UseMiddleware(Func<MiddlewareContext, Func<Task>, Task> middleware)
     {
         _middleware.Add(middleware);
         return this;
-    }
-
-    /// <summary>
-    /// 在最外层插入同步中间件
-    /// </summary>
-    /// <param name="middleware">中间件方法</param>
-    public FlandreApp UseMiddleware(Action<MiddlewareContext, Action> middleware)
-    {
-        return UseMiddleware((ctx, next) =>
-        {
-            middleware.Invoke(ctx, next);
-            return Task.CompletedTask;
-        });
     }
 
     private async Task StartAsyncCore(bool withDefaults, CancellationToken cancellationToken = default)

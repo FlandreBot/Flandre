@@ -22,7 +22,7 @@ public class MiddlewareTests
         int count1In = 0, count1Out = 0, count2 = 0;
 
         // Custom Middleware #1
-        app.UseMiddleware((ctx, next) =>
+        app.UseMiddleware(async (ctx, next) =>
         {
             // 1, 2, 3 pass through
 
@@ -40,14 +40,14 @@ public class MiddlewareTests
             }
 
             // only 2 passes through the next middleware
-            next();
+            await next();
             // 2 goes out
 
             count1Out++;
         });
 
         // Custom Middleware #2
-        app.UseMiddleware((ctx, next) =>
+        app.UseMiddleware(async (ctx, next) =>
         {
             // 2 passes through
             count2++;
@@ -55,7 +55,7 @@ public class MiddlewareTests
             ctx.Response = ctx.Message.Content;
 
             // 2 goes out
-            next();
+            await next();
         });
 
         await app.StartAsync();

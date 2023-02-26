@@ -21,33 +21,36 @@ public sealed partial class FlandreApp
         if (_pluginMessageEventUsed)
             return this;
         _pluginMessageEventUsed = true;
-        UseMiddleware((ctx, next) =>
+        UseMiddleware(async (ctx, next) =>
         {
             _pluginTypes.ForEach(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceived(ctx));
-            next();
+            await next();
         });
         return this;
     }
 
+    /// <summary>
+    /// 使用群组 assignee 检查中间件
+    /// </summary>
     public FlandreApp UseAssigneeChecker()
     {
-        UseMiddleware((ctx, next) =>
+        UseMiddleware(async (ctx, next) =>
         {
             var segment = ctx.Message.Content.Segments.FirstOrDefault();
             if (segment is AtSegment ats)
             {
                 if (ats.UserId == ctx.SelfId)
-                    next();
+                    await next();
             }
             // 如果没找到群组的 assignee
             else if (!GuildAssignees.TryGetValue($"{ctx.Platform}:{ctx.GuildId}", out var assignee))
             {
-                next();
+                await next();
             }
             // 如果找到了群组的 assignee，且是自己
             else if (ctx.SelfId == assignee)
             {
-                next();
+                await next();
             }
         });
         return this;
@@ -63,7 +66,7 @@ public sealed partial class FlandreApp
         if (_commandSessionUsed)
             return this;
         _commandSessionUsed = true;
-        UseMiddleware((ctx, next) =>
+        UseMiddleware(async (ctx, next) =>
         {
             var mark = ctx.GetUserMark();
             if (CommandSessions.TryGetValue(mark, out var tcs))
@@ -73,7 +76,7 @@ public sealed partial class FlandreApp
             }
             else
             {
-                next();
+                await next();
             }
         });
         return this;
@@ -90,10 +93,10 @@ public sealed partial class FlandreApp
             return this;
         _commandParserUsed = true;
 
-        UseMiddleware((ctx, next) =>
+        UseMiddleware(async (ctx, next) =>
         {
             ctx.Command = ParseCommand(ctx);
-            next();
+            await next();
         });
 
         return this;
@@ -166,15 +169,15 @@ public sealed partial class FlandreApp
             return this;
         _commandInvokerUsed = true;
 
-        UseMiddleware((ctx, next) =>
+        UseMiddleware(async (ctx, next) =>
         {
-            ctx.Response = InvokeCommand(ctx) ?? ctx.Response;
-            next();
+            ctx.Response = await InvokeCommand(ctx) ?? ctx.Response;
+            await next();
         });
 
         return this;
 
-        MessageContent? InvokeCommand(MiddlewareContext ctx)
+        async Task<MessageContent?> InvokeCommand(MiddlewareContext ctx)
         {
             if (ctx.Command is null || ctx.CommandStringParser is null)
                 return null;
@@ -201,7 +204,7 @@ public sealed partial class FlandreApp
             Exception? ex = null;
             try
             {
-                content = ctx.Command.Invoke(plugin, cmdCtx, result);
+                content = await ctx.Command.Invoke(plugin, cmdCtx, result);
             }
             catch (Exception e)
             {

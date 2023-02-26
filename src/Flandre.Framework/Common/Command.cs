@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Flandre.Core.Messaging;
@@ -107,7 +106,8 @@ public sealed class Command
 
     #endregion
 
-    internal MessageContent? Invoke(Plugin plugin, CommandContext ctx, CommandParser.CommandParseResult parsed)
+    internal async Task<MessageContent?> Invoke(Plugin plugin, CommandContext ctx,
+        CommandParser.CommandParseResult parsed)
     {
         if (InnerMethod is null)
             return null;
@@ -139,11 +139,17 @@ public sealed class Command
         }
 
         var cmdResult = InnerMethod?.Invoke(plugin, args.ToArray());
+        var content = cmdResult switch
+        {
+            Task<MessageContent?> task => await task,
+            ValueTask<MessageContent?> valueTask => await valueTask,
+            MessageContent msgContent => msgContent,
 
-        var content = cmdResult is ValueTask<MessageContent?> valueTask
-            ? valueTask.GetAwaiter().GetResult()
-            : cmdResult as MessageContent ??
-              (cmdResult as Task<MessageContent?>)?.GetAwaiter().GetResult();
+            string str => (MessageContent)str,
+            MessageBuilder msgBuilder => (MessageContent)msgBuilder,
+
+            _ => null
+        };
         return content;
     }
 }
