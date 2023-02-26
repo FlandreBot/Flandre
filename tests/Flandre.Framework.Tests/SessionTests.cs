@@ -1,9 +1,19 @@
-﻿using Flandre.Adapters.Mock;
+﻿using Flandre.Framework.Extensions;
 
 namespace Flandre.Framework.Tests;
 
 public class SessionTests
 {
+    private class TestPlugin : Plugin
+    {
+        [Command("start-session")]
+        public static async Task<MessageContent?> OnStartSession(CommandContext ctx)
+        {
+            var nextMsg = await ctx.StartSession(TimeSpan.FromSeconds(2));
+            return nextMsg?.Content;
+        }
+    }
+
     [Fact]
     public async Task TestCommandSession()
     {

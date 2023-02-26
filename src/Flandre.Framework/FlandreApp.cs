@@ -39,7 +39,7 @@ public sealed partial class FlandreApp : IHost
 
     #region 指令解析相关
 
-    internal CommandNode RootCommandNode { get; } = new();
+    internal CommandNode RootCommandNode { get; } = new("");
     internal Dictionary<string, Command> StringShortcuts { get; } = new();
     internal Dictionary<Regex, Command> RegexShortcuts { get; } = new();
 

@@ -13,11 +13,11 @@ public class CommandAttribute : Attribute
     /// 构造特性实例
     /// </summary>
     /// <param name="fullName"></param>
-    /// <param name="alias"></param>
-    public CommandAttribute(string fullName, params string[] alias)
+    /// <param name="aliases"></param>
+    public CommandAttribute(string fullName, params string[] aliases)
     {
         FullName = fullName;
-        Alias = alias;
+        Aliases = aliases;
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ public class CommandAttribute : Attribute
     /// <summary>
     /// 指令别名（全名）
     /// </summary>
-    public string[] Alias { get; }
+    public string[] Aliases { get; }
 
     /// <summary>
     /// 能触发该指令的用户身份

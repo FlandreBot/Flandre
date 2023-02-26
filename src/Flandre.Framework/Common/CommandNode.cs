@@ -2,6 +2,8 @@ namespace Flandre.Framework.Common;
 
 internal sealed class CommandNode
 {
+    public string FullName { get; }
+
     public Command? Command { get; internal set; }
 
     public Dictionary<string, CommandNode> SubNodes { get; } = new();
@@ -10,25 +12,31 @@ internal sealed class CommandNode
 
     public bool IsAlias { get; internal set; }
 
-    public Command AddCommand(Type pluginType, string path)
+    public CommandNode(string fullName) => FullName = fullName;
+
+    public Command AddCommand(Type pluginType, string relativePath)
     {
-        var node = this;
-        var segments = path.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        node = segments.Aggregate(node,
-            (current, name) => current.SubNodes.TryGetValue(name, out var nextNode)
+        var segments = relativePath.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var currentNode = this;
+
+        for (var i = 0; i < segments.Length; i++)
+        {
+            currentNode = currentNode.SubNodes.TryGetValue(segments[i], out var nextNode)
                 ? nextNode
-                : current.SubNodes[name] = new CommandNode());
+                : currentNode.SubNodes[segments[i]] = new CommandNode(
+                    string.Join('.', segments[..(i + 1)]));
+        }
 
         var finalName = segments[^1];
-        var command = new Command(node, pluginType, finalName);
-        node.Command = command;
+        var command = new Command(currentNode, pluginType, finalName, currentNode.FullName);
+        currentNode.Command = command;
         return command;
     }
 
-    public CommandNode? GetNodeByPath(string path)
+    public CommandNode? FindSubNode(string relativePath)
     {
         var node = this;
-        foreach (var name in path.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+        foreach (var name in relativePath.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
             if (node.SubNodes.TryGetValue(name, out var nextNode))
                 node = nextNode;
             else

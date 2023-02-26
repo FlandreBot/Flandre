@@ -1,11 +1,26 @@
-﻿
-
-// ReSharper disable StringLiteralTypo
+﻿// ReSharper disable StringLiteralTypo
 
 namespace Flandre.Framework.Tests;
 
 public class FlandreAppTests
 {
+    private class TestPlugin : Plugin
+    {
+        [Command("test", " ..  test111..11.45..14  . ")]
+        [StringShortcut("测试")]
+        public static MessageContent OnTest(CommandContext ctx, bool arg1, [Option] double opt = 0)
+        {
+            return $"{arg1} {opt + 200}";
+        }
+        
+        [Command("sub.test", "sssuuubbb")]
+        [StringShortcut("子测试")]
+        public static MessageContent? OnSubTest(CommandContext ctx) => null;
+
+        [Command("...sub....sub..sub......test..")]
+        public static MessageContent? OnSubSubSubTest(CommandContext ctx) => null;
+    }
+    
     [Fact]
     public async Task TestShortcutAndAlias()
     {
@@ -16,23 +31,23 @@ public class FlandreAppTests
 
         await app.StartAsync();
 
-        Assert.Equal(6, app.RootCommandNode.CountCommands());
+        Assert.Equal(3, app.RootCommandNode.CountCommands());
         Assert.Equal(2, app.StringShortcuts.Count);
 
-        Assert.NotNull(app.RootCommandNode.GetNodeByPath("test1"));
-        Assert.NotNull(app.RootCommandNode.GetNodeByPath("sub.test"));
-        Assert.NotNull(app.RootCommandNode.GetNodeByPath("sub.sub.sub.test"));
+        Assert.NotNull(app.RootCommandNode.FindSubNode("test"));
+        Assert.NotNull(app.RootCommandNode.FindSubNode("sub.test"));
+        Assert.NotNull(app.RootCommandNode.FindSubNode("sub.sub.sub.test"));
 
         // shortcut
         Assert.NotNull(app.StringShortcuts.GetValueOrDefault("测试"));
         Assert.NotNull(app.StringShortcuts.GetValueOrDefault("子测试"));
         Assert.Equal(app.StringShortcuts["测试"],
-            app.RootCommandNode.GetNodeByPath("test1")?.Command);
+            app.RootCommandNode.FindSubNode("test")?.Command);
 
         // alias
-        Assert.NotNull(app.RootCommandNode.GetNodeByPath("test111.11.45.14"));
-        Assert.Equal(app.RootCommandNode.GetNodeByPath("sssuuubbb")?.Command,
-            app.RootCommandNode.GetNodeByPath("sub.test")?.Command);
+        Assert.NotNull(app.RootCommandNode.FindSubNode("test111.11.45.14"));
+        Assert.Equal(app.RootCommandNode.FindSubNode("sssuuubbb")?.Command,
+            app.RootCommandNode.FindSubNode("sub.test")?.Command);
 
         await app.StopAsync();
     }

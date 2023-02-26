@@ -13,6 +13,8 @@ public delegate object? TypeParserDelegate(in string raw);
 
 internal static class CommandUtils
 {
+    #region .NET 7 IParsable<T>
+
 #if NET7_0_OR_GREATER
     /// <summary>
     /// 
@@ -66,6 +68,8 @@ internal static class CommandUtils
     public static object? Parse<T>(in string raw) where T : IParsable<T>
         => T.TryParse(raw, null, out var tmp) ? tmp : null;
 #endif
+
+    #endregion
 
     internal static bool TryParseValue(string section, Type type, out object result)
     {

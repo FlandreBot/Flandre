@@ -88,7 +88,7 @@ public sealed class PluginLoadContext
 
             var cmd = AddCommand(cmdAttr.FullName).WithAction(method);
 
-            foreach (var alias in cmdAttr.Alias)
+            foreach (var alias in cmdAttr.Aliases)
                 cmd.AddAlias(alias);
 
             cmd.Parameters = parameters;
@@ -98,7 +98,9 @@ public sealed class PluginLoadContext
             cmd.RegexShortcuts = method.GetCustomAttributes<RegexShortcutAttribute>()
                 .Select(attr => attr.RegexShortcut).ToList();
 
-            cmd.IsObsoleted = method.GetCustomAttribute<ObsoleteAttribute>() is not null;
+            var obsoleteAttr = method.GetCustomAttribute<ObsoleteAttribute>();
+            cmd.IsObsolete = obsoleteAttr is not null;
+            cmd.ObsoleteMessage = obsoleteAttr?.Message;
             cmd.Description = method.GetCustomAttribute<DescriptionAttribute>()?.Description;
         }
     }
@@ -128,7 +130,8 @@ public sealed class PluginLoadContext
             {
                 currentNode = currentNode.SubNodes.TryGetValue(segments[i], out var nextNode)
                     ? nextNode
-                    : currentNode.SubNodes[segments[i]] = new CommandNode();
+                    : currentNode.SubNodes[segments[i]] = new CommandNode(
+                        string.Join('.', segments[..(i + 1)]));
 
                 if (i == segments.Length - 1)
                 {

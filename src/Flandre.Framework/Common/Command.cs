@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Flandre.Core.Messaging;
@@ -15,6 +16,11 @@ public sealed class Command
     /// </summary>
     public string Name { get; }
 
+    /// <summary>
+    /// 指令完整名称（路径）
+    /// </summary>
+    public string FullName { get; }
+
     internal List<CommandParameter> Parameters { get; set; } = new();
     internal List<CommandOption> Options { get; set; } = new();
 
@@ -29,16 +35,18 @@ public sealed class Command
     internal MethodInfo? InnerMethod { get; private set; }
     internal Type PluginType { get; }
 
-    internal bool IsObsoleted { get; set; }
+    internal bool IsObsolete { get; set; }
+    internal string? ObsoleteMessage { get; set; }
     internal string? Description { get; set; }
 
     private readonly CommandNode _currentNode;
 
-    internal Command(CommandNode currentNode, Type pluginType, string name)
+    internal Command(CommandNode currentNode, Type pluginType, string name, string fullName)
     {
         _currentNode = currentNode;
         PluginType = pluginType;
         Name = name;
+        FullName = fullName;
     }
 
     #region FluentAPI

@@ -1,9 +1,14 @@
-﻿using Flandre.Adapters.Mock;
-
-namespace Flandre.Framework.Tests;
+﻿namespace Flandre.Framework.Tests;
 
 public class AppEventsTests
 {
+    private class TestPlugin : Plugin
+    {
+        [Command("throw-ex")]
+        public static MessageContent? OnThrowEx(CommandContext ctx) =>
+            throw new Exception("Test Exception");
+    }
+    
     [Fact]
     public async Task TestEvents()
     {

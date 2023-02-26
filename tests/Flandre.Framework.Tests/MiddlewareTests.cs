@@ -1,6 +1,4 @@
-﻿using Flandre.Adapters.Mock;
-
-namespace Flandre.Framework.Tests;
+﻿namespace Flandre.Framework.Tests;
 
 public class MiddlewareTests
 {
@@ -13,7 +11,6 @@ public class MiddlewareTests
         var builder = FlandreApp.CreateBuilder();
         using var app = builder
             .AddAdapter(adapter)
-            .AddPlugin<TestPlugin>()
             .Build();
 
         // Order Note
