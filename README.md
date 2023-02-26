@@ -23,11 +23,6 @@
 
 ---
 
-## 🚧 注意
-
-项目仍在早期开发阶段，功能尚未完善，且处于快速迭代过程中。  
-如果您对项目的开发感兴趣，诚挚欢迎您的改进建议或 PR 贡献。
-
 ## ⭐ 特性
 
 ### 🌐 原生跨平台
@@ -45,6 +40,9 @@ Flandre 为跨平台而生，对聊天平台的结构进行抽象化，采用适
 ### 🧩 灵活的开发方式
 Flandre 提供两种开发方式，分别是完整的开发框架 `Framework`，以及易于嵌入已有程序的 `Core`。
 
+<details>
+<summary>详细区别</summary>
+
 #### Flandre.Framework
 [![NuGet](https://img.shields.io/nuget/vpre/Flandre.Framework?style=flat&label=NuGet&color=9866ca)](https://www.nuget.org/packages/Flandre.Framework/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Framework?style=flat&label=Downloads&color=42a5f5)](https://www.nuget.org/packages/Flandre.Framework/)
@@ -59,6 +57,8 @@ Framework 基于 [Microsoft.Extensions.Hosting](https://learn.microsoft.com/zh-c
 `Flandre.Core` 是整个框架的核心组件，包含了适配器、机器人等抽象层，提供直接操作 Bot 进行平台交互的功能。相比 `Framework`，`Core` 作为一个轻量化的模块，能更容易地嵌入进已有项目中，成为功能的一部分。
 
 > 不需要代入 .NET Framework / Core 命名方式的意义。在 Flandre 中，两者只意味着开发方式的不同，且都处于积极维护中。
+
+</details>
 
 下文将主要介绍 `Flandre.Framework` 的各类特性。如果你需要关于 `Flandre.Core` 的详细说明，请~~参照这里的文档~~。(还没写x)
 
