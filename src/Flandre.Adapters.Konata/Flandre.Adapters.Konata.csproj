@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Adapters.Konata</Title>
-        <PackageVersion>2.0.0-alpha.1</PackageVersion>
+        <PackageVersion>2.0.0-alpha.2</PackageVersion>
         <Authors>FlandreDevs,b1acksoil</Authors>
         <Description>Konata.Core (QQ Protocol) adapter for Flandre project.</Description>
         <PackageTags>bot;chatbot;flandre;adapter;konata</PackageTags>
@@ -23,7 +23,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Konata.Core" Version="1.3.1"/>
+        <PackageReference Include="Konata.Core" Version="1.3.3"/>
     </ItemGroup>
 
     <ItemGroup>
