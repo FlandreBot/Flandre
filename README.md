@@ -96,6 +96,8 @@ $ dotnet new flandre -o MyFirstFlandreApp
 
 使用你喜欢的 IDE 打开项目，在 `Program.cs` 中添加想要的适配器，开始对 Flandre 的探索。
 
+需要一个示例？[Sakuya](https://github.com/FlandreDevs/Sakuya) 是我们提供的一个示例项目，可以前往查看。
+
 ## 💻 开发
 
 你可以查看本仓库的[里程碑](https://github.com/FlandreDevs/Flandre/milestones)或[项目](https://github.com/FlandreDevs/Flandre/projects)页，获取最新的开发进度。
