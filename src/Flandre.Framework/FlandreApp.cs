@@ -193,9 +193,10 @@ public sealed partial class FlandreApp : IHost
         OnStarting?.Invoke(this, new AppStartingEvent());
         Logger.LogDebug("Starting app...");
 
+        UsePluginMessageHandler();
+
         if (withDefaults)
         {
-            UsePluginMessageHandler();
             UseCommandSession();
             UseCommandParser();
             UseCommandInvoker();
