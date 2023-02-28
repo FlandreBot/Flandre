@@ -269,12 +269,14 @@ public sealed class KonataBot : FlandreBot
             case CaptchaEvent.CaptchaType.Sms:
                 Log(BotLogLevel.Warning,
                     $"The phone verify code has been sent to {e.Phone}. Please input the code and press Enter.");
+                Console.Write("Phone verify code: ");
                 Internal.SubmitSmsCode(Console.ReadLine());
                 break;
 
             case CaptchaEvent.CaptchaType.Slider:
                 Log(BotLogLevel.Warning,
                     $"The Slider Captcha URL is: {e.SliderUrl}. Please input the ticket and press Enter.");
+                Console.Write("Ticket: ");
                 Internal.SubmitSliderTicket(Console.ReadLine());
                 break;
         }
