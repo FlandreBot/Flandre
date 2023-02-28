@@ -9,3 +9,6 @@
 
 - 由于 Konata 机制，在接收到的消息中，图片消息段 (`ImageSegment`) 将固定只包含 `Url` 属性，为图片的链接，需要自行下载。
 - ~~想到什么再补~~
+
+## 开源许可
+由于 GPL v3 协议的传染性，不同于 Flandre 项目其他部分，Flandre.Adapters.Konata 采用 [GPL v3](./LICENSE) 协议开源。
