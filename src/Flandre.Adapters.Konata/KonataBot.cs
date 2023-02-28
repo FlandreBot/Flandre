@@ -55,14 +55,14 @@ public sealed class KonataBot : FlandreBot
             ? Internal.Uin.ToString()
             : _config.SelfId;
 
-        Internal.OnFriendMessage += InnerOnFriendMessage;
-        Internal.OnGroupMessage += InnerOnGroupMessage;
-        Internal.OnGroupInvite += InnerOnGroupInvite;
-        Internal.OnGroupRequestJoin += InnerOnGroupRequestJoin;
-        Internal.OnFriendRequest += InnerOnFriendRequest;
+        Internal.OnFriendMessage += InternalOnFriendMessage;
+        Internal.OnGroupMessage += InternalOnGroupMessage;
+        Internal.OnGroupInvite += InternalOnGroupInvite;
+        Internal.OnGroupRequestJoin += InternalOnGroupRequestJoin;
+        Internal.OnFriendRequest += InternalOnFriendRequest;
 
-        Internal.OnCaptcha += InnerOnCaptcha;
-        Internal.OnLog += InnerOnLog;
+        Internal.OnCaptcha += InternalOnCaptcha;
+        Internal.OnLog += InternalOnLog;
     }
 
     #region 生命周期
@@ -230,37 +230,37 @@ public sealed class KonataBot : FlandreBot
 
     #region 内部事件
 
-    private void InnerOnFriendMessage(KonataInternalBot bot, FriendMessageEvent e)
+    private void InternalOnFriendMessage(KonataInternalBot bot, FriendMessageEvent e)
     {
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage(Platform)));
     }
 
-    private void InnerOnGroupMessage(KonataInternalBot bot, GroupMessageEvent e)
+    private void InternalOnGroupMessage(KonataInternalBot bot, GroupMessageEvent e)
     {
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage(Platform)));
     }
 
-    private void InnerOnGroupInvite(KonataInternalBot bot, GroupInviteEvent e)
+    private void InternalOnGroupInvite(KonataInternalBot bot, GroupInviteEvent e)
     {
         OnGuildInvited?.Invoke(this, new BotGuildInvitedEvent(
             e.GroupName, e.GroupUin.ToString(),
             e.InviterNick, e.InviterUin.ToString(), e.InviterIsAdmin) { EventMessage = e.Token });
     }
 
-    private void InnerOnGroupRequestJoin(KonataInternalBot bot, GroupRequestJoinEvent e)
+    private void InternalOnGroupRequestJoin(KonataInternalBot bot, GroupRequestJoinEvent e)
     {
         OnGuildJoinRequested?.Invoke(this, new BotGuildJoinRequestedEvent(
             e.GroupName, e.GroupUin.ToString(),
             e.ReqNick, e.ReqUin.ToString(), e.ReqComment) { EventMessage = e.Token });
     }
 
-    private void InnerOnFriendRequest(KonataInternalBot bot, FriendRequestEvent e)
+    private void InternalOnFriendRequest(KonataInternalBot bot, FriendRequestEvent e)
     {
         OnFriendRequested?.Invoke(this, new BotFriendRequestedEvent(
             e.ReqNick, e.ReqUin.ToString(), e.ReqComment) { EventMessage = e.Token });
     }
 
-    private void InnerOnCaptcha(KonataInternalBot bot, CaptchaEvent e)
+    private void InternalOnCaptcha(KonataInternalBot bot, CaptchaEvent e)
     {
         Log(BotLogLevel.Warning, $"Bot {_config.SelfId} needs login verification.");
 
@@ -280,7 +280,7 @@ public sealed class KonataBot : FlandreBot
         }
     }
 
-    private void InnerOnLog(KonataInternalBot bot, LogEvent e)
+    private void InternalOnLog(KonataInternalBot bot, LogEvent e)
     {
         switch (e.Level)
         {
