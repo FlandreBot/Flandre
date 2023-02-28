@@ -83,6 +83,9 @@ public MessageContent OnExample(CommandContext ctx,
 
 ```shell
 $ dotnet new install Flandre.Templates
+
+# 如果曾经安装过，可以使用以下命令更新至最新版本
+$ dotnet new update
 ```
 
 创建一个名为 `MyFirstFlandreApp` 的新项目：
