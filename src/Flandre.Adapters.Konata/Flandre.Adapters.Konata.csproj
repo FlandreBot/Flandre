@@ -6,7 +6,7 @@
         <Authors>FlandreDevs,b1acksoil</Authors>
         <Description>Konata.Core (QQ Protocol) adapter for Flandre project.</Description>
         <PackageTags>bot;chatbot;flandre;adapter;konata</PackageTags>
-        <PackageLicenseExpression>GPL-3.0</PackageLicenseExpression>
+        <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
         <PackageIcon>avatar.jpg</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
 
