@@ -103,7 +103,28 @@ public sealed partial class FlandreApp
 
         Command? ParseCommand(MiddlewareContext ctx)
         {
+            // 1. 检查 StringShortcut 中是否有匹配项
+            // 3. 检查 RegexShortcut 中是否有匹配项
+            // 4. 常规匹配指令
+
             var commandStr = ctx.Message.GetText().Trim();
+
+            foreach (var strShortcut in StringShortcuts.Keys)
+            {
+                if (!strShortcut.TryFormat(commandStr, out var result))
+                    continue;
+                ctx.CommandStringParser = new StringParser(result);
+                return StringShortcuts[strShortcut];
+            }
+
+            foreach (var regShortcut in RegexShortcuts.Keys)
+            {
+                if (!regShortcut.TryFormat(commandStr, out var result))
+                    continue;
+                ctx.CommandStringParser = new StringParser(result);
+                return RegexShortcuts[regShortcut];
+            }
+
             var commandPrefix = _appOptions.CurrentValue.CommandPrefix;
             if (commandStr == commandPrefix)
                 return null;
@@ -111,15 +132,6 @@ public sealed partial class FlandreApp
             var parser = ctx.CommandStringParser = new StringParser(commandStr);
 
             var root = parser.SkipWhiteSpaces().Read(' ');
-
-            if (StringShortcuts.TryGetValue(root, out var command))
-                return command;
-
-            // TODO: support regex variables
-            // ReSharper disable once AccessToModifiedClosure
-            var matchedRegex = RegexShortcuts.Keys.FirstOrDefault(regex => regex.IsMatch(root));
-            if (matchedRegex is not null)
-                return RegexShortcuts[matchedRegex];
 
             if (!string.IsNullOrWhiteSpace(commandPrefix)
                 && !root.StartsWith(commandPrefix))
@@ -204,7 +216,7 @@ public sealed partial class FlandreApp
             Exception? ex = null;
             try
             {
-                content = await ctx.Command.Invoke(plugin, cmdCtx, result);
+                content = await ctx.Command.Invoke(plugin, cmdCtx, result, pluginLogger);
             }
             catch (Exception e)
             {

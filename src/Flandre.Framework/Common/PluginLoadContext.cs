@@ -1,7 +1,5 @@
 using System.ComponentModel;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using Flandre.Core.Messaging;
 using Flandre.Framework.Attributes;
 using Microsoft.Extensions.Logging;
 
@@ -44,16 +42,6 @@ public sealed class PluginLoadContext
             if (cmdAttr is null)
                 continue;
 
-            // 方法类型不对的
-            if (!(method.ReturnType.IsAssignableTo(typeof(MessageContent))
-                  || method.ReturnType.IsAssignableTo(typeof(Task<MessageContent>))
-                  || method.ReturnType.IsAssignableTo(typeof(ValueTask<MessageContent>))))
-            {
-                _logger.LogWarning("指令方法 {PluginType}.{MethodName} 的返回类型不是 MessageContent, 将忽略这个指令。",
-                    _pluginType, method.Name);
-                continue;
-            }
-
             var options = new List<CommandOption>();
             var parameters = new List<CommandParameter>();
 
@@ -67,17 +55,21 @@ public sealed class PluginLoadContext
                 if (param.GetCustomAttribute<OptionAttribute>() is { } optAttr)
                 {
                     // option
-                    if (!param.HasDefaultValue)
-                    {
-                        _logger.LogWarning("指令方法 {PluginType}.{MethodName} 中选项参数 {OptionName} 不具有默认值, 将忽略这个指令。",
-                            _pluginType, method.Name, param.Name);
-                        continue;
-                    }
+                    // if (!param.HasDefaultValue)
+                    // {
+                    //     _logger.LogWarning("指令方法 {PluginType}.{MethodName} 中选项参数 {OptionName} 不具有默认值, 将忽略这个选项。",
+                    //         _pluginType, method.Name, param.Name);
+                    //     continue;
+                    // }
+                    var paramType = param.ParameterType;
 
-                    options.Add(new CommandOption(param.Name!, optAttr.ShortName, param.DefaultValue!)
-                    {
-                        Description = description
-                    });
+                    options.Add(new CommandOption(param.Name!, optAttr.ShortName, paramType,
+                        param.HasDefaultValue // 如果 option 定义了默认值
+                            ? param.DefaultValue! // 则使用定义的默认值
+                            // 否则使用 default(T)
+                            : param.ParameterType.IsValueType
+                                ? Activator.CreateInstance(paramType)
+                                : null) { Description = description });
                     continue;
                 }
 
@@ -93,10 +85,16 @@ public sealed class PluginLoadContext
 
             cmd.Parameters = parameters;
             cmd.Options = options;
-            cmd.StringShortcuts = method.GetCustomAttributes<StringShortcutAttribute>()
-                .Select(attr => attr.StringShortcut).ToList();
-            cmd.RegexShortcuts = method.GetCustomAttributes<RegexShortcutAttribute>()
-                .Select(attr => attr.RegexShortcut).ToList();
+
+            cmd.Shortcuts.AddRange(method.GetCustomAttributes<StringShortcutAttribute>()
+                .Select(attr => new StringShortcut(attr)));
+            cmd.Shortcuts.AddRange(method.GetCustomAttributes<RegexShortcutAttribute>()
+                .Select(attr => new RegexShortcut(attr)));
+
+            // cmd.StringShortcuts = method.GetCustomAttributes<StringShortcutAttribute>()
+            //     .Select(attr => attr.StringShortcut).ToList();
+            // cmd.RegexShortcuts = method.GetCustomAttributes<RegexShortcutAttribute>()
+            //     .Select(attr => attr.RegexShortcut).ToList();
 
             var obsoleteAttr = method.GetCustomAttribute<ObsoleteAttribute>();
             cmd.IsObsolete = obsoleteAttr is not null;
@@ -142,17 +140,30 @@ public sealed class PluginLoadContext
         }
     }
 
-    internal void LoadCommandShortcuts(Dictionary<string, Command> stringShortcuts,
-        Dictionary<Regex, Command> regexShortcuts)
+    internal void LoadCommandShortcuts(Dictionary<StringShortcut, Command> stringShortcuts,
+        Dictionary<RegexShortcut, Command> regexShortcuts)
     {
         void LoadNodeShortcuts(CommandNode node)
         {
             if (node.HasCommand)
             {
-                foreach (var strShortcut in node.Command!.StringShortcuts)
-                    stringShortcuts[strShortcut] = node.Command;
-                foreach (var regexShortcut in node.Command!.RegexShortcuts)
-                    regexShortcuts[regexShortcut] = node.Command;
+                foreach (var shortcut in node.Command!.Shortcuts)
+                {
+                    switch (shortcut)
+                    {
+                        case StringShortcut strShortcut:
+                            stringShortcuts[strShortcut] = node.Command;
+                            break;
+
+                        case RegexShortcut regShortcut:
+                            regexShortcuts[regShortcut] = node.Command;
+                            break;
+                    }
+                }
+                // foreach (var strShortcut in node.Command!.StringShortcuts)
+                //     stringShortcuts[strShortcut] = node.Command;
+                // foreach (var regexShortcut in node.Command!.RegexShortcuts)
+                //     regexShortcuts[regexShortcut] = node.Command;
             }
 
             foreach (var (_, subNode) in node.SubNodes)

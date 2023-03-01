@@ -8,7 +8,7 @@ internal static class CommandParser
     internal sealed class CommandParseResult
     {
         public List<object> ParsedArguments { get; } = new();
-        public Dictionary<string, object> ParsedOptions { get; } = new();
+        public Dictionary<string, object?> ParsedOptions { get; } = new();
 
         public string? ErrorText { get; internal set; }
     }

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Flandre.Core.Messaging;
 using Flandre.Framework.Attributes;
+using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
 
@@ -28,8 +29,7 @@ public sealed class Command
     /// </summary>
     internal List<string> Aliases { get; } = new();
 
-    internal List<string> StringShortcuts { get; set; } = new();
-    internal List<Regex> RegexShortcuts { get; set; } = new();
+    internal List<CommandShortcut> Shortcuts { get; } = new();
 
     internal MethodInfo? InnerMethod { get; private set; }
     internal Type PluginType { get; }
@@ -62,24 +62,20 @@ public sealed class Command
     }
 
     /// <summary>
-    /// 添加前缀式快捷方式
+    /// 添加字符串匹配快捷方式
     /// </summary>
-    /// <param name="shortcut"></param>
-    /// <returns></returns>
-    public Command AddShortcut(string shortcut)
+    public Command AddShortcut(string shortcut, string target, bool allowArguments = false)
     {
-        StringShortcuts.Add(shortcut);
+        Shortcuts.Add(new StringShortcut(shortcut, target, allowArguments));
         return this;
     }
 
     /// <summary>
     /// 添加正则式快捷方式
     /// </summary>
-    /// <param name="shortcut"></param>
-    /// <returns></returns>
-    public Command AddShortcut(Regex shortcut)
+    public Command AddShortcut(Regex shortcut, string target)
     {
-        RegexShortcuts.Add(shortcut);
+        Shortcuts.Add(new RegexShortcut(shortcut, target));
         return this;
     }
 
@@ -107,12 +103,12 @@ public sealed class Command
     #endregion
 
     internal async Task<MessageContent?> Invoke(Plugin plugin, CommandContext ctx,
-        CommandParser.CommandParseResult parsed)
+        CommandParser.CommandParseResult parsed, ILogger logger)
     {
         if (InnerMethod is null)
             return null;
 
-        var args = new List<object> { ctx };
+        var args = new List<object?> { ctx };
         var parsedArgIndex = 0;
         var methodParams = InnerMethod.GetParameters();
         for (var i = 1; i < methodParams.Length; ++i)
@@ -138,6 +134,12 @@ public sealed class Command
             }
         }
 
+        // void MethodReturnTypeNotResolved()
+        // {
+        //     logger.LogWarning("无法将指令方法 {PluginType}.{MethodName} 的返回类型转换为可解析的返回类型。",
+        //         plugin.GetType().Name, InnerMethod?.Name);
+        // }
+
         var cmdResult = InnerMethod?.Invoke(plugin, args.ToArray());
         var content = cmdResult switch
         {
@@ -148,8 +150,9 @@ public sealed class Command
             string str => (MessageContent)str,
             MessageBuilder msgBuilder => (MessageContent)msgBuilder,
 
-            _ => null
+            _ => cmdResult?.ToString() is { } val ? (MessageContent)val : null
         };
+
         return content;
     }
 }

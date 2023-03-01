@@ -10,16 +10,16 @@ public sealed class CommandOption
 
     public Type Type { get; }
 
-    public object DefaultValue { get; }
+    public object? DefaultValue { get; }
 
     public string? Description { get; init; }
 
-    internal CommandOption(string name, char shortName, object defaultValue)
+    internal CommandOption(string name, char shortName, Type type, object? defaultValue)
     {
         Name = name;
         ShortName = shortName;
         HasShortName = shortName != default;
-        Type = defaultValue.GetType();
+        Type = type;
         DefaultValue = defaultValue;
     }
 }

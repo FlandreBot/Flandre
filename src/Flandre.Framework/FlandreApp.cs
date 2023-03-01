@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
 using Flandre.Core.Common;
 using Flandre.Core.Messaging;
 using Flandre.Framework.Common;
@@ -40,8 +39,11 @@ public sealed partial class FlandreApp : IHost
     #region 指令解析相关
 
     internal CommandNode RootCommandNode { get; } = new("");
-    internal Dictionary<string, Command> StringShortcuts { get; } = new();
-    internal Dictionary<Regex, Command> RegexShortcuts { get; } = new();
+    internal Dictionary<StringShortcut, Command> StringShortcuts { get; } = new();
+
+    internal Dictionary<RegexShortcut, Command> RegexShortcuts { get; } = new();
+    // internal Dictionary<string, Command> StringShortcuts { get; } = new();
+    // internal Dictionary<Regex, Command> RegexShortcuts { get; } = new();
 
     #endregion
 
