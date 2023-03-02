@@ -3,7 +3,7 @@
 /// <summary>
 /// 基础上下文
 /// </summary>
-public class Context
+public class BotContext
 {
     /// <summary>
     /// 当前 bot 实例
@@ -14,7 +14,7 @@ public class Context
     /// 构造上下文
     /// </summary>
     /// <param name="bot">bot 实例</param>
-    public Context(Bot bot)
+    public BotContext(Bot bot)
     {
         Bot = bot;
     }

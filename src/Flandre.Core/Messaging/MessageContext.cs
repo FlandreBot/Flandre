@@ -5,7 +5,7 @@ namespace Flandre.Core.Messaging;
 /// <summary>
 /// 消息上下文
 /// </summary>
-public class MessageContext : Context
+public class MessageContext : BotContext
 {
     /// <summary>
     /// 当前消息

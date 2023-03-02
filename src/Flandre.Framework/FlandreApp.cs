@@ -109,7 +109,7 @@ public sealed partial class FlandreApp : IHost
                     await bot.SendMessage(e.Message, middlewareCtx.Response);
             });
 
-            var ctx = new Context(bot);
+            var ctx = new BotContext(bot);
 
             foreach (var pluginType in _pluginTypes)
             {
