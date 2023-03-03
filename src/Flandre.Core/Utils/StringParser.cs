@@ -52,6 +52,8 @@ public class StringParser
     {
     }
 
+    #region Skip
+
     /// <summary>
     /// 跳过指定长度
     /// </summary>
@@ -93,6 +95,10 @@ public class StringParser
     /// </summary>
     public StringParser SkipWhiteSpaces() => SkipWhen(char.IsWhiteSpace);
 
+    #endregion
+
+    #region Peek
+
     /// <summary>
     /// 读取字符串，但不移动解析器指针
     /// </summary>
@@ -126,6 +132,30 @@ public class StringParser
             ++end;
         return _str[_pos..end];
     }
+
+    /// <summary>
+    /// 读取字符串，且移动解析器指针，直至空白字符
+    /// </summary>
+    public string PeekToWhiteSpace() => PeekWhen(t => !char.IsWhiteSpace(t));
+
+    /// <summary>
+    /// 查看包含引号的字符串
+    /// </summary>
+    public string PeekQuoted()
+    {
+        if (IsEnd)
+            return "";
+
+        var index = Array.IndexOf(LeftQuotes, Current);
+
+        if (index is -1)
+            return PeekToWhiteSpace();
+        return Peek(RightQuotes[index], true)[..^1];
+    }
+
+    #endregion
+
+    #region Read
 
     /// <summary>
     /// 读取字符串，且移动解析器指针
@@ -181,6 +211,8 @@ public class StringParser
         ++_pos;
         return Read(RightQuotes[index], true)[..^1];
     }
+
+    #endregion
 
     private int IndexOfOrEnd(char value)
     {
