@@ -286,13 +286,24 @@ public sealed class KonataBot : FlandreBot
     {
         switch (e.Level)
         {
+            case LogLevel.Verbose:
+                Log(BotLogLevel.Trace, e.EventMessage);
+                break;
+
+            case LogLevel.Information:
+                Log(BotLogLevel.Information, e.EventMessage);
+                break;
+
             case LogLevel.Warning:
                 Log(BotLogLevel.Warning, e.EventMessage);
                 break;
 
             case LogLevel.Exception:
-            case LogLevel.Fatal:
                 Log(BotLogLevel.Error, e.EventMessage);
+                break;
+
+            case LogLevel.Fatal:
+                Log(BotLogLevel.Critical, e.EventMessage);
                 break;
         }
     }
