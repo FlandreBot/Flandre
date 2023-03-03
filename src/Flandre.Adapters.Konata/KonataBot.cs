@@ -70,15 +70,15 @@ public sealed class KonataBot : FlandreBot
     /// <inheritdoc />
     public override async Task Start()
     {
-        Log(BotLogLevel.Debug, $"Starting bot {_config.SelfId}...");
+        Log(BotLogLevel.Debug, $"Trying to log in bot {_config.KeyStore.Account.Uin}...");
         if (!await Internal.Login())
         {
-            Log(BotLogLevel.Warning, $"Bot {_config.SelfId} login failed.");
+            Log(BotLogLevel.Warning, $"Bot {_config.KeyStore.Account.Uin} login failed.");
             return;
         }
 
         _config.KeyStore = Internal.KeyStore;
-        Log(BotLogLevel.Information, $"Bot {_config.SelfId} started.");
+        Log(BotLogLevel.Information, $"Bot {_config.KeyStore.Account.Uin} started.");
     }
 
     /// <inheritdoc />
