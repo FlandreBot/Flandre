@@ -1,4 +1,7 @@
-﻿namespace Flandre.Framework.Tests;
+﻿using Flandre.Framework.Services;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Flandre.Framework.Tests;
 
 public class CommandNodeTests
 {
@@ -21,10 +24,12 @@ public class CommandNodeTests
             .AddPlugin<TestPlugin>()
             .Build();
 
-        Assert.Equal(3, app.RootCommandNode.CountCommands());
-        Assert.Equal("cmd-xxx", app.RootCommandNode.FindSubNode("cmd-xxx")?.FullName);
-        Assert.Equal("cmd-aaa.cmd-bbb", app.RootCommandNode.FindSubNode("cmd-aaa..cmd-bbb")?.FullName);
-        Assert.Equal("cmd-aaa.cmd-bbb", app.RootCommandNode.FindSubNode("cmd-aaa..cmd-bbb")?.Command?.FullName);
-        Assert.Equal("cmd-bbb", app.RootCommandNode.FindSubNode("cmd-bbb . .")?.Command?.FullName);
+        var cmdService = app.Services.GetRequiredService<CommandService>();
+
+        Assert.Equal(3, cmdService.RootCommandNode.CountCommands());
+        Assert.Equal("cmd-xxx", cmdService.RootCommandNode.FindSubNode("cmd-xxx")?.FullName);
+        Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-aaa..cmd-bbb")?.FullName);
+        Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-aaa..cmd-bbb")?.Command?.FullName);
+        Assert.Equal("cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-bbb . .")?.Command?.FullName);
     }
 }

@@ -1,6 +1,8 @@
 using System.ComponentModel;
 using System.Reflection;
 using Flandre.Framework.Attributes;
+using Flandre.Framework.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
@@ -10,15 +12,15 @@ namespace Flandre.Framework.Common;
 /// </summary>
 public sealed class PluginLoadContext
 {
-    private readonly CommandNode _rootNode;
+    private readonly CommandService _cmdService;
     private readonly Type _pluginType;
     private readonly ILogger<PluginLoadContext> _logger;
 
-    internal PluginLoadContext(CommandNode rootNode, Type pluginType, ILogger<PluginLoadContext> logger)
+    internal PluginLoadContext(Type pluginType, IServiceProvider services)
     {
-        _rootNode = rootNode;
         _pluginType = pluginType;
-        _logger = logger;
+        _cmdService = services.GetRequiredService<CommandService>();
+        _logger = services.GetRequiredService<ILogger<PluginLoadContext>>();
     }
 
     /// <summary>
@@ -28,7 +30,28 @@ public sealed class PluginLoadContext
     /// <returns></returns>
     public Command AddCommand(string path)
     {
-        return _rootNode.AddCommand(_pluginType, path);
+        return _cmdService.RootCommandNode.AddCommand(_pluginType, path);
+    }
+
+    /// <summary>
+    /// 添加类型解析器
+    /// </summary>
+    /// <param name="typeFriendlyName">类型友好名称，用于向用户展示</param>
+    /// <param name="parser">解析委托</param>
+    /// <typeparam name="T">需要解析的类型</typeparam>
+    public void AddTypeParser<T>(string typeFriendlyName, TypeParserDelegate<T> parser)
+    {
+        _cmdService.AddTypeParser(typeFriendlyName, parser);
+    }
+
+    /// <summary>
+    /// 添加类型解析器
+    /// </summary>
+    /// <param name="parser">解析委托</param>
+    /// <typeparam name="T">需要解析的类型</typeparam>
+    public void AddTypeParser<T>(TypeParserDelegate<T> parser)
+    {
+        _cmdService.AddTypeParser(null, parser);
     }
 
     #region Internal Processing
@@ -117,11 +140,11 @@ public sealed class PluginLoadContext
                 LoadNodeAliases(subNode);
         }
 
-        LoadNodeAliases(_rootNode);
+        LoadNodeAliases(_cmdService.RootCommandNode);
 
         foreach (var (alias, cmd) in toBeAdded)
         {
-            var currentNode = _rootNode;
+            var currentNode = _cmdService.RootCommandNode;
             var segments = alias.Split('.',
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             for (var i = 0; i < segments.Length; i++)
@@ -140,8 +163,7 @@ public sealed class PluginLoadContext
         }
     }
 
-    internal void LoadCommandShortcuts(Dictionary<StringShortcut, Command> stringShortcuts,
-        Dictionary<RegexShortcut, Command> regexShortcuts)
+    internal void LoadCommandShortcuts()
     {
         void LoadNodeShortcuts(CommandNode node)
         {
@@ -152,11 +174,11 @@ public sealed class PluginLoadContext
                     switch (shortcut)
                     {
                         case StringShortcut strShortcut:
-                            stringShortcuts[strShortcut] = node.Command;
+                            _cmdService.StringShortcuts[strShortcut] = node.Command;
                             break;
 
                         case RegexShortcut regShortcut:
-                            regexShortcuts[regShortcut] = node.Command;
+                            _cmdService.RegexShortcuts[regShortcut] = node.Command;
                             break;
                     }
                 }
@@ -170,7 +192,7 @@ public sealed class PluginLoadContext
                 LoadNodeShortcuts(subNode);
         }
 
-        LoadNodeShortcuts(_rootNode);
+        LoadNodeShortcuts(_cmdService.RootCommandNode);
     }
 
     #endregion

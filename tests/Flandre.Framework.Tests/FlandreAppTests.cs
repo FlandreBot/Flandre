@@ -1,5 +1,8 @@
 ﻿// ReSharper disable StringLiteralTypo
 
+using Flandre.Framework.Services;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Flandre.Framework.Tests;
 
 public class FlandreAppTests
@@ -24,42 +27,38 @@ public class FlandreAppTests
     }
 
     [Fact]
-    public async Task TestAliases()
+    public void TestAliases()
     {
         var builder = FlandreApp.CreateBuilder();
         using var app = builder
             .AddPlugin<TestPlugin>()
             .Build();
 
-        await app.StartAsync();
+        var cmdService = app.Services.GetRequiredService<CommandService>();
 
-        Assert.Equal(3, app.RootCommandNode.CountCommands());
+        Assert.Equal(3, cmdService.RootCommandNode.CountCommands());
 
-        Assert.NotNull(app.RootCommandNode.FindSubNode("test"));
-        Assert.NotNull(app.RootCommandNode.FindSubNode("sub.test"));
-        Assert.NotNull(app.RootCommandNode.FindSubNode("sub.sub.sub.test"));
+        Assert.NotNull(cmdService.RootCommandNode.FindSubNode("test"));
+        Assert.NotNull(cmdService.RootCommandNode.FindSubNode("sub.test"));
+        Assert.NotNull(cmdService.RootCommandNode.FindSubNode("sub.sub.sub.test"));
 
         // alias
-        Assert.NotNull(app.RootCommandNode.FindSubNode("test111.11.45.14"));
-        Assert.Equal(app.RootCommandNode.FindSubNode("sssuuubbb")?.Command,
-            app.RootCommandNode.FindSubNode("sub.test")?.Command);
-
-        await app.StopAsync();
+        Assert.NotNull(cmdService.RootCommandNode.FindSubNode("test111.11.45.14"));
+        Assert.Equal(cmdService.RootCommandNode.FindSubNode("sssuuubbb")?.Command,
+            cmdService.RootCommandNode.FindSubNode("sub.test")?.Command);
     }
 
     [Fact]
-    public async Task TestShortcutCount()
+    public void TestShortcutCount()
     {
         var builder = FlandreApp.CreateBuilder();
         using var app = builder
             .AddPlugin<TestPlugin>()
             .Build();
 
-        await app.StartAsync();
+        var cmdService = app.Services.GetRequiredService<CommandService>();
 
-        Assert.Equal(2, app.StringShortcuts.Count);
-        Assert.Single(app.RegexShortcuts);
-
-        await app.StopAsync();
+        Assert.Equal(2, cmdService.StringShortcuts.Count);
+        Assert.Single(cmdService.RegexShortcuts);
     }
 }

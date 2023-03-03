@@ -3,6 +3,7 @@ using Flandre.Core.Messaging.Segments;
 using Flandre.Core.Utils;
 using Flandre.Framework.Common;
 using Flandre.Framework.Events;
+using Flandre.Framework.Services;
 using Flandre.Framework.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -107,22 +108,24 @@ public sealed partial class FlandreApp
             // 3. 检查 RegexShortcut 中是否有匹配项
             // 4. 常规匹配指令
 
+            var cmdService = Services.GetRequiredService<CommandService>();
+
             var commandStr = ctx.Message.GetText().Trim();
 
-            foreach (var strShortcut in StringShortcuts.Keys)
+            foreach (var strShortcut in cmdService.StringShortcuts.Keys)
             {
                 if (!strShortcut.TryFormat(commandStr, out var result))
                     continue;
                 ctx.CommandStringParser = new StringParser(result);
-                return StringShortcuts[strShortcut];
+                return cmdService.StringShortcuts[strShortcut];
             }
 
-            foreach (var regShortcut in RegexShortcuts.Keys)
+            foreach (var regShortcut in cmdService.RegexShortcuts.Keys)
             {
                 if (!regShortcut.TryFormat(commandStr, out var result))
                     continue;
                 ctx.CommandStringParser = new StringParser(result);
-                return RegexShortcuts[regShortcut];
+                return cmdService.RegexShortcuts[regShortcut];
             }
 
             var commandPrefix = _appOptions.CurrentValue.CommandPrefix;
@@ -139,7 +142,7 @@ public sealed partial class FlandreApp
 
             var path = new List<string>();
             var current = root.TrimStart(commandPrefix);
-            var node = RootCommandNode;
+            var node = cmdService.RootCommandNode;
             var temp = false;
             parser.SkipWhiteSpaces();
 
@@ -194,7 +197,9 @@ public sealed partial class FlandreApp
             if (ctx.Command is null || ctx.CommandStringParser is null)
                 return null;
 
-            if (!ctx.Command.TryParse(ctx.CommandStringParser, out var result))
+            var cmdService = Services.GetRequiredService<CommandService>();
+
+            if (!ctx.Command.TryParse(ctx.CommandStringParser, cmdService, out var result))
                 return result.ErrorText!;
 
             var plugin = (Plugin)ctx.Services.GetRequiredService(ctx.Command.PluginType);

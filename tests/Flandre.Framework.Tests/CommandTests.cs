@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using Flandre.Framework.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Flandre.Framework.Tests;
 
@@ -120,11 +122,13 @@ public class CommandTests
             .AddPlugin<TestPlugin>()
             .Build();
 
-        Assert.Equal("This is a test command.",
-            app.RootCommandNode.FindSubNode("test1")?.Command?.Description);
+        var cmdService = app.Services.GetRequiredService<CommandService>();
 
-        Assert.True(app.RootCommandNode.FindSubNode("test2")?.Command?.IsObsolete);
+        Assert.Equal("This is a test command.",
+            cmdService.RootCommandNode.FindSubNode("test1")?.Command?.Description);
+
+        Assert.True(cmdService.RootCommandNode.FindSubNode("test2")?.Command?.IsObsolete);
         Assert.Equal("This command is obsoleted.",
-            app.RootCommandNode.FindSubNode("test2")?.Command?.ObsoleteMessage);
+            cmdService.RootCommandNode.FindSubNode("test2")?.Command?.ObsoleteMessage);
     }
 }
