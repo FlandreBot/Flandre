@@ -125,12 +125,12 @@ public class StringParser
     /// <param name="includeTerminator"></param>
     public string PeekWhen(Func<char, bool> predicate, bool includeTerminator = false)
     {
-        var end = _pos;
-        while (!(IsEnd || !predicate(Current)))
-            ++end;
+        var cur = _pos;
+        while (!(cur >= _str.Length || !predicate(_str[cur])))
+            ++cur;
         if (includeTerminator)
-            ++end;
-        return _str[_pos..end];
+            ++cur;
+        return _str[_pos..cur];
     }
 
     /// <summary>
