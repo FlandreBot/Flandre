@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -51,6 +52,19 @@ public class CommandTests
         {
             return $"{arg1} {arg2} {opt1}";
         }
+
+        // Array parameter
+        [Command("test6")]
+        public static string OnTest6(CommandContext ctx, int[] intArr, double arg, string[] strArr)
+        {
+            return new StringBuilder()
+                .Append(string.Join(',', intArr))
+                .Append(" | ")
+                .Append(arg)
+                .Append(" | ")
+                .Append(string.Join(',', strArr))
+                .ToString();
+        }
     }
 
     [Fact]
@@ -65,6 +79,10 @@ public class CommandTests
             .AddAdapter(adapter)
             .AddPlugin<TestPlugin>()
             .Build();
+
+        var service = app.Services.GetRequiredService<CommandService>();
+
+        Assert.Equal(6, service.RootCommandNode.CountCommands());
 
         await app.StartWithDefaultsAsync();
 
@@ -112,6 +130,26 @@ public class CommandTests
         content = await friendClient.SendMessageForReply("测试5 333");
         Assert.Equal("111.222 333 True",
             content?.GetText());
+    }
+
+    [Fact]
+    public async Task TestArrayParameter()
+    {
+        var adapter = new MockAdapter();
+        var client = adapter.GetFriendClient();
+
+        var builder = FlandreApp.CreateBuilder();
+        var app = builder
+            .AddAdapter(adapter)
+            .AddPlugin<TestPlugin>()
+            .Build();
+
+        await app.StartWithDefaultsAsync();
+
+        var content = await client.SendMessageForReply("test6 11 22 33 1.23 aaa bbb ccc  ");
+        Assert.Equal("11,22,33 | 1.23 | aaa,bbb,ccc", content?.GetText());
+
+        await app.StopAsync();
     }
 
     [Fact]

@@ -36,13 +36,11 @@ internal sealed class CommandService
 
     public bool TryParseArgumentValue(Type type, string raw, out object? result)
     {
-        if (!TypeParsers.TryGetValue(type, out var typeParser))
-        {
-            result = null;
-            return false;
-        }
+        if (TypeParsers.TryGetValue(type, out var typeParser))
+            return typeParser(raw, out result);
 
-        return typeParser(raw, out result);
+        result = null;
+        return false;
     }
 
     public string GetTypeFriendlyName(Type type)

@@ -1,3 +1,4 @@
+using System.Collections;
 using Flandre.Core.Utils;
 using Flandre.Framework.Services;
 
@@ -31,12 +32,12 @@ internal static class CommandParser
 
         while (!parser.IsEnd)
         {
-            var peek = parser.SkipWhiteSpaces().Peek(' ');
+            var peek = parser.SkipWhiteSpaces().PeekToWhiteSpace();
 
             // option (full)
             if (peek.StartsWith("--", StringComparison.OrdinalIgnoreCase))
             {
-                var optName = parser.Read(' ').TrimStart('-');
+                var optName = parser.ReadToWhiteSpace().TrimStart('-');
 
                 // 例: `--no-check` 将名为 `check` 的选项设置为 false
                 // 如果者类型不是 bool，无事发生
@@ -62,7 +63,7 @@ internal static class CommandParser
                 else
                 {
                     if (service.TryParseArgumentValue(option.Type,
-                            parser.SkipWhiteSpaces().Read(' '), out var obj))
+                            parser.SkipWhiteSpaces().ReadToWhiteSpace(), out var obj))
                         result.ParsedOptions[option.Name] = obj;
                     else
                         return TypeNotMatch(result, option, service);
@@ -70,7 +71,7 @@ internal static class CommandParser
             }
             else if (peek.StartsWith('-')) // option (short)
             {
-                var opts = parser.Read(' ').TrimStart('-');
+                var opts = parser.ReadToWhiteSpace().TrimStart('-');
 
                 parser.SkipWhiteSpaces();
 
@@ -93,7 +94,7 @@ internal static class CommandParser
                         if (i < opts.Length - 1)
                             return TypeNotMatch(result, option, service);
 
-                        var nextArg = parser.Read(' ');
+                        var nextArg = parser.ReadToWhiteSpace();
 
                         if (option.Type == typeof(string))
                             result.ParsedOptions[option.Name] = parser.ReadQuoted();
@@ -114,9 +115,28 @@ internal static class CommandParser
 
                 var param = command.Parameters[argIndex];
 
-                if (param.Type == typeof(string))
+                if (param.Type.IsArray)
+                {
+                    var elemType = param.Type.GetElementType()!;
+                    var list = new ArrayList();
+
+                    while (!parser.IsEnd &&
+                           service.TryParseArgumentValue(elemType,
+                               elemType == typeof(string) ? parser.PeekQuoted() : parser.PeekToWhiteSpace(),
+                               out var obj))
+                    {
+                        list.Add(obj);
+                        parser.ReadToWhiteSpace();
+                        parser.SkipWhiteSpaces();
+                    }
+
+                    var arr = Array.CreateInstance(elemType, list.Count);
+                    list.CopyTo(arr);
+                    result.ParsedArguments.Add(arr);
+                }
+                else if (param.Type == typeof(string))
                     result.ParsedArguments.Add(parser.ReadQuoted());
-                else if (service.TryParseArgumentValue(param.Type, parser.Read(' '), out var obj))
+                else if (service.TryParseArgumentValue(param.Type, parser.ReadToWhiteSpace(), out var obj))
                     result.ParsedArguments.Add(obj);
                 else
                     return TypeNotMatch(result, param, service);
