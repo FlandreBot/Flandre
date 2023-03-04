@@ -108,12 +108,18 @@ public sealed class Command
         if (InnerMethod is null)
             return null;
 
-        var args = new List<object?> { ctx };
+        var args = new List<object?>();
         var parsedArgIndex = 0;
         var methodParams = InnerMethod.GetParameters();
-        for (var i = 1; i < methodParams.Length; ++i)
+        foreach (var param in methodParams)
         {
-            var param = methodParams[i];
+            if (param.ParameterType != typeof(object) &&
+                param.ParameterType.IsAssignableFrom(typeof(CommandContext)))
+            {
+                args.Add(ctx);
+                continue;
+            }
+
             if (parsedArgIndex > parsed.ParsedArguments.Count)
                 throw new CommandInvokeException("Too many arguments requested.");
             var attr = param.GetCustomAttribute<OptionAttribute>();
