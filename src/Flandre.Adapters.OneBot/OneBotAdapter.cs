@@ -13,10 +13,9 @@ public class OneBotAdapter : IAdapter
         _config = config;
 
         foreach (var bot in _config.Bots)
-            switch (bot.Protocol.ToLower())
+            switch (bot.Protocol)
             {
-                case "websocket":
-                case "ws":
+                case OneBotProtocol.WebSocket:
                     var obb = new OneBotWebSocketBot(bot);
                     _bots.Add(obb);
                     _bots.Add(obb.GuildBot);
@@ -24,7 +23,7 @@ public class OneBotAdapter : IAdapter
 
                 default:
                     throw new NotSupportedException(
-                        $"OneBot adapter only supports \"websocket\" / \"ws\" protocol. Skipping initialization of bot {bot.SelfId}...");
+                        $"For now, the OneBot adapter only supports WebSocket protocol. Skipped initialization of bot {bot.SelfId}.");
             }
     }
 
