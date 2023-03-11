@@ -8,9 +8,9 @@ public class MockAdapter : IAdapter
 {
     internal readonly MockBot Bot = new();
 
-    public Task Start() => Task.CompletedTask;
+    public Task StartAsync() => Task.CompletedTask;
 
-    public Task Stop() => Task.CompletedTask;
+    public Task StopAsync() => Task.CompletedTask;
 
     public IEnumerable<Bot> GetBots()
     {

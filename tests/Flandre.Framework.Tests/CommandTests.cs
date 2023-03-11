@@ -9,10 +9,10 @@ public class CommandTests
 {
     public class TestPlugin : Plugin
     {
-        public override async Task OnMessageReceived(MessageContext ctx)
+        public override async Task OnMessageReceivedAsync(MessageContext ctx)
         {
             if (ctx.Message.GetText().StartsWith("OMR:"))
-                await ctx.Bot.SendMessage(ctx.Message);
+                await ctx.Bot.SendMessageAsync(ctx.Message);
         }
 
         [Command("test1")]

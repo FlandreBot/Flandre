@@ -9,7 +9,7 @@ public class SessionTests
         [Command("start-session")]
         public static async Task<MessageContent?> OnStartSession(CommandContext ctx)
         {
-            var nextMsg = await ctx.StartSession(TimeSpan.FromSeconds(2));
+            var nextMsg = await ctx.StartSessionAsync(TimeSpan.FromSeconds(2));
             return nextMsg?.Content;
         }
     }

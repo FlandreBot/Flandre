@@ -41,8 +41,8 @@ public abstract partial class Bot
     /// <param name="e">拉群邀请事件</param>
     /// <param name="approve">是否同意</param>
     /// <param name="comment">附加说明</param>
-    public virtual Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null)
-        => LogNotSupported(nameof(HandleGuildInvitation));
+    public virtual Task HandleGuildInvitationAsync(BotGuildInvitedEvent e, bool approve, string? comment = null)
+        => LogNotSupportedAsync(nameof(HandleGuildInvitationAsync));
 
     /// <summary>
     /// 处理加群申请
@@ -50,8 +50,8 @@ public abstract partial class Bot
     /// <param name="e">加群申请事件</param>
     /// <param name="approve">是否同意</param>
     /// <param name="comment">附加说明</param>
-    public virtual Task HandleGuildJoinRequest(BotGuildJoinRequestedEvent e, bool approve, string? comment = null)
-        => LogNotSupported(nameof(HandleGuildJoinRequest));
+    public virtual Task HandleGuildJoinRequestAsync(BotGuildJoinRequestedEvent e, bool approve, string? comment = null)
+        => LogNotSupportedAsync(nameof(HandleGuildJoinRequestAsync));
 
     /// <summary>
     /// 处理好友申请
@@ -59,6 +59,6 @@ public abstract partial class Bot
     /// <param name="e">好友申请事件</param>
     /// <param name="approve">是否同意</param>
     /// <param name="comment">附加说明</param>
-    public virtual Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null)
-        => LogNotSupported(nameof(HandleFriendRequest));
+    public virtual Task HandleFriendRequestAsync(BotFriendRequestedEvent e, bool approve, string? comment = null)
+        => LogNotSupportedAsync(nameof(HandleFriendRequestAsync));
 }

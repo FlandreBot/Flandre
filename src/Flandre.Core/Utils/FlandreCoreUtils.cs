@@ -8,16 +8,6 @@ namespace Flandre.Core.Utils;
 public static class FlandreCoreUtils
 {
     /// <summary>
-    /// 自动检测 <see cref="ResourceSegment"/> 的属性并获取或下载资源。
-    /// 优先级顺序为：直接返回 Data -> 根据 Path 读取文件 -> 根据 Url 下载文件
-    /// </summary>
-    /// <param name="resource">资源消息段</param>
-    public static byte[]? GetOrDownloadData(this ResourceSegment resource)
-    {
-        return resource.GetOrDownloadDataAsync().Result;
-    }
-
-    /// <summary>
     /// 自动检测 <see cref="ResourceSegment"/> 的属性并异步获取或下载资源。
     /// 优先级顺序为：直接返回 Data -> 根据 Path 读取文件 -> 根据 Url 下载文件
     /// </summary>

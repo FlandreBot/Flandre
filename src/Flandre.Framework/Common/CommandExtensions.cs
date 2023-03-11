@@ -1,5 +1,7 @@
 ﻿using Flandre.Core.Messaging;
 
+#pragma warning disable CS1591
+
 namespace Flandre.Framework.Common;
 
 public static class CommandExtensions

@@ -96,10 +96,10 @@ public sealed partial class FlandreApp : IHost
             bot.OnMessageReceived += (_, e) => Task.Run(async () =>
             {
                 var middlewareCtx = new MiddlewareContext(this, bot, e.Message, null);
-                await ExecuteMiddleware(middlewareCtx, 0); // Wait for all middleware's execution
+                await ExecuteMiddlewareAsync(middlewareCtx, 0); // Wait for all middleware's execution
                 middlewareCtx.ServiceScope.Dispose();
                 if (middlewareCtx.Response is not null)
-                    await bot.SendMessage(e.Message, middlewareCtx.Response);
+                    await bot.SendMessageAsync(e.Message, middlewareCtx.Response);
             });
 
             var ctx = new BotContext(bot);
@@ -107,15 +107,15 @@ public sealed partial class FlandreApp : IHost
             foreach (var pluginType in _pluginTypes)
             {
                 bot.OnGuildInvited += (_, e) => WithCatch(pluginType,
-                    plugin => plugin.OnGuildInvited(ctx, e),
+                    plugin => plugin.OnGuildInvitedAsync(ctx, e),
                     nameof(bot.OnGuildInvited));
 
                 bot.OnGuildJoinRequested += (_, e) => WithCatch(pluginType,
-                    plugin => plugin.OnGuildJoinRequested(ctx, e),
+                    plugin => plugin.OnGuildJoinRequestedAsync(ctx, e),
                     nameof(bot.OnFriendRequested));
 
                 bot.OnFriendRequested += (_, e) => WithCatch(pluginType,
-                    plugin => plugin.OnFriendRequested(ctx, e),
+                    plugin => plugin.OnFriendRequestedAsync(ctx, e),
                     nameof(bot.OnFriendRequested));
             }
         }
@@ -143,7 +143,7 @@ public sealed partial class FlandreApp : IHost
 
             loadCtx.LoadFromAttributes();
             // Fluent API can override attributes
-            plugin.OnLoading(loadCtx).GetAwaiter().GetResult();
+            plugin.OnLoadingAsync(loadCtx).GetAwaiter().GetResult();
 
             loadCtx.LoadCommandAliases();
             loadCtx.LoadCommandShortcuts();
@@ -157,13 +157,13 @@ public sealed partial class FlandreApp : IHost
     /// </summary>
     /// <param name="ctx">中间件上下文</param>
     /// <param name="index">中间件索引</param>
-    private async Task ExecuteMiddleware(MiddlewareContext ctx, int index)
+    private async Task ExecuteMiddlewareAsync(MiddlewareContext ctx, int index)
     {
         try
         {
             if (_middleware.Count < index + 1)
                 return;
-            await _middleware[index].Invoke(ctx, () => ExecuteMiddleware(ctx, index + 1));
+            await _middleware[index].Invoke(ctx, () => ExecuteMiddlewareAsync(ctx, index + 1));
         }
         catch (Exception e)
         {
@@ -196,7 +196,7 @@ public sealed partial class FlandreApp : IHost
             UseCommandInvoker();
         }
 
-        await Task.WhenAll(_adapters.Select(adapter => adapter.Start()).ToArray());
+        await Task.WhenAll(_adapters.Select(adapter => adapter.StartAsync()).ToArray());
         await _hostApp.StartAsync(cancellationToken);
 
         var cmdService = Services.GetRequiredService<CommandService>();
@@ -231,7 +231,7 @@ public sealed partial class FlandreApp : IHost
     /// </summary>
     public async Task StopAsync(CancellationToken cancellationToken = default)
     {
-        await Task.WhenAll(_adapters.Select(adapter => adapter.Stop()).ToArray());
+        await Task.WhenAll(_adapters.Select(adapter => adapter.StopAsync()).ToArray());
         await _hostApp.StopAsync(cancellationToken);
         Logger.LogInformation("App stopped.");
         OnStopped?.Invoke(this, new AppStoppedEvent());

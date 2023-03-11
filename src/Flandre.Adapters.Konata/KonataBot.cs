@@ -68,7 +68,7 @@ public sealed class KonataBot : FlandreBot
     #region 生命周期
 
     /// <inheritdoc />
-    public override async Task Start()
+    public override async Task StartAsync()
     {
         Log(BotLogLevel.Debug, $"Trying to log in bot {_config.KeyStore.Account.Uin}...");
         if (!await Internal.Login())
@@ -82,7 +82,7 @@ public sealed class KonataBot : FlandreBot
     }
 
     /// <inheritdoc />
-    public override Task Stop() => Task.Run(() => Internal.Dispose());
+    public override Task StopAsync() => Task.Run(() => Internal.Dispose());
 
     #endregion 生命周期
 
@@ -94,7 +94,7 @@ public sealed class KonataBot : FlandreBot
     /// <param name="channelId">群号</param>
     /// <param name="content">消息内容</param>
     /// <param name="guildId">群号，可不提供</param>
-    public override async Task<string?> SendChannelMessage(string channelId, MessageContent content,
+    public override async Task<string?> SendChannelMessageAsync(string channelId, MessageContent content,
         string? guildId = null)
     {
         await Internal.SendGroupMessage(
@@ -107,7 +107,7 @@ public sealed class KonataBot : FlandreBot
     /// </summary>
     /// <param name="userId">用户 QQ 号</param>
     /// <param name="content">消息内容</param>
-    public override async Task<string?> SendPrivateMessage(string userId, MessageContent content)
+    public override async Task<string?> SendPrivateMessageAsync(string userId, MessageContent content)
     {
         await Internal.SendFriendMessage(
             uint.Parse(userId), content.ToKonataMessageChain());
@@ -119,7 +119,7 @@ public sealed class KonataBot : FlandreBot
     #region 用户相关
 
     /// <inheritdoc />
-    public override Task<User?> GetSelf()
+    public override Task<User?> GetSelfAsync()
     {
         return Task.FromResult<User?>(new User
         {
@@ -131,13 +131,13 @@ public sealed class KonataBot : FlandreBot
 
     /// <inheritdoc />
     /// <remarks>在 Konata 中只能获取好友的信息。</remarks>
-    public override async Task<User?> GetUser(string userId, string? guildId = null)
+    public override async Task<User?> GetUserAsync(string userId, string? guildId = null)
     {
-        return (await GetFriendList()).FirstOrDefault(user => user.UserId == userId);
+        return (await GetFriendListAsync()).FirstOrDefault(user => user.UserId == userId);
     }
 
     /// <inheritdoc />
-    public override async Task<IEnumerable<User>> GetFriendList()
+    public override async Task<IEnumerable<User>> GetFriendListAsync()
     {
         return (await Internal.GetFriendList(true)).Select(friend => new User
         {
@@ -156,15 +156,15 @@ public sealed class KonataBot : FlandreBot
     /// 获取群信息
     /// </summary>
     /// <param name="guildId">群号</param>    
-    public override async Task<Guild?> GetGuild(string guildId)
+    public override async Task<Guild?> GetGuildAsync(string guildId)
     {
-        return (await GetGuildList()).FirstOrDefault(guild => guild.Id == guildId);
+        return (await GetGuildListAsync()).FirstOrDefault(guild => guild.Id == guildId);
     }
 
     /// <summary>
     /// 获取 Bot 加入的群列表
     /// </summary>
-    public override async Task<IEnumerable<Guild>> GetGuildList()
+    public override async Task<IEnumerable<Guild>> GetGuildListAsync()
     {
         return (await Internal.GetGroupList(true))
             .Select(group => new Guild
@@ -179,16 +179,16 @@ public sealed class KonataBot : FlandreBot
     /// </summary>
     /// <param name="guildId">群号</param>
     /// <param name="userId">群成员 QQ</param>
-    public override async Task<GuildMember?> GetGuildMember(string guildId, string userId)
+    public override async Task<GuildMember?> GetGuildMemberAsync(string guildId, string userId)
     {
-        return (await GetGuildMemberList(guildId)).FirstOrDefault(member => member.UserId == userId);
+        return (await GetGuildMemberListAsync(guildId)).FirstOrDefault(member => member.UserId == userId);
     }
 
     /// <summary>
     /// 获取群成员列表
     /// </summary>
     /// <param name="guildId">群号</param>
-    public override async Task<IEnumerable<GuildMember>> GetGuildMemberList(string guildId)
+    public override async Task<IEnumerable<GuildMember>> GetGuildMemberListAsync(string guildId)
     {
         return (await Internal.GetGroupMemberList(uint.Parse(guildId), true))
             .Select(member => new GuildMember
@@ -206,17 +206,17 @@ public sealed class KonataBot : FlandreBot
     #region Channel 相关
 
     /// <summary>
-    /// 获取群列表，对于 Konata 等效于 <see cref="GetGuild"/>
+    /// 获取群列表，对于 Konata 等效于 <see cref="GetGuildAsync"/>
     /// </summary>
-    public override async Task<Channel?> GetChannel(string channelId, string? guildId = null)
+    public override async Task<Channel?> GetChannelAsync(string channelId, string? guildId = null)
     {
-        return (await GetChannelList("")).FirstOrDefault(channel => channel.Id == channelId);
+        return (await GetChannelListAsync("")).FirstOrDefault(channel => channel.Id == channelId);
     }
 
     /// <summary>
-    /// 获取群列表，对于 Konata 等效于 <see cref="GetGuildList"/>
+    /// 获取群列表，对于 Konata 等效于 <see cref="GetGuildListAsync"/>
     /// </summary>
-    public override async Task<IEnumerable<Channel>> GetChannelList(string guildId)
+    public override async Task<IEnumerable<Channel>> GetChannelListAsync(string guildId)
     {
         return (await Internal.GetGroupList(true))
             .Select(group => new Channel
@@ -313,7 +313,7 @@ public sealed class KonataBot : FlandreBot
     #region 事件处理
 
     /// <inheritdoc />
-    public override async Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null)
+    public override async Task HandleGuildInvitationAsync(BotGuildInvitedEvent e, bool approve, string? comment = null)
     {
         if (approve)
             await Internal.ApproveGroupInvitation(
@@ -324,7 +324,7 @@ public sealed class KonataBot : FlandreBot
     }
 
     /// <inheritdoc />
-    public override async Task HandleGuildJoinRequest(BotGuildJoinRequestedEvent e, bool approve,
+    public override async Task HandleGuildJoinRequestAsync(BotGuildJoinRequestedEvent e, bool approve,
         string? comment = null)
     {
         if (approve)
@@ -336,7 +336,7 @@ public sealed class KonataBot : FlandreBot
     }
 
     /// <inheritdoc />
-    public override async Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null)
+    public override async Task HandleFriendRequestAsync(BotFriendRequestedEvent e, bool approve, string? comment = null)
     {
         if (approve)
             await Internal.ApproveFriendRequest(
