@@ -9,4 +9,9 @@ public sealed class FlandreAppOptions
     /// 全局指令前缀
     /// </summary>
     public string CommandPrefix { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 在用户调用指令时，不进行“指令未找到”提示
+    /// </summary>
+    public bool IgnoreWhenCallingUndefinedCommand { get; set; } = false;
 }

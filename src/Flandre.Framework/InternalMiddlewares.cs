@@ -167,7 +167,8 @@ public sealed partial class FlandreApp
             if (node.HasCommand)
                 return node.Command;
 
-            if (!string.IsNullOrWhiteSpace(commandPrefix))
+            if (!string.IsNullOrWhiteSpace(commandPrefix) &&
+                !_appOptions.CurrentValue.IgnoreWhenCallingUndefinedCommand)
                 ctx.Response = $"未找到指令：{string.Join('.', path)}。";
             return null;
         }
