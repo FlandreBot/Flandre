@@ -25,12 +25,12 @@ public class KonataAdapter : IAdapter
     /// <summary>
     /// 启动适配器
     /// </summary>
-    public Task Start() => Task.WhenAll(_bots.ConvertAll(bot => bot.Start()));
+    public Task StartAsync() => Task.WhenAll(_bots.ConvertAll(bot => bot.StartAsync()));
 
     /// <summary>
     /// 停止适配器
     /// </summary>
-    public Task Stop() => Task.WhenAll(_bots.ConvertAll(bot => bot.Stop()));
+    public Task StopAsync() => Task.WhenAll(_bots.ConvertAll(bot => bot.StopAsync()));
 
     /// <summary>
     /// 获取 bot 列表

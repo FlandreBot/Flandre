@@ -36,13 +36,13 @@ public class MockBot : Bot
         });
     }
 
-    public override Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
+    public override Task<string?> SendMessageAsync(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content, string? guildId = null)
     {
         throw new NotSupportedException();
     }
 
-    public override async Task<string?> SendMessage(Message message, MessageContent? contentOverride = null)
+    public override async Task<string?> SendMessageAsync(Message message, MessageContent? contentOverride = null)
     {
         if (_tcsDict.TryGetValue(message.MessageId, out var tcs))
         {
@@ -53,10 +53,10 @@ public class MockBot : Bot
         return message.MessageId;
     }
 
-    public override async Task<string?> SendChannelMessage(string channelId, MessageContent content,
+    public override async Task<string?> SendChannelMessageAsync(string channelId, MessageContent content,
         string? guildId = null)
     {
-        await SendMessage(new Message
+        await SendMessageAsync(new Message
         {
             Platform = Platform,
             Content = content
@@ -64,9 +64,9 @@ public class MockBot : Bot
         return null;
     }
 
-    public override async Task<string?> SendPrivateMessage(string userId, MessageContent content)
+    public override async Task<string?> SendPrivateMessageAsync(string userId, MessageContent content)
     {
-        await SendMessage(new Message
+        await SendMessageAsync(new Message
         {
             Platform = Platform,
             Content = content
@@ -74,7 +74,7 @@ public class MockBot : Bot
         return null;
     }
 
-    public override async Task<User?> GetSelf()
+    public override async Task<User?> GetSelfAsync()
     {
         return new User
         {

@@ -58,7 +58,7 @@ public class OneBotGuildBot : Bot
             }));
     }
 
-    public override async Task<string?> SendMessage(MessageSourceType sourceType, string? channelId, string? userId,
+    public override async Task<string?> SendMessageAsync(MessageSourceType sourceType, string? channelId, string? userId,
         MessageContent content, string? guildId = null)
     {
         if (sourceType == MessageSourceType.Channel)
@@ -68,13 +68,13 @@ public class OneBotGuildBot : Bot
         return null;
     }
 
-    public override async Task<string?> SendChannelMessage(string channelId, MessageContent content,
+    public override async Task<string?> SendChannelMessageAsync(string channelId, MessageContent content,
         string? guildId = null)
     {
         return await Internal.SendGuildChannelMessage(guildId!, channelId, content);
     }
 
-    public override async Task<User?> GetSelf()
+    public override async Task<User?> GetSelfAsync()
     {
         var self = await Internal.GetGuildServiceProfile();
         return new User
@@ -85,19 +85,19 @@ public class OneBotGuildBot : Bot
         };
     }
 
-    public override Task<User?> GetUser(string userId, string? guildId = null)
+    public override Task<User?> GetUserAsync(string userId, string? guildId = null)
     {
         Log(BotLogLevel.Warning,
-            $"Platform qqguild does not support method {nameof(GetUser)}. If you need to get the information of guild member, please use method {nameof(GetGuildMember)} instead.");
+            $"Platform qqguild does not support method {nameof(GetUserAsync)}. If you need to get the information of guild member, please use method {nameof(GetGuildMemberAsync)} instead.");
         return Task.FromResult<User?>(null);
     }
 
-    public override Task<IEnumerable<User>> GetFriendList()
+    public override Task<IEnumerable<User>> GetFriendListAsync()
     {
         return Task.FromResult<IEnumerable<User>>(Array.Empty<User>());
     }
 
-    public override async Task<Guild?> GetGuild(string guildId)
+    public override async Task<Guild?> GetGuildAsync(string guildId)
     {
         try
         {
@@ -114,7 +114,7 @@ public class OneBotGuildBot : Bot
         }
     }
 
-    public override async Task<IEnumerable<Guild>> GetGuildList()
+    public override async Task<IEnumerable<Guild>> GetGuildListAsync()
     {
         return (await Internal.GetGuildList()).Select(g => new Guild
         {
@@ -123,7 +123,7 @@ public class OneBotGuildBot : Bot
         });
     }
 
-    public override async Task<GuildMember?> GetGuildMember(string guildId, string userId)
+    public override async Task<GuildMember?> GetGuildMemberAsync(string guildId, string userId)
     {
         try
         {
@@ -142,7 +142,7 @@ public class OneBotGuildBot : Bot
         }
     }
 
-    public override async Task<IEnumerable<GuildMember>> GetGuildMemberList(string guildId)
+    public override async Task<IEnumerable<GuildMember>> GetGuildMemberListAsync(string guildId)
     {
         var list = new List<OneBotGuildMember>();
         OneBotGuildMemberListResponse resp;
@@ -163,12 +163,12 @@ public class OneBotGuildBot : Bot
         });
     }
 
-    public override async Task<Channel?> GetChannel(string channelId, string? guildId = null)
+    public override async Task<Channel?> GetChannelAsync(string channelId, string? guildId = null)
     {
-        return (await GetChannelList(guildId!)).FirstOrDefault(c => c.Id == channelId);
+        return (await GetChannelListAsync(guildId!)).FirstOrDefault(c => c.Id == channelId);
     }
 
-    public override async Task<IEnumerable<Channel>> GetChannelList(string guildId)
+    public override async Task<IEnumerable<Channel>> GetChannelListAsync(string guildId)
     {
         return (await Internal.GetGuildChannelList(guildId)).Select(c => new Channel
         {

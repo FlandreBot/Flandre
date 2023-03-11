@@ -15,7 +15,7 @@ public static class SessionExtensions
     /// <param name="ctx">当前指令上下文</param>
     /// <param name="timeout">超时时间</param>
     /// <returns>用户发送的下一条消息，如果超时则返回<see langword="null"/></returns>
-    public static Task<Message?> StartSession(this CommandContext ctx, TimeSpan timeout)
+    public static Task<Message?> StartSessionAsync(this CommandContext ctx, TimeSpan timeout)
     {
         var cts = new CancellationTokenSource(timeout);
         var tcs = new TaskCompletionSource<Message?>();

@@ -8,12 +8,12 @@ public interface IAdapter
     /// <summary>
     /// 启动适配器
     /// </summary>
-    public Task Start();
+    public Task StartAsync();
 
     /// <summary>
     /// 停止适配器
     /// </summary>
-    public Task Stop();
+    public Task StopAsync();
 
     /// <summary>
     /// 获取适配器 bot 列表

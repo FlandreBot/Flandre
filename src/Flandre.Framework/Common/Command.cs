@@ -102,7 +102,7 @@ public sealed class Command
 
     #endregion
 
-    internal async Task<MessageContent?> Invoke(Plugin plugin, CommandContext ctx,
+    internal async Task<MessageContent?> InvokeAsync(Plugin plugin, CommandContext ctx,
         CommandParser.CommandParseResult parsed, ILogger logger)
     {
         if (InnerMethod is null)

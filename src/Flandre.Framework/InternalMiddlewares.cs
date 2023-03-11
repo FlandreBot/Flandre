@@ -24,7 +24,7 @@ public sealed partial class FlandreApp
         _pluginMessageEventUsed = true;
         UseMiddleware(async (ctx, next) =>
         {
-            _pluginTypes.ForEach(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceived(ctx));
+            _pluginTypes.ForEach(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceivedAsync(ctx));
             await next();
         });
         return this;
@@ -222,7 +222,7 @@ public sealed partial class FlandreApp
             Exception? ex = null;
             try
             {
-                content = await ctx.Command.Invoke(plugin, cmdCtx, result, pluginLogger);
+                content = await ctx.Command.InvokeAsync(plugin, cmdCtx, result, pluginLogger);
             }
             catch (Exception e)
             {

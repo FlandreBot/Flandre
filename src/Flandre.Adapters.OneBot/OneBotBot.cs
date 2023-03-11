@@ -35,26 +35,26 @@ public abstract class OneBotBot : Bot
     #region 核心方法
 
     /// <inheritdoc />
-    public override async Task<string?> SendChannelMessage(string channelId, MessageContent content,
+    public override async Task<string?> SendChannelMessageAsync(string channelId, MessageContent content,
         string? guildId = null)
     {
         return (await Internal.SendGroupMessage(long.Parse(channelId), content)).ToString();
     }
 
     /// <inheritdoc />
-    public override async Task<string?> SendPrivateMessage(string userId, MessageContent content)
+    public override async Task<string?> SendPrivateMessageAsync(string userId, MessageContent content)
     {
         return (await Internal.SendPrivateMessage(long.Parse(userId), content)).ToString();
     }
 
     /// <inheritdoc />
-    public override Task DeleteMessage(string messageId)
+    public override Task DeleteMessageAsync(string messageId)
     {
         return Internal.DeleteMessage(int.Parse(messageId));
     }
 
     /// <inheritdoc />
-    public override async Task<User?> GetSelf()
+    public override async Task<User?> GetSelfAsync()
     {
         var user = await Internal.GetLoginInfo();
         return new User
@@ -66,7 +66,7 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task<User?> GetUser(string userId, string? guildId = null)
+    public override async Task<User?> GetUserAsync(string userId, string? guildId = null)
     {
         var user = await Internal.GetStrangerInfo(long.Parse(userId));
         return new User
@@ -78,7 +78,7 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task<IEnumerable<User>> GetFriendList()
+    public override async Task<IEnumerable<User>> GetFriendListAsync()
     {
         var list = await Internal.GetFriendList();
         return list.Select(f => new User
@@ -91,7 +91,7 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task<Guild?> GetGuild(string guildId)
+    public override async Task<Guild?> GetGuildAsync(string guildId)
     {
         try
         {
@@ -109,7 +109,7 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task<IEnumerable<Guild>> GetGuildList()
+    public override async Task<IEnumerable<Guild>> GetGuildListAsync()
     {
         var list = await Internal.GetGroupList();
         return list.Select(g => new Guild
@@ -120,7 +120,7 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task<GuildMember?> GetGuildMember(string guildId, string userId)
+    public override async Task<GuildMember?> GetGuildMemberAsync(string guildId, string userId)
     {
         try
         {
@@ -141,7 +141,7 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task<IEnumerable<GuildMember>> GetGuildMemberList(string guildId)
+    public override async Task<IEnumerable<GuildMember>> GetGuildMemberListAsync(string guildId)
     {
         var list = await Internal.GetGroupMemberList(long.Parse(guildId));
         return list.Select(member => new GuildMember
@@ -155,7 +155,7 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task<Channel?> GetChannel(string channelId, string? guildId = null)
+    public override async Task<Channel?> GetChannelAsync(string channelId, string? guildId = null)
     {
         try
         {
@@ -173,7 +173,7 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task<IEnumerable<Channel>> GetChannelList(string guildId)
+    public override async Task<IEnumerable<Channel>> GetChannelListAsync(string guildId)
     {
         var list = await Internal.GetGroupList();
         return list.Select(c => new Channel
@@ -184,20 +184,20 @@ public abstract class OneBotBot : Bot
     }
 
     /// <inheritdoc />
-    public override async Task HandleGuildInvitation(BotGuildInvitedEvent e, bool approve, string? comment = null)
+    public override async Task HandleGuildInvitationAsync(BotGuildInvitedEvent e, bool approve, string? comment = null)
     {
         await Internal.SetGroupAddRequest(e.EventMessage?.ToString()!, "invite", approve, comment ?? "");
     }
 
     /// <inheritdoc />
-    public override async Task HandleGuildJoinRequest(BotGuildJoinRequestedEvent e, bool approve,
+    public override async Task HandleGuildJoinRequestAsync(BotGuildJoinRequestedEvent e, bool approve,
         string? comment = null)
     {
         await Internal.SetGroupAddRequest(e.EventMessage?.ToString()!, "add", approve, comment ?? "");
     }
 
     /// <inheritdoc />
-    public override async Task HandleFriendRequest(BotFriendRequestedEvent e, bool approve, string? comment = null)
+    public override async Task HandleFriendRequestAsync(BotFriendRequestedEvent e, bool approve, string? comment = null)
     {
         await Internal.SetFriendAddRequest(e.EventMessage?.ToString()!, approve, comment ?? "");
     }

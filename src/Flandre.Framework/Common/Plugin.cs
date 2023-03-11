@@ -29,32 +29,32 @@ public abstract class Plugin
     /// </summary>
     /// <param name="ctx"></param>
     /// <returns></returns>
-    public virtual Task OnLoading(PluginLoadContext ctx) => Task.CompletedTask;
+    public virtual Task OnLoadingAsync(PluginLoadContext ctx) => Task.CompletedTask;
 
     /// <summary>
     /// 处理消息事件
     /// </summary>
     /// <param name="ctx">当前消息上下文</param>
-    public virtual Task OnMessageReceived(MessageContext ctx) => Task.CompletedTask;
+    public virtual Task OnMessageReceivedAsync(MessageContext ctx) => Task.CompletedTask;
 
     /// <summary>
     /// 收到拉群邀请
     /// </summary>
     /// <param name="ctx">当前上下文</param>
     /// <param name="e">拉群邀请事件</param>
-    public virtual Task OnGuildInvited(BotContext ctx, BotGuildInvitedEvent e) => Task.CompletedTask;
+    public virtual Task OnGuildInvitedAsync(BotContext ctx, BotGuildInvitedEvent e) => Task.CompletedTask;
 
     /// <summary>
     /// 收到入群申请
     /// </summary>
     /// <param name="ctx">当前上下文</param>
     /// <param name="e">入群申请事件</param>
-    public virtual Task OnGuildJoinRequested(BotContext ctx, BotGuildJoinRequestedEvent e) => Task.CompletedTask;
+    public virtual Task OnGuildJoinRequestedAsync(BotContext ctx, BotGuildJoinRequestedEvent e) => Task.CompletedTask;
 
     /// <summary>
     /// 收到好友申请
     /// </summary>
     /// <param name="ctx">当前上下文</param>
     /// <param name="e">好友申请事件</param>
-    public virtual Task OnFriendRequested(BotContext ctx, BotFriendRequestedEvent e) => Task.CompletedTask;
+    public virtual Task OnFriendRequestedAsync(BotContext ctx, BotFriendRequestedEvent e) => Task.CompletedTask;
 }
