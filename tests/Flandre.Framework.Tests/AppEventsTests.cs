@@ -8,7 +8,7 @@ public class AppEventsTests
         public static MessageContent? OnThrowEx(CommandContext ctx) =>
             throw new Exception("Test Exception");
     }
-    
+
     [Fact]
     public async Task TestEvents()
     {

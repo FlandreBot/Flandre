@@ -58,7 +58,8 @@ public class OneBotGuildBot : Bot
             }));
     }
 
-    public override async Task<string?> SendMessageAsync(MessageSourceType sourceType, string? channelId, string? userId,
+    public override async Task<string?> SendMessageAsync(MessageSourceType sourceType, string? channelId,
+        string? userId,
         MessageContent content, string? guildId = null)
     {
         if (sourceType == MessageSourceType.Channel)

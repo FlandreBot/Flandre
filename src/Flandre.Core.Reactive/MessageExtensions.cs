@@ -38,7 +38,7 @@ public static class ObservableMessageExtensions
     {
         return observable.Where(msg => msg.SourceType == MessageSourceType.Private);
     }
-    
+
     public static IObservable<Message> InChannel(this IObservable<Message> observable)
     {
         return observable.Where(msg => msg.SourceType == MessageSourceType.Channel);

@@ -99,7 +99,8 @@ public abstract partial class Bot
     /// <param name="channelId">Channel ID</param>
     /// <param name="content">消息内容</param>
     /// <param name="guildId">群组 ID</param>
-    public virtual Task<string?> SendChannelMessageAsync(string channelId, MessageContent content, string? guildId = null)
+    public virtual Task<string?> SendChannelMessageAsync(string channelId, MessageContent content,
+        string? guildId = null)
         => LogNotSupportedAsync<string?>(nameof(SendChannelMessageAsync), null);
 
     /// <summary>

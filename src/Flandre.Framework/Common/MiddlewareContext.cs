@@ -21,7 +21,7 @@ public sealed class MiddlewareContext : MessageContext
     /// 域内服务
     /// </summary>
     public IServiceProvider Services => ServiceScope.ServiceProvider;
-    
+
     /// <summary>
     /// 即将发送的回复
     /// </summary>
