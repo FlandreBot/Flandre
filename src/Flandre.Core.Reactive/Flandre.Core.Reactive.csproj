@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Core.Reactive</Title>
-        <PackageVersion>1.0.0-alpha.1</PackageVersion>
+        <PackageVersion>1.0.0-alpha.2</PackageVersion>
         <Authors>FlandreDevs,b1acksoil</Authors>
         <Description>Reactive Extensions (Rx.NET) support for Flandre.Core.</Description>
         <PackageTags>flandre;rx.net;reactive</PackageTags>
