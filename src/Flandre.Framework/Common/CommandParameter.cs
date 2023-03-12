@@ -10,12 +10,15 @@ public sealed class CommandParameter
 
     public string? Description { get; init; }
 
+    public bool IsParamArray { get; }
+
     public bool IsRequired => DefaultValue is null;
 
-    internal CommandParameter(string name, Type type, object? defaultValue)
+    internal CommandParameter(string name, Type type, object? defaultValue, bool isParamArray)
     {
         Name = name;
         Type = type;
         DefaultValue = defaultValue;
+        IsParamArray = isParamArray;
     }
 }

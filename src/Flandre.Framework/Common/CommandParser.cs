@@ -115,7 +115,7 @@ internal static class CommandParser
 
                 var param = command.Parameters[argIndex];
 
-                if (param.Type.IsArray)
+                if (param.IsParamArray)
                 {
                     var elemType = param.Type.GetElementType()!;
                     var list = new ArrayList();

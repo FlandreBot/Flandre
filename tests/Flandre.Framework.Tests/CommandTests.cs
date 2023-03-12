@@ -55,11 +55,9 @@ public class CommandTests
 
         // Array parameter
         [Command("test6")]
-        public static string OnTest6(int[] intArr, double arg, string[] strArr)
+        public static string OnTest6(double arg, params string[] strArr)
         {
             return new StringBuilder()
-                .Append(string.Join(',', intArr))
-                .Append(" | ")
                 .Append(arg)
                 .Append(" | ")
                 .Append(string.Join(',', strArr))
@@ -146,8 +144,8 @@ public class CommandTests
 
         await app.StartWithDefaultsAsync();
 
-        var content = await client.SendMessageForReply("test6 11 22 33 1.23 aaa bbb ccc  ");
-        Assert.Equal("11,22,33 | 1.23 | aaa,bbb,ccc", content?.GetText());
+        var content = await client.SendMessageForReply("test6 1.23 aaa bbb ccc  ");
+        Assert.Equal("1.23 | aaa,bbb,ccc", content?.GetText());
 
         await app.StopAsync();
     }

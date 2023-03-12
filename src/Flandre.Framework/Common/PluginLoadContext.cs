@@ -98,7 +98,11 @@ public sealed class PluginLoadContext
 
                 // parameter
                 parameters.Add(new CommandParameter(param.Name!, param.ParameterType,
-                    param.HasDefaultValue ? param.DefaultValue : null) { Description = description });
+                    param.HasDefaultValue ? param.DefaultValue : null,
+                    param.ParameterType.IsArray && param.GetCustomAttribute<ParamArrayAttribute>() is not null)
+                {
+                    Description = description
+                });
             }
 
             var cmd = AddCommand(cmdAttr.FullName).WithAction(method);
