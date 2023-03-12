@@ -173,12 +173,12 @@ public sealed partial class FlandreApp : IHost
     }
 
     /// <summary>
-    /// 在最外层插入异步中间件
+    /// 在最内层插入异步中间件
     /// </summary>
-    /// <param name="middleware">中间件方法</param>
-    public FlandreApp UseMiddleware(Func<MiddlewareContext, Func<Task>, Task> middleware)
+    /// <param name="middlewareAction">中间件方法</param>
+    public FlandreApp UseMiddleware(Func<MiddlewareContext, Func<Task>, Task> middlewareAction)
     {
-        _middleware.Add(middleware);
+        _middleware.Add(middlewareAction);
         return this;
     }
 
