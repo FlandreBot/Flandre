@@ -148,10 +148,12 @@ public sealed partial class FlandreApp
 
             do
             {
-                path.Add(current);
-                if (node.SubNodes.TryGetValue(current, out var subNode))
+                var cur = current;
+                path.Add(cur);
+                if (node.SubNodes.Keys.FirstOrDefault(k =>
+                        cur.Equals(k, StringComparison.OrdinalIgnoreCase)) is { } key)
                 {
-                    node = subNode;
+                    node = node.SubNodes[key];
                     if (temp)
                         parser.Read(' ');
                     else

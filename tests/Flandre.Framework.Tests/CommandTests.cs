@@ -15,9 +15,9 @@ public class CommandTests
                 await ctx.Bot.SendMessageAsync(ctx.Message);
         }
 
-        [Command("test1")]
+        [Command]
         [Description("This is a test command.")]
-        public static MessageContent OnTest1(bool arg1, [Option] double opt = 0)
+        public static MessageContent Test1(bool arg1, [Option] double opt = 0)
         {
             return new MessageBuilder()
                 .Text($"{arg1} {opt + 200}")
@@ -26,36 +26,36 @@ public class CommandTests
 
         [Command("test2", "..test111.11...45.14.")]
         [Obsolete("This command is obsoleted.")]
-        public static string OnTest2(int arg1, float arg2, CommandContext ctx,
+        public static string Test2(int arg1, float arg2, CommandContext ctx,
             [Option] bool opt1 = true, [Option(ShortName = 'o')] bool opt2 = false)
         {
             return $"{arg1} {arg2} {opt1} {opt2}";
         }
 
-        [Command("test3")]
+        [Command]
         [RegexShortcut("测([0-9A-Za-z_])试", "$1 someStr")]
-        public static string OnTest3(string arg1, string arg2)
+        public static string Test3(string arg1, string arg2)
         {
             return $"{arg1} {arg2}";
         }
 
-        [Command("test4")]
+        [Command]
         [StringShortcut("测试4", "123.456")]
-        public static string OnTest4(double arg1)
+        public static string Test4(double arg1)
         {
             return $"{arg1}";
         }
 
-        [Command("test5")]
+        [Command]
         [StringShortcut("测试5", "111.222 --opt1", AllowArguments = true)]
-        public static string OnTest5(double arg1, int arg2, [Option] bool opt1)
+        public static string Test5(double arg1, int arg2, [Option] bool opt1)
         {
             return $"{arg1} {arg2} {opt1}";
         }
 
         // Array parameter
-        [Command("test6")]
-        public static string OnTest6(double arg, params string[] strArr)
+        [Command]
+        public static string Test6(double arg, params string[] strArr)
         {
             return new StringBuilder()
                 .Append(arg)

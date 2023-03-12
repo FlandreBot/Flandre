@@ -105,7 +105,7 @@ public sealed class PluginLoadContext
                 });
             }
 
-            var cmd = AddCommand(cmdAttr.FullName).WithAction(method);
+            var cmd = AddCommand(cmdAttr.FullName ?? method.Name).WithAction(method);
 
             foreach (var alias in cmdAttr.Aliases)
                 cmd.AddAlias(alias);

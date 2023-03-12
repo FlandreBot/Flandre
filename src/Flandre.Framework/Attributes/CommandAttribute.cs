@@ -21,9 +21,18 @@ public class CommandAttribute : Attribute
     }
 
     /// <summary>
+    /// 构造特性实例
+    /// </summary>
+    public CommandAttribute()
+    {
+        FullName = null;
+        Aliases = Array.Empty<string>();
+    }
+
+    /// <summary>
     /// 指令的全名
     /// </summary>
-    public string FullName { get; }
+    public string? FullName { get; }
 
     /// <summary>
     /// 指令别名（全名）
@@ -35,10 +44,4 @@ public class CommandAttribute : Attribute
     /// </summary>
     /// <remarks>默认值为 <see cref="UserRole.Member"/></remarks>
     public UserRole Role { get; init; } = UserRole.Member;
-
-    /// <summary>
-    /// 是否允许忽略大小写
-    /// </summary>
-    /// <remarks>默认值为 <see langword="true"/></remarks>
-    public bool IgnoreCase { get; init; } = true;
 }

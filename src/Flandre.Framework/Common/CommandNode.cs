@@ -36,9 +36,10 @@ internal sealed class CommandNode
     public CommandNode? FindSubNode(string relativePath)
     {
         var node = this;
-        foreach (var name in relativePath.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            if (node.SubNodes.TryGetValue(name, out var nextNode))
-                node = nextNode;
+        foreach (var name in relativePath.Split('.',
+                     StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            if (node.SubNodes.Keys.FirstOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase)) is { } key)
+                node = node.SubNodes[key];
             else
                 return null;
 
