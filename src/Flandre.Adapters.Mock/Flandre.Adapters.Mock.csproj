@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Adapters.Mock</Title>
-        <PackageVersion>0.8.0</PackageVersion>
+        <PackageVersion>1.0.0-rc.1</PackageVersion>
         <Authors>FlandreDevs,b1acksoil</Authors>
         <Description>Mock client for Project Flandre.</Description>
         <PackageTags>bot;chatbot;flandre;adapter</PackageTags>
