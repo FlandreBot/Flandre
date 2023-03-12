@@ -67,13 +67,16 @@ Framework 基于 [Microsoft.Extensions.Hosting](https://learn.microsoft.com/zh-c
 Flandre.Framework 实现了一套开箱即用的指令解析系统，而无需开发者自己造轮子。开发者可以方便地定义一条指令：
 
 ```csharp
-[Command("example")]
-public MessageContent OnExample(CommandContext ctx,
-    double arg1, string arg2, [Option] bool opt1)
+[Command]
+public MessageContent Add(double a, double b)
 {
-    // 指令逻辑...
+    var result = a + b; 
+    return $"{a} + {b} = {result}";
 }
 ```
+
+- 用户发送 `add 1.14514 1.91981`
+- 机器人返回 `1.14514 + 1.91981 = 3.06495`
 
 ## 🚀 起步
 
@@ -104,7 +107,7 @@ $ dotnet new flandre -o MyFirstFlandreApp
 
 如果你在开发的过程中发现了 Bug，或有建议，欢迎[提交 Issue](https://github.com/FlandreDevs/Flandre/issues/new/choose)。
 
-如果你想要贡献代码，欢迎[与我们联系](#💬-交流)，并[发起 PR](https://github.com/FlandreDevs/Flandre/compare)。
+如果你想要贡献代码，欢迎[与我们联系](#%F0%9F%92%AC%20%E4%BA%A4%E6%B5%81)，并[发起 PR](https://github.com/FlandreDevs/Flandre/compare)。
 
 项目目前有两个主要分支：
 
