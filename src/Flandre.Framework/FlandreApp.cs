@@ -87,7 +87,7 @@ public sealed partial class FlandreApp : IHost
             catch (Exception e)
             {
                 var logger = Services.GetRequiredService<ILoggerFactory>().CreateLogger(pluginType);
-                logger.LogError(e, "Error occurred while handling {EventName}.", eventName ?? "event");
+                logger.LogError(e, "Error occurred while handling {EventName}", eventName ?? "event");
             }
         });
 
@@ -128,10 +128,11 @@ public sealed partial class FlandreApp : IHost
                 bot.OnLogging += (_, e) =>
                     Services.GetRequiredService<ILoggerFactory>()
                         .CreateLogger(adapterType.FullName ?? adapterType.Name)
+                        // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
                         .Log((LogLevel)e.LogLevel, e.LogMessage);
         }
 
-        Logger.LogDebug("All bot events subscribed.");
+        Logger.LogDebug("All bot events subscribed");
     }
 
     private void LoadPlugins()
@@ -167,7 +168,7 @@ public sealed partial class FlandreApp : IHost
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Error occurred while processing middleware {MiddlewareName}.",
+            Logger.LogError(e, "Error occurred while processing middleware {MiddlewareName}",
                 _middleware[index].Method.Name);
         }
     }
@@ -201,7 +202,7 @@ public sealed partial class FlandreApp : IHost
 
         var cmdService = Services.GetRequiredService<CommandService>();
 
-        Logger.LogInformation("App started.");
+        Logger.LogInformation("App started");
         Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, Bots.Count);
         Logger.LogDebug(
             "Total {PluginCount} plugins, {CommandCount} commands, {StringShortcutCount} string shortcuts, {RegexShortcutCount} regex shortcuts, {MiddlewareCount} middleware",
@@ -233,7 +234,7 @@ public sealed partial class FlandreApp : IHost
     {
         await Task.WhenAll(_adapters.Select(adapter => adapter.StopAsync()).ToArray());
         await _hostApp.StopAsync(cancellationToken);
-        Logger.LogInformation("App stopped.");
+        Logger.LogInformation("App stopped");
         OnStopped?.Invoke(this, new AppStoppedEvent());
     }
 
