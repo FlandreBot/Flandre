@@ -1,6 +1,7 @@
 using Flandre.Core.Common;
 using Flandre.Framework.Common;
 using Flandre.Framework.Services;
+using Flandre.Framework.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,8 +15,13 @@ namespace Flandre.Framework;
 public sealed class FlandreAppBuilder
 {
     private readonly HostApplicationBuilder _hostAppBuilder;
-    private readonly List<Type> _pluginTypes = new();
-    private readonly List<IAdapter> _adapters = new();
+    private readonly AdapterCollection _adapterCollection = new();
+    private readonly PluginCollection _pluginCollection = new();
+
+    /// <summary>
+    /// 插件集合
+    /// </summary>
+    public IPluginCollection Plugins => _pluginCollection;
 
     /// <summary>
     /// 全局服务
@@ -68,12 +74,11 @@ public sealed class FlandreAppBuilder
     /// 添加插件
     /// </summary>
     /// <typeparam name="TPlugin">插件类型</typeparam>
+    [Obsolete($"{nameof(FlandreAppBuilder)}.{nameof(AddPlugin)} is obsoleted." +
+              $"Use {nameof(FlandreAppBuilder)}.{nameof(Plugins)}.{nameof(Plugins.Add)} instead.")]
     public FlandreAppBuilder AddPlugin<TPlugin>() where TPlugin : Plugin
     {
-        var pluginType = typeof(TPlugin);
-        _pluginTypes.Add(pluginType);
-        Services.AddTransient(pluginType);
-
+        Plugins.Add<TPlugin>();
         return this;
     }
 
@@ -82,11 +87,13 @@ public sealed class FlandreAppBuilder
     /// <typeparam name="TPluginOptions"></typeparam>
     /// <param name="configuration"></param>
     /// <returns></returns>
+    [Obsolete($"{nameof(FlandreAppBuilder)}.{nameof(AddPlugin)} is obsoleted." +
+              $"Use {nameof(FlandreAppBuilder)}.{nameof(Plugins)}.{nameof(Plugins.Add)} instead.")]
     public FlandreAppBuilder AddPlugin<TPlugin, TPluginOptions>(IConfiguration configuration)
         where TPlugin : Plugin where TPluginOptions : class
     {
-        Services.Configure<TPluginOptions>(configuration);
-        return AddPlugin<TPlugin>();
+        Plugins.Add<TPlugin, TPluginOptions>(configuration);
+        return this;
     }
 
     /// <inheritdoc cref="AddPlugin{TPlugin}"/>
@@ -94,11 +101,13 @@ public sealed class FlandreAppBuilder
     /// <typeparam name="TPluginOptions"></typeparam>
     /// <param name="action"></param>
     /// <returns></returns>
+    [Obsolete($"{nameof(FlandreAppBuilder)}.{nameof(AddPlugin)} is obsoleted." +
+              $"Use {nameof(FlandreAppBuilder)}.{nameof(Plugins)}.{nameof(Plugins.Add)} instead.")]
     public FlandreAppBuilder AddPlugin<TPlugin, TPluginOptions>(Action<TPluginOptions> action)
         where TPlugin : Plugin where TPluginOptions : class
     {
-        Services.Configure(action);
-        return AddPlugin<TPlugin>();
+        Plugins.Add<TPlugin, TPluginOptions>(action);
+        return this;
     }
 
     /// <summary>
@@ -106,9 +115,11 @@ public sealed class FlandreAppBuilder
     /// </summary>
     /// <param name="adapter"></param>
     /// <returns></returns>
+    [Obsolete($"{nameof(FlandreAppBuilder)}.{nameof(AddPlugin)} is obsoleted." +
+              $"Use {nameof(FlandreAppBuilder)}.{nameof(Plugins)}.{nameof(Plugins.Add)} instead.")]
     public FlandreAppBuilder AddAdapter(IAdapter adapter)
     {
-        _adapters.Add(adapter);
+        _adapterCollection.Add(adapter);
         return this;
     }
 
@@ -117,7 +128,11 @@ public sealed class FlandreAppBuilder
     /// </summary>
     public FlandreApp Build()
     {
-        var app = new FlandreApp(_hostAppBuilder.Build(), _pluginTypes, _adapters);
+        Services.AddRange(_pluginCollection.PluginServices);
+
+        var app = new FlandreApp(_hostAppBuilder.Build(),
+            _pluginCollection.PluginTypes,
+            _adapterCollection.Adapters);
         app.Initialize();
         return app;
     }
