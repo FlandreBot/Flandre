@@ -15,8 +15,8 @@ namespace Flandre.Framework;
 public sealed class FlandreAppBuilder
 {
     private readonly HostApplicationBuilder _hostAppBuilder;
-    private readonly AdapterCollection _adapterCollection = new();
-    private readonly PluginCollection _pluginCollection = new();
+    private readonly AdapterCollection _adapterCollection;
+    private readonly PluginCollection _pluginCollection;
 
     /// <summary>
     /// 插件集合
@@ -67,6 +67,8 @@ public sealed class FlandreAppBuilder
     internal FlandreAppBuilder(HostApplicationBuilderSettings? settings)
     {
         _hostAppBuilder = new HostApplicationBuilder(settings);
+        _adapterCollection = new AdapterCollection();
+        _pluginCollection = new PluginCollection(Services);
         AddInfrastructure();
     }
 

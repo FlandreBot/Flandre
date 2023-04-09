@@ -49,9 +49,14 @@ public interface IPluginCollection
 
 internal sealed class PluginCollection : IPluginCollection
 {
+    public PluginCollection(IServiceCollection services)
+    {
+        Services = services;
+    }
+
     public List<Type> PluginTypes { get; } = new();
 
-    public IServiceCollection Services { get; } = new ServiceCollection();
+    public IServiceCollection Services { get; }
 
     public IPluginCollection Add(Type pluginType)
     {
