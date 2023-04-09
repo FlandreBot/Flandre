@@ -16,10 +16,9 @@ public class AppEventsTests
         var client = adapter.GetChannelClient();
 
         var builder = FlandreApp.CreateBuilder();
-        var app = builder
-            .AddAdapter(adapter)
-            .AddPlugin<TestPlugin>()
-            .Build();
+        builder.Adapters.Add(adapter);
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         var count = 0;
         string? cmdName = null;

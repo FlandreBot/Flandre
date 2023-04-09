@@ -73,10 +73,9 @@ public class CommandTests
         var friendClient = adapter.GetFriendClient();
 
         var builder = FlandreApp.CreateBuilder();
-        var app = builder
-            .AddAdapter(adapter)
-            .AddPlugin<TestPlugin>()
-            .Build();
+        builder.Adapters.Add(adapter);
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         var service = app.Services.GetRequiredService<CommandService>();
 
@@ -107,10 +106,9 @@ public class CommandTests
         var friendClient = adapter.GetFriendClient();
 
         var builder = FlandreApp.CreateBuilder();
-        using var app = builder
-            .AddAdapter(adapter)
-            .AddPlugin<TestPlugin>()
-            .Build();
+        builder.Adapters.Add(adapter);
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         await app.StartWithDefaultsAsync();
 
@@ -137,10 +135,9 @@ public class CommandTests
         var client = adapter.GetFriendClient();
 
         var builder = FlandreApp.CreateBuilder();
-        var app = builder
-            .AddAdapter(adapter)
-            .AddPlugin<TestPlugin>()
-            .Build();
+        builder.Adapters.Add(adapter);
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         await app.StartWithDefaultsAsync();
 
@@ -154,9 +151,8 @@ public class CommandTests
     public void TestInformalAttributes()
     {
         var builder = FlandreApp.CreateBuilder();
-        using var app = builder
-            .AddPlugin<TestPlugin>()
-            .Build();
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 

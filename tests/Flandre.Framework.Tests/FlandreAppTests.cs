@@ -30,9 +30,8 @@ public class FlandreAppTests
     public void TestAliases()
     {
         var builder = FlandreApp.CreateBuilder();
-        using var app = builder
-            .AddPlugin<TestPlugin>()
-            .Build();
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
@@ -52,9 +51,8 @@ public class FlandreAppTests
     public void TestShortcutCount()
     {
         var builder = FlandreApp.CreateBuilder();
-        using var app = builder
-            .AddPlugin<TestPlugin>()
-            .Build();
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 

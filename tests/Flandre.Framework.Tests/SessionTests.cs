@@ -20,10 +20,9 @@ public class SessionTests
         var adapter = new MockAdapter();
         var client = adapter.GetChannelClient();
         var builder = FlandreApp.CreateBuilder();
-        using var app = builder
-            .AddAdapter(adapter)
-            .AddPlugin<TestPlugin>()
-            .Build();
+        builder.Adapters.Add(adapter);
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         await app.StartWithDefaultsAsync();
 

@@ -9,9 +9,8 @@ public class MiddlewareTests
         var client = adapter.GetChannelClient();
 
         var builder = FlandreApp.CreateBuilder();
-        using var app = builder
-            .AddAdapter(adapter)
-            .Build();
+        builder.Adapters.Add(adapter);
+        using var app = builder.Build();
 
         // Order Note
         //  1,2,3  ↓     ↑  2

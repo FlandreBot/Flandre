@@ -20,9 +20,9 @@ public class CommandNodeTests
     [Fact]
     public void TestNode()
     {
-        var app = FlandreApp.CreateBuilder()
-            .AddPlugin<TestPlugin>()
-            .Build();
+        var builder = FlandreApp.CreateBuilder();
+        builder.Plugins.Add<TestPlugin>();
+        using var app = builder.Build();
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 

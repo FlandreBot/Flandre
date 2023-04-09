@@ -21,6 +21,11 @@ public sealed class FlandreAppBuilder
     /// <summary>
     /// 插件集合
     /// </summary>
+    public IAdapterCollection Adapters => _adapterCollection;
+
+    /// <summary>
+    /// 插件集合
+    /// </summary>
     public IPluginCollection Plugins => _pluginCollection;
 
     /// <summary>
@@ -74,8 +79,7 @@ public sealed class FlandreAppBuilder
     /// 添加插件
     /// </summary>
     /// <typeparam name="TPlugin">插件类型</typeparam>
-    [Obsolete($"{nameof(FlandreAppBuilder)}.{nameof(AddPlugin)} is obsoleted." +
-              $"Use {nameof(FlandreAppBuilder)}.{nameof(Plugins)}.{nameof(Plugins.Add)} instead.")]
+    [Obsolete("FlandreAppBuilder.AddPlugin() is obsoleted. Use FlandreAppBuilder.Plugins.Plugins.Add() instead.")]
     public FlandreAppBuilder AddPlugin<TPlugin>() where TPlugin : Plugin
     {
         Plugins.Add<TPlugin>();
@@ -87,8 +91,7 @@ public sealed class FlandreAppBuilder
     /// <typeparam name="TPluginOptions"></typeparam>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    [Obsolete($"{nameof(FlandreAppBuilder)}.{nameof(AddPlugin)} is obsoleted." +
-              $"Use {nameof(FlandreAppBuilder)}.{nameof(Plugins)}.{nameof(Plugins.Add)} instead.")]
+    [Obsolete("FlandreAppBuilder.AddPlugin() is obsoleted. Use FlandreAppBuilder.Plugins.Add() instead.")]
     public FlandreAppBuilder AddPlugin<TPlugin, TPluginOptions>(IConfiguration configuration)
         where TPlugin : Plugin where TPluginOptions : class
     {
@@ -101,8 +104,7 @@ public sealed class FlandreAppBuilder
     /// <typeparam name="TPluginOptions"></typeparam>
     /// <param name="action"></param>
     /// <returns></returns>
-    [Obsolete($"{nameof(FlandreAppBuilder)}.{nameof(AddPlugin)} is obsoleted." +
-              $"Use {nameof(FlandreAppBuilder)}.{nameof(Plugins)}.{nameof(Plugins.Add)} instead.")]
+    [Obsolete("FlandreAppBuilder.AddPlugin() is obsoleted. Use FlandreAppBuilder.Plugins.Add() instead.")]
     public FlandreAppBuilder AddPlugin<TPlugin, TPluginOptions>(Action<TPluginOptions> action)
         where TPlugin : Plugin where TPluginOptions : class
     {
@@ -115,8 +117,7 @@ public sealed class FlandreAppBuilder
     /// </summary>
     /// <param name="adapter"></param>
     /// <returns></returns>
-    [Obsolete($"{nameof(FlandreAppBuilder)}.{nameof(AddPlugin)} is obsoleted." +
-              $"Use {nameof(FlandreAppBuilder)}.{nameof(Plugins)}.{nameof(Plugins.Add)} instead.")]
+    [Obsolete("FlandreAppBuilder.AddAdapter() is obsoleted. Use FlandreAppBuilder.Adapters.Add() instead.")]
     public FlandreAppBuilder AddAdapter(IAdapter adapter)
     {
         _adapterCollection.Add(adapter);
