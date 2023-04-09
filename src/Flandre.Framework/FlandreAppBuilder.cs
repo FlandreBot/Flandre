@@ -129,7 +129,7 @@ public sealed class FlandreAppBuilder
     /// </summary>
     public FlandreApp Build()
     {
-        Services.AddRange(_pluginCollection.PluginServices);
+        Services.AddRange(_pluginCollection.Services);
 
         var app = new FlandreApp(_hostAppBuilder.Build(),
             _pluginCollection.PluginTypes,

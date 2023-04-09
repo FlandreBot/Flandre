@@ -10,6 +10,11 @@ namespace Flandre.Framework;
 public interface IPluginCollection
 {
     /// <summary>
+    /// 插件使用的服务
+    /// </summary>
+    IServiceCollection Services { get; }
+
+    /// <summary>
     /// 添加插件
     /// </summary>
     /// <param name="pluginType">插件类型</param>
@@ -46,12 +51,12 @@ internal sealed class PluginCollection : IPluginCollection
 {
     public List<Type> PluginTypes { get; } = new();
 
-    public IServiceCollection PluginServices { get; } = new ServiceCollection();
+    public IServiceCollection Services { get; } = new ServiceCollection();
 
     public IPluginCollection Add(Type pluginType)
     {
         PluginTypes.Add(pluginType);
-        PluginServices.AddScoped(pluginType);
+        Services.AddScoped(pluginType);
         return this;
     }
 
@@ -64,7 +69,7 @@ internal sealed class PluginCollection : IPluginCollection
         where TPlugin : Plugin where TPluginOptions : class
     {
         Add<TPlugin>();
-        PluginServices.Configure<TPluginOptions>(configuration);
+        Services.Configure<TPluginOptions>(configuration);
         return this;
     }
 
@@ -72,7 +77,7 @@ internal sealed class PluginCollection : IPluginCollection
         where TPlugin : Plugin where TPluginOptions : class
     {
         Add<TPlugin>();
-        PluginServices.Configure(action);
+        Services.Configure(action);
         return this;
     }
 }
