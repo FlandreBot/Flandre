@@ -63,6 +63,14 @@ public class CommandTests
                 .Append(string.Join(',', strArr))
                 .ToString();
         }
+
+        [Command]
+        public static async ValueTask<string> TestAsync()
+        {
+            // simulates async tasks
+            await Task.Run(() => { });
+            return "ok!";
+        }
     }
 
     [Fact]
@@ -79,7 +87,7 @@ public class CommandTests
 
         var service = app.Services.GetRequiredService<CommandService>();
 
-        Assert.Equal(6, service.RootCommandNode.CountCommands());
+        Assert.Equal(7, service.RootCommandNode.CountCommands());
 
         await app.StartWithDefaultsAsync();
 
@@ -94,6 +102,10 @@ public class CommandTests
         content = await friendClient.SendMessageForReply("test2  -o 123 191.981  --no-opt1");
         Assert.Equal("123 191.981 False True",
             content?.GetText());
+
+        // test async
+        content = await friendClient.SendMessageForReply("testasync");
+        Assert.Equal("ok!", content?.GetText());
 
         await app.StopAsync();
     }

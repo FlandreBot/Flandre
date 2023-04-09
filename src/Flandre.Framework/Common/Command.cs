@@ -149,12 +149,16 @@ public sealed class Command
         var cmdResult = InnerMethod?.Invoke(plugin, args.ToArray());
         var content = cmdResult switch
         {
-            Task<MessageContent?> task => await task,
-            ValueTask<MessageContent?> valueTask => await valueTask,
-            MessageContent msgContent => msgContent,
+            MessageContent mc => mc,
+            Task<MessageContent?> mcTask => await mcTask,
+            ValueTask<MessageContent?> mcValueTask => await mcValueTask,
 
-            string str => (MessageContent)str,
-            MessageBuilder msgBuilder => (MessageContent)msgBuilder,
+            MessageBuilder mb => mb.Build(),
+            Task<MessageBuilder> mbTask => (MessageContent)await mbTask,
+            ValueTask<MessageBuilder> mbValueTask => (MessageContent)await mbValueTask,
+
+            Task<string> strTask => (MessageContent)await strTask,
+            ValueTask<string> strValueTask => (MessageContent)await strValueTask,
 
             _ => cmdResult?.ToString() is { } val ? (MessageContent)val : null
         };

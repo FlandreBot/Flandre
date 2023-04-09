@@ -75,9 +75,11 @@ public class MessageContent : IEnumerable<MessageSegment>
     /// <summary>
     /// 由字符串隐式转换
     /// </summary>
-    public static implicit operator MessageContent(string text)
+    public static implicit operator MessageContent(string? text)
     {
-        return new MessageContent(new[] { new TextSegment(text) });
+        return text is null
+            ? new MessageContent(Array.Empty<MessageSegment>())
+            : new MessageContent(new[] { new TextSegment(text) });
     }
 
     /// <summary>
