@@ -228,8 +228,8 @@ public sealed partial class FlandreApp
             }
             catch (Exception e)
             {
-                pluginLogger.LogError("Error occurred in ");
                 ex = e.InnerException ?? e;
+                pluginLogger.LogError(ex, "Error occurred in {CommandPath}", ctx.Command.FullName);
             }
 
             OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ex, content));
