@@ -37,6 +37,13 @@ public sealed partial class FlandreApp : IHost
     /// </summary>
     public ILogger<FlandreApp> Logger { get; }
 
+    private IDictionary<string, object?>? _properties;
+
+    /// <summary>
+    /// 应用属性，用于在中间件内传递消息
+    /// </summary>
+    public IDictionary<string, object?> Properties => _properties ??= new Dictionary<string, object?>();
+
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
     internal ConcurrentDictionary<string, TaskCompletionSource<Message?>> CommandSessions { get; } = new();
 

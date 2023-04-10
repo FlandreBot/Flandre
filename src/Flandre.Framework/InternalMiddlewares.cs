@@ -12,16 +12,22 @@ namespace Flandre.Framework;
 
 public sealed partial class FlandreApp
 {
-    private bool _pluginMessageEventUsed;
-    private bool _commandSessionUsed;
-    private bool _commandParserUsed;
-    private bool _commandInvokerUsed;
+    private bool CheckMiddlewareUsed(string methodName)
+    {
+        var symbol = $"__Flandre_{methodName[3..]}_Middleware_Used";
+        if (Properties.ContainsKey(symbol))
+            return true;
+
+        // not used
+        Properties[symbol] = true;
+        return false;
+    }
 
     private FlandreApp UsePluginMessageHandler()
     {
-        if (_pluginMessageEventUsed)
+        if (CheckMiddlewareUsed(nameof(UsePluginMessageHandler)))
             return this;
-        _pluginMessageEventUsed = true;
+
         UseMiddleware(async (ctx, next) =>
         {
             _pluginTypes.ForEach(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceivedAsync(ctx));
@@ -35,6 +41,9 @@ public sealed partial class FlandreApp
     /// </summary>
     public FlandreApp UseAssigneeChecker()
     {
+        if (CheckMiddlewareUsed(nameof(UseAssigneeChecker)))
+            return this;
+
         UseMiddleware(async (ctx, next) =>
         {
             var segment = ctx.Message.Content.Segments.FirstOrDefault();
@@ -64,9 +73,9 @@ public sealed partial class FlandreApp
     /// <returns></returns>
     public FlandreApp UseCommandSession()
     {
-        if (_commandSessionUsed)
+        if (CheckMiddlewareUsed(nameof(UseCommandSession)))
             return this;
-        _commandSessionUsed = true;
+
         UseMiddleware(async (ctx, next) =>
         {
             var mark = ctx.GetUserMark();
@@ -90,9 +99,8 @@ public sealed partial class FlandreApp
     /// <returns></returns>
     public FlandreApp UseCommandParser()
     {
-        if (_commandParserUsed)
+        if (CheckMiddlewareUsed(nameof(UseCommandParser)))
             return this;
-        _commandParserUsed = true;
 
         UseMiddleware(async (ctx, next) =>
         {
@@ -183,9 +191,8 @@ public sealed partial class FlandreApp
     /// <returns></returns>
     public FlandreApp UseCommandInvoker()
     {
-        if (_commandInvokerUsed)
+        if (CheckMiddlewareUsed(nameof(UseCommandInvoker)))
             return this;
-        _commandInvokerUsed = true;
 
         UseMiddleware(async (ctx, next) =>
         {
