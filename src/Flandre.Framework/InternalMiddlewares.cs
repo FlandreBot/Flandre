@@ -30,7 +30,12 @@ public sealed partial class FlandreApp
 
         UseMiddleware(async (ctx, next) =>
         {
-            _pluginTypes.ForEach(p => ((Plugin)Services.GetRequiredService(p)).OnMessageReceivedAsync(ctx));
+            _pluginTypes.ForEach(p =>
+            {
+                // create a new scope instead of using ctx scope
+                using var scope = Services.CreateScope();
+                ((Plugin)scope.ServiceProvider.GetRequiredService(p)).OnMessageReceivedAsync(ctx);
+            });
             await next();
         });
         return this;
@@ -212,6 +217,7 @@ public sealed partial class FlandreApp
             if (!ctx.Command.TryParse(ctx.CommandStringParser, cmdService, out var result))
                 return result.ErrorText!;
 
+            // ctx.Service is a service scope
             var plugin = (Plugin)ctx.Services.GetRequiredService(ctx.Command.PluginType);
             var pluginLogger = (ILogger)Services.GetRequiredService(plugin.LoggerType);
 

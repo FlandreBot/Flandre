@@ -88,7 +88,8 @@ public sealed partial class FlandreApp : IHost
         {
             try
             {
-                var plugin = (Plugin)Services.GetRequiredService(pluginType);
+                using var scope = Services.CreateScope();
+                var plugin = (Plugin)scope.ServiceProvider.GetRequiredService(pluginType);
                 await subscriber.Invoke(plugin);
             }
             catch (Exception e)
@@ -146,8 +147,9 @@ public sealed partial class FlandreApp : IHost
     {
         foreach (var pluginType in _pluginTypes)
         {
-            var loadCtx = new PluginLoadContext(pluginType, Services);
-            var plugin = (Plugin)Services.GetRequiredService(pluginType);
+            using var scope = Services.CreateScope();
+            var loadCtx = new PluginLoadContext(pluginType, scope.ServiceProvider);
+            var plugin = (Plugin)scope.ServiceProvider.GetRequiredService(pluginType);
 
             loadCtx.LoadFromAttributes();
             // Fluent API can override attributes
