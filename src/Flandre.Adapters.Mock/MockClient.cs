@@ -53,7 +53,21 @@ public class MockClient
         var tcs = new TaskCompletionSource<MessageContent?>();
 
         var msg = ConstructMessage(message);
-        _adapter.Bot.ReceiveMessageToReply(msg, tcs, timeout);
+
+        _adapter.Bot.ReplyTarget = (msg.MessageId, tcs);
+        _adapter.Bot.ReceiveMessageToReply(msg);
+
+        Task.Run(async () =>
+        {
+            await Task.Delay(timeout);
+            if (_adapter.Bot.ReplyTarget is { } target
+                && target.MessageId == msg.MessageId
+                && !target.Tcs.Task.IsCompleted)
+            {
+                _adapter.Bot.ReplyTarget = null;
+                tcs.TrySetResult(null);
+            }
+        });
 
         return tcs.Task;
     }

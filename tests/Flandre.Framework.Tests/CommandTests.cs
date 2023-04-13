@@ -99,7 +99,7 @@ public class CommandTests
 
         content = await friendClient.SendMessageForReply("test1 --opt 114.514 true");
         Assert.Equal("True 314.514", content?.GetText());
-
+        //
         content = await friendClient.SendMessageForReply("test2  -o 123 191.981  --no-opt1");
         Assert.Equal("123 191.981 False True",
             content?.GetText());

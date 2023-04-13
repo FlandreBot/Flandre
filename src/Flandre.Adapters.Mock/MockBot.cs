@@ -18,53 +18,33 @@ public class MockBot : Bot
 
     private readonly string _selfId = Guid.NewGuid().ToString();
 
-    private readonly Dictionary<string, TaskCompletionSource<MessageContent?>> _tcsDict = new();
+    internal (string MessageId, TaskCompletionSource<MessageContent?> Tcs)? ReplyTarget { get; set; }
 
     internal void ReceiveMessage(Message message)
     {
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
     }
 
-    internal void ReceiveMessageToReply(Message message, TaskCompletionSource<MessageContent?> tcs, TimeSpan timeout)
+    internal void ReceiveMessageToReply(Message message)
     {
-        _tcsDict[message.MessageId] = tcs;
         OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
-        Task.Run(async () =>
-        {
-            await Task.Delay(timeout);
-            _tcsDict.GetValueOrDefault(message.MessageId)?.TrySetResult(null);
-        });
     }
 
-    private async Task<string?> SendAsync(Message message, MessageContent? contentOverride = null)
+    private void Send(MessageContent? content)
     {
-        if (_tcsDict.TryGetValue(message.MessageId, out var tcs))
-        {
-            tcs.SetResult(contentOverride ?? message.Content);
-            _tcsDict.Remove(message.MessageId);
-        }
-
-        return message.MessageId;
+        ReplyTarget?.Tcs.TrySetResult(content);
     }
 
     public override async Task<string?> SendChannelMessageAsync(string channelId, MessageContent content,
         string? guildId = null)
     {
-        await SendAsync(new Message
-        {
-            Platform = Platform,
-            Content = content
-        });
+        Send(content);
         return null;
     }
 
     public override async Task<string?> SendPrivateMessageAsync(string userId, MessageContent content)
     {
-        await SendAsync(new Message
-        {
-            Platform = Platform,
-            Content = content
-        });
+        Send(content);
         return null;
     }
 

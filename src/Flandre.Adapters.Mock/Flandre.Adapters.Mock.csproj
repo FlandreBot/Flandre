@@ -23,7 +23,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Flandre.Core\Flandre.Core.csproj" />
+        <ProjectReference Include="..\Flandre.Core\Flandre.Core.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
