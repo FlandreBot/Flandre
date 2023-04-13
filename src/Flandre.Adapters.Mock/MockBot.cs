@@ -36,13 +36,7 @@ public class MockBot : Bot
         });
     }
 
-    public override Task<string?> SendMessageAsync(MessageSourceType sourceType, string? channelId, string? userId,
-        MessageContent content, string? guildId = null)
-    {
-        throw new NotSupportedException();
-    }
-
-    public override async Task<string?> SendMessageAsync(Message message, MessageContent? contentOverride = null)
+    private async Task<string?> SendAsync(Message message, MessageContent? contentOverride = null)
     {
         if (_tcsDict.TryGetValue(message.MessageId, out var tcs))
         {
@@ -56,7 +50,7 @@ public class MockBot : Bot
     public override async Task<string?> SendChannelMessageAsync(string channelId, MessageContent content,
         string? guildId = null)
     {
-        await SendMessageAsync(new Message
+        await SendAsync(new Message
         {
             Platform = Platform,
             Content = content
@@ -66,7 +60,7 @@ public class MockBot : Bot
 
     public override async Task<string?> SendPrivateMessageAsync(string userId, MessageContent content)
     {
-        await SendMessageAsync(new Message
+        await SendAsync(new Message
         {
             Platform = Platform,
             Content = content

@@ -58,17 +58,6 @@ public class OneBotGuildBot : Bot
             }));
     }
 
-    public override async Task<string?> SendMessageAsync(MessageSourceType sourceType, string? channelId,
-        string? userId,
-        MessageContent content, string? guildId = null)
-    {
-        if (sourceType == MessageSourceType.Channel)
-            return await Internal.SendGuildChannelMessage(guildId!, channelId!, content);
-
-        Log(BotLogLevel.Warning, "Platform qqguild does not support sending private message.");
-        return null;
-    }
-
     public override async Task<string?> SendChannelMessageAsync(string channelId, MessageContent content,
         string? guildId = null)
     {
