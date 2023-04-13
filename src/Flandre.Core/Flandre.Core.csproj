@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Title>Flandre.Core</Title>
         <PackageVersion>1.0.0-rc.1</PackageVersion>
-        <Authors>FlandreDevs,b1acksoil</Authors>
+        <Authors>FlandreDevs,bsdayo</Authors>
         <Description>跨平台聊天机器人框架核心，提供基本交互操作，容易嵌入到已有项目中。</Description>
         <PackageTags>bot;chatbot;flandre</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,7 +19,7 @@
         <PackageProjectUrl>https://github.com/FlandreDevs/Flandre</PackageProjectUrl>
         <RepositoryUrl>https://github.com/FlandreDevs/Flandre.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <Copyright>FlandreDevs (C) 2022-present</Copyright>
+        <Copyright>FlandreDevs (C) 2022-2023</Copyright>
     </PropertyGroup>
 
     <ItemGroup>

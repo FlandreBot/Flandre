@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Title>Flandre.Adapters.Mock</Title>
         <PackageVersion>1.0.0-rc.1</PackageVersion>
-        <Authors>FlandreDevs,b1acksoil</Authors>
+        <Authors>FlandreDevs,bsdayo</Authors>
         <Description>Mock client for Project Flandre.</Description>
         <PackageTags>bot;chatbot;flandre;adapter</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,7 +19,7 @@
         <PackageProjectUrl>https://github.com/FlandreDevs/Flandre</PackageProjectUrl>
         <RepositoryUrl>https://github.com/FlandreDevs/Flandre.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <Copyright>FlandreDevs (C) 2022-present</Copyright>
+        <Copyright>FlandreDevs (C) 2022-2023</Copyright>
     </PropertyGroup>
 
     <ItemGroup>
