@@ -22,7 +22,7 @@ public class Message
     /// <summary>
     /// 消息来源类型
     /// </summary>
-    public MessageSourceType SourceType { get; init; }
+    public MessageEnvironment Environment { get; init; }
 
     /// <summary>
     /// 消息 ID
@@ -61,7 +61,7 @@ public class Message
 /// <summary>
 /// 消息来源类型
 /// </summary>
-public enum MessageSourceType
+public enum MessageEnvironment
 {
     /// <summary>
     /// 来自 Channel

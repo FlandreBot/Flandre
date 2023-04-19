@@ -32,6 +32,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 		README.NuGet.md = README.NuGet.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Discord", "src\Flandre.Adapters.Discord\Flandre.Adapters.Discord.csproj", "{CF294883-2C88-4AF9-BED6-8F766C664982}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordAdapterTest", "temp\DiscordAdapterTest\DiscordAdapterTest.csproj", "{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +82,14 @@ Global
 		{43701E39-49AD-4342-B66F-773D76B35438}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43701E39-49AD-4342-B66F-773D76B35438}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43701E39-49AD-4342-B66F-773D76B35438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF294883-2C88-4AF9-BED6-8F766C664982}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF294883-2C88-4AF9-BED6-8F766C664982}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF294883-2C88-4AF9-BED6-8F766C664982}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF294883-2C88-4AF9-BED6-8F766C664982}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

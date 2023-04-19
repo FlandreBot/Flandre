@@ -36,11 +36,11 @@ public static class ObservableMessageExtensions
 
     public static IObservable<Message> InPrivate(this IObservable<Message> observable)
     {
-        return observable.Where(msg => msg.SourceType == MessageSourceType.Private);
+        return observable.Where(msg => msg.Environment == MessageEnvironment.Private);
     }
 
     public static IObservable<Message> InChannel(this IObservable<Message> observable)
     {
-        return observable.Where(msg => msg.SourceType == MessageSourceType.Channel);
+        return observable.Where(msg => msg.Environment == MessageEnvironment.Channel);
     }
 }

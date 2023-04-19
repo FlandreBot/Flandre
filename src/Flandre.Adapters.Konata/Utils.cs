@@ -42,9 +42,9 @@ internal static class MessageUtils
         {
             Time = DateTimeOffset.FromUnixTimeSeconds(message.Time).LocalDateTime,
             Platform = platform,
-            SourceType = message.Type == MessageStruct.SourceType.Group
-                ? MessageSourceType.Channel
-                : MessageSourceType.Private,
+            Environment = message.Type == MessageStruct.SourceType.Group
+                ? MessageEnvironment.Channel
+                : MessageEnvironment.Private,
             MessageId = message.Uuid.ToString(),
             GuildId = groupId,
             ChannelId = groupId,
@@ -74,8 +74,8 @@ internal static class MessageUtils
                             uint.Parse(quoteSegment.QuotedMessage.Sender.UserId),
                             quoteSegment.QuotedMessage.Sender.Nickname,
                             quoteSegment.QuotedMessage.Content.ToKonataMessageChain(),
-                            quoteSegment.QuotedMessage.SourceType ==
-                            MessageSourceType.Channel
+                            quoteSegment.QuotedMessage.Environment ==
+                            MessageEnvironment.Channel
                                 ? MessageStruct.SourceType.Group
                                 : MessageStruct.SourceType.Friend);
                         mb.Add(ReplyChain.Create(messageStruct));

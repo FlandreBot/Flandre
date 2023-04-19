@@ -45,7 +45,7 @@ public class OneBotGuildBot : Bot
             {
                 Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,
                 Platform = Platform,
-                SourceType = MessageSourceType.Channel,
+                Environment = MessageEnvironment.Channel,
                 MessageId = e.MessageId!,
                 GuildId = e.GuildId,
                 ChannelId = e.ChannelId,
