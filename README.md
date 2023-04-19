@@ -27,34 +27,43 @@
 
 ### 🌐 原生跨平台
 
-Flandre 为跨平台而生，对聊天平台的结构进行抽象化，采用适配器模式进行兼容，使得开发者可以通过一套统一接口控制不同平台的机器人，同时提供了良好的开发体验。  
+Flandre
+为跨平台而生，对聊天平台的结构进行抽象化，采用适配器模式进行兼容，使得开发者可以通过一套统一接口控制不同平台的机器人，同时提供了良好的开发体验。  
 目前已经实现的适配器：
 
-| 平台 | 介绍 |
-|:--:|:--:|
+|                                               平台                                                |                                                                             介绍                                                                              |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [OneBot](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.OneBot/README.md) | [OneBot](https://github.com/botuniverse/onebot) v11 协议封装，主要对 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 提供支持。支持 QQ 协议，同时基于 go-cqhttp 对 QQ 频道也进行了一定的支持。 |
-| [Konata](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.Konata/README.md) | QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core) |
-| Telegram | 计划中... |
-| Discord | 计划中... |
+| [Konata](https://github.com/FlandreDevs/Flandre/blob/dev/src/Flandre.Adapters.Konata/README.md) |                                             QQ 协议适配，基于 [Konata.Core](https://github.com/KonataDev/Konata.Core)                                              |
+|                                             Discord                                             |                               Discord 适配，基于 [Discord.Net](https://github.com/discord-net/Discord.Net) **(Work in Progress)**                                |
+|                                            Telegram                                             |                                                                           计划中...                                                                            |
 
 ### 🧩 灵活的开发方式
+
 Flandre 提供两种开发方式，分别是完整的开发框架 `Framework`，以及易于嵌入已有程序的 `Core`。
 
 <details>
 <summary>详细区别</summary>
 
 #### Flandre.Framework
+
 [![NuGet](https://img.shields.io/nuget/vpre/Flandre.Framework?style=flat&label=NuGet&color=9866ca)](https://www.nuget.org/packages/Flandre.Framework/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Framework?style=flat&label=Downloads&color=42a5f5)](https://www.nuget.org/packages/Flandre.Framework/)
 
-`Flandre.Framework` 是一个使用方便、功能全面的 Bot 开发框架，在核心包 `Core` 的基础上集成了插件、指令、中间件等系统，并提供依赖注入、日志管理等等实用功能。  
-Framework 基于 [Microsoft.Extensions.Hosting](https://learn.microsoft.com/zh-cn/dotnet/core/extensions/generic-host)，这意味着可以复用大量社区已有的开源库。对于一个全新的 Bot 项目，我们建议直接使用 Framework 开发。
+`Flandre.Framework` 是一个使用方便、功能全面的 Bot 开发框架，在核心包 `Core`
+的基础上集成了插件、指令、中间件等系统，并提供依赖注入、日志管理等等实用功能。  
+Framework 基于 [Microsoft.Extensions.Hosting](https://learn.microsoft.com/zh-cn/dotnet/core/extensions/generic-host)
+，这意味着可以复用大量社区已有的开源库。在 API 设计上，Framework 参考了 ASP.NET Core，如果你有相关经验，使用起来会更加得心应手。
+
+对于一个全新的 Bot 项目，我们建议直接使用 Framework 开发。
 
 #### Flandre.Core
+
 [![NuGet](https://img.shields.io/nuget/vpre/Flandre.Core?style=flat&label=NuGet&color=9866ca)](https://www.nuget.org/packages/Flandre.Core/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Flandre.Core?style=flat&label=Downloads&color=42a5f5)](https://www.nuget.org/packages/Flandre.Core/)
 
-`Flandre.Core` 是整个框架的核心组件，包含了适配器、机器人等抽象层，提供直接操作 Bot 进行平台交互的功能。相比 `Framework`，`Core` 作为一个轻量化的模块，能更容易地嵌入进已有项目中，成为功能的一部分。
+`Flandre.Core` 是整个框架的核心组件，包含了适配器、机器人等抽象层，提供直接操作 Bot
+进行平台交互的功能。相比 `Framework`，`Core` 作为一个轻量化的模块，能更容易地嵌入进已有项目中，成为功能的一部分。
 
 > 不需要代入 .NET Framework / Core 命名方式的意义。在 Flandre 中，两者只意味着开发方式的不同，且都处于积极维护中。
 
@@ -103,11 +112,13 @@ $ dotnet new flandre -o MyFirstFlandreApp
 
 ## 💻 开发
 
-你可以查看本仓库的[里程碑](https://github.com/FlandreDevs/Flandre/milestones)或[项目](https://github.com/FlandreDevs/Flandre/projects)页，获取最新的开发进度。
+你可以查看本仓库的[里程碑](https://github.com/FlandreDevs/Flandre/milestones)
+或[项目](https://github.com/FlandreDevs/Flandre/projects)页，获取最新的开发进度。
 
 如果你在开发的过程中发现了 Bug，或有建议，欢迎[提交 Issue](https://github.com/FlandreDevs/Flandre/issues/new/choose)。
 
-如果你想要贡献代码，欢迎[与我们联系](#%F0%9F%92%AC%20%E4%BA%A4%E6%B5%81)，并[发起 PR](https://github.com/FlandreDevs/Flandre/compare)。
+如果你想要贡献代码，欢迎[与我们联系](#%F0%9F%92%AC%20%E4%BA%A4%E6%B5%81)
+，并[发起 PR](https://github.com/FlandreDevs/Flandre/compare)。
 
 项目的主要分支：
 
