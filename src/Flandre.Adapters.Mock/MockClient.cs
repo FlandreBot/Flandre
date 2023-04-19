@@ -11,7 +11,7 @@ public class MockClient
     public string ChannelId { get; internal init; } = string.Empty;
     public string UserId { get; internal init; } = string.Empty;
 
-    public MessageSourceType EnvironmentType { get; internal init; }
+    public MessageEnvironment EnvironmentType { get; internal init; }
 
     internal MockClient(MockAdapter adapter)
     {
@@ -23,7 +23,7 @@ public class MockClient
         return new Message
         {
             Time = DateTime.Now,
-            SourceType = EnvironmentType,
+            Environment = EnvironmentType,
             MessageId = Guid.NewGuid().ToString(),
             GuildId = GuildId,
             ChannelId = ChannelId,

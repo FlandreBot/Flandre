@@ -9,7 +9,7 @@ public static class MockAdapterExtensions
     {
         return new MockClient(adapter)
         {
-            EnvironmentType = MessageSourceType.Channel,
+            EnvironmentType = MessageEnvironment.Channel,
             GuildId = guildId,
             ChannelId = channelId,
             UserId = userId
@@ -26,7 +26,7 @@ public static class MockAdapterExtensions
     {
         return new MockClient(adapter)
         {
-            EnvironmentType = MessageSourceType.Private,
+            EnvironmentType = MessageEnvironment.Private,
             UserId = userId
         };
     }

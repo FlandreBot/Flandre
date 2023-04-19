@@ -37,11 +37,11 @@ public static class ObservableMessageReceivedExtensions
 
     public static IObservable<BotMessageReceivedEvent> InPrivate(this IObservable<BotMessageReceivedEvent> observable)
     {
-        return observable.Where(e => e.Message.SourceType == MessageSourceType.Private);
+        return observable.Where(e => e.Message.Environment == MessageEnvironment.Private);
     }
 
     public static IObservable<BotMessageReceivedEvent> InChannel(this IObservable<BotMessageReceivedEvent> observable)
     {
-        return observable.Where(e => e.Message.SourceType == MessageSourceType.Channel);
+        return observable.Where(e => e.Message.Environment == MessageEnvironment.Channel);
     }
 }

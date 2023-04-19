@@ -140,7 +140,7 @@ public sealed class OneBotWebSocketBot : OneBotBot
             {
                 Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,
                 Platform = Platform,
-                SourceType = e.MessageType == "group" ? MessageSourceType.Channel : MessageSourceType.Private,
+                Environment = e.MessageType == "group" ? MessageEnvironment.Channel : MessageEnvironment.Private,
                 MessageId = e.MessageId.ToString(),
                 GuildId = e.GroupId?.ToString(),
                 ChannelId = e.GroupId?.ToString(),

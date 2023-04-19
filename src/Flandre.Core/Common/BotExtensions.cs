@@ -11,19 +11,19 @@ public static class BotExtensions
     /// 发送消息
     /// </summary>
     /// <param name="bot">发送消息的机器人</param>
-    /// <param name="sourceType">消息类型</param>
+    /// <param name="environment">消息类型</param>
     /// <param name="channelId">频道 ID</param>
     /// <param name="userId">用户 ID</param>
     /// <param name="content">消息内容</param>
     /// <param name="guildId">群组 ID</param>
-    public static Task<string?> SendMessageAsync(this Bot bot, MessageSourceType sourceType, string? channelId, string? userId,
+    public static Task<string?> SendMessageAsync(this Bot bot, MessageEnvironment environment, string? channelId, string? userId,
         MessageContent content,
         string? guildId = null)
     {
-        return sourceType switch
+        return environment switch
         {
-            MessageSourceType.Channel => bot.SendChannelMessageAsync(channelId!, content, guildId),
-            MessageSourceType.Private => bot.SendPrivateMessageAsync(userId!, content),
+            MessageEnvironment.Channel => bot.SendChannelMessageAsync(channelId!, content, guildId),
+            MessageEnvironment.Private => bot.SendPrivateMessageAsync(userId!, content),
             _ => Task.FromResult<string?>(null)
         };
     }
@@ -36,7 +36,7 @@ public static class BotExtensions
     /// <param name="contentOverride">覆盖消息对象的内容，可选</param>
     public static Task<string?> SendMessageAsync(this Bot bot, Message message, MessageContent? contentOverride = null)
     {
-        return SendMessageAsync(bot, message.SourceType, message.ChannelId, message.Sender.UserId,
+        return SendMessageAsync(bot, message.Environment, message.ChannelId, message.Sender.UserId,
             contentOverride ?? message.Content, message.GuildId);
     }
 }

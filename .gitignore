@@ -403,3 +403,5 @@ FodyWeavers.xsd
 
 # JetBrains IDE configuration files
 .idea/
+
+temp/

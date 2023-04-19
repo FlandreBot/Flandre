@@ -46,7 +46,7 @@ public abstract partial class Bot
     /// <returns>Task.CompletedTask</returns>
     protected Task LogNotSupportedAsync(string method)
     {
-        Log(BotLogLevel.Warning, $"Platform {Platform} does not support method {method}.");
+        Log(BotLogLevel.Debug, $"Platform {Platform} does not support method {method}.");
         return Task.CompletedTask;
     }
 
@@ -58,7 +58,7 @@ public abstract partial class Bot
     /// <returns>Task.FromResult&lt;TResult&gt;(result)</returns>
     protected Task<TResult> LogNotSupportedAsync<TResult>(string method, TResult result)
     {
-        Log(BotLogLevel.Warning, $"Platform {Platform} does not support method {method}.");
+        Log(BotLogLevel.Debug, $"Platform {Platform} does not support method {method}.");
         return Task.FromResult(result);
     }
 
