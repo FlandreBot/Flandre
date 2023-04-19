@@ -6,6 +6,11 @@
 public interface IAdapter
 {
     /// <summary>
+    /// 适配器机器人列表
+    /// </summary>
+    public IEnumerable<Bot> Bots { get; }
+    
+    /// <summary>
     /// 启动适配器
     /// </summary>
     public Task StartAsync();
@@ -14,9 +19,4 @@ public interface IAdapter
     /// 停止适配器
     /// </summary>
     public Task StopAsync();
-
-    /// <summary>
-    /// 获取适配器 bot 列表
-    /// </summary>
-    public IEnumerable<Bot> GetBots();
 }

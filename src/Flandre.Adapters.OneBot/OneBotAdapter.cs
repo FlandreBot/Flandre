@@ -4,6 +4,8 @@ namespace Flandre.Adapters.OneBot;
 
 public class OneBotAdapter : IAdapter
 {
+    public IEnumerable<Bot> Bots => _bots.AsReadOnly();
+
     private readonly List<Bot> _bots = new();
 
     private readonly OneBotAdapterConfig _config;
@@ -36,8 +38,6 @@ public class OneBotAdapter : IAdapter
     {
         await Task.WhenAll(_bots.Select(bot => bot.StopAsync()));
     }
-
-    public IEnumerable<Bot> GetBots() => _bots;
 }
 
 public class OneBotAdapterConfig

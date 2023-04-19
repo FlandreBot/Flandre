@@ -7,6 +7,9 @@ namespace Flandre.Adapters.Discord;
 /// </summary>
 public sealed class DiscordAdapter : IAdapter
 {
+    /// <inheritdoc cref="IAdapter.Bots"/>
+    public IEnumerable<Bot> Bots => _bots.AsReadOnly();
+
     private readonly List<DiscordBot> _bots = new();
 
     /// <summary>
@@ -31,9 +34,6 @@ public sealed class DiscordAdapter : IAdapter
     public async Task StopAsync()
     {
     }
-
-    /// <inheritdoc cref="IAdapter.GetBots"/>
-    public IEnumerable<Bot> GetBots() => _bots;
 }
 
 /// <summary>

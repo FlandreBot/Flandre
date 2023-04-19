@@ -11,7 +11,7 @@ public class CoreReactiveExtensionsTests
         var adapter = new MockAdapter();
         var client1 = adapter.GetChannelClient("testG1", "testC1", "123");
         var client2 = adapter.GetChannelClient("testG2", "testC2", "456");
-        var bot = adapter.GetBots().First();
+        var bot = adapter.Bots.First();
 
         var messageCountFrom1 = 0;
         var messageCountFrom2 = 0;

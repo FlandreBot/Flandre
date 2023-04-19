@@ -7,6 +7,9 @@ namespace Flandre.Adapters.Konata;
 /// </summary>
 public class KonataAdapter : IAdapter
 {
+    /// <inheritdocs/>
+    public IEnumerable<Bot> Bots => _bots.AsReadOnly();
+
     private readonly List<KonataBot> _bots = new();
     private readonly KonataAdapterConfig _config;
 
@@ -31,11 +34,6 @@ public class KonataAdapter : IAdapter
     /// 停止适配器
     /// </summary>
     public Task StopAsync() => Task.WhenAll(_bots.ConvertAll(bot => bot.StopAsync()));
-
-    /// <summary>
-    /// 获取 bot 列表
-    /// </summary>
-    public IEnumerable<Bot> GetBots() => _bots;
 }
 
 /// <summary>

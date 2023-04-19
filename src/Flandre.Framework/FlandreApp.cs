@@ -21,11 +21,12 @@ public sealed partial class FlandreApp : IHost
     private readonly List<IAdapter> _adapters;
     private readonly List<Type> _pluginTypes;
     private readonly List<Func<MiddlewareContext, Func<Task>, Task>> _middleware = new();
+    private readonly List<Bot> _bots = new();
 
     /// <summary>
-    /// 机器人实例
+    /// 所有机器人实例
     /// </summary>
-    public List<Bot> Bots { get; } = new();
+    public IEnumerable<Bot> Bots => _bots.AsReadOnly();
 
     /// <summary>
     /// 服务
@@ -71,7 +72,7 @@ public sealed partial class FlandreApp : IHost
         Logger = Services.GetRequiredService<ILogger<FlandreApp>>();
 
         foreach (var adapter in _adapters)
-            Bots.AddRange(adapter.GetBots());
+            _bots.AddRange(adapter.Bots);
     }
 
     #region 初始化步骤
@@ -99,7 +100,7 @@ public sealed partial class FlandreApp : IHost
             }
         });
 
-        foreach (var bot in Bots)
+        foreach (var bot in _bots)
         {
             bot.OnMessageReceived += (_, e) => Task.Run(async () =>
             {
@@ -132,7 +133,7 @@ public sealed partial class FlandreApp : IHost
         foreach (var adapter in _adapters)
         {
             var adapterType = adapter.GetType();
-            foreach (var bot in adapter.GetBots())
+            foreach (var bot in adapter.Bots)
                 bot.OnLogging += (_, e) =>
                     Services.GetRequiredService<ILoggerFactory>()
                         .CreateLogger(adapterType.FullName ?? adapterType.Name)
@@ -212,7 +213,7 @@ public sealed partial class FlandreApp : IHost
         var cmdService = Services.GetRequiredService<CommandService>();
 
         Logger.LogInformation("App started");
-        Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, Bots.Count);
+        Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, _bots.Count);
         Logger.LogDebug(
             "Total {PluginCount} plugins, {CommandCount} commands, {StringShortcutCount} string shortcuts, {RegexShortcutCount} regex shortcuts, {MiddlewareCount} middleware",
             _pluginTypes.Count, cmdService.RootCommandNode.CountCommands(),
