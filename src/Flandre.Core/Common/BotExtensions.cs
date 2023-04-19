@@ -16,7 +16,8 @@ public static class BotExtensions
     /// <param name="userId">用户 ID</param>
     /// <param name="content">消息内容</param>
     /// <param name="guildId">群组 ID</param>
-    public static Task<string?> SendMessageAsync(this Bot bot, MessageEnvironment environment, string? channelId, string? userId,
+    public static Task<string?> SendMessageAsync(this Bot bot, MessageEnvironment environment, string? channelId,
+        string? userId,
         MessageContent content,
         string? guildId = null)
     {

@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Adapters.OneBot</Title>
-        <PackageVersion>2.0.0-rc.1</PackageVersion>
+        <PackageVersion>2.0.0-rc.2</PackageVersion>
         <Authors>FlandreDevs,bsdayo</Authors>
         <Description>OneBot protocol adapter for Flandre project.</Description>
         <PackageTags>bot;chatbot;flandre;adapter;onebot</PackageTags>
