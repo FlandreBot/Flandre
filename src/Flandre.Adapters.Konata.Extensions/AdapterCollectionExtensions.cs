@@ -16,7 +16,7 @@ public static class AdapterCollectionExtensions
     {
         var config = adapters.Services
             .BuildServiceProvider()
-            .GetRequiredService<IConfigurationRoot>()
+            .GetRequiredService<IConfiguration>()
             .GetSection("Adapters:Konata")
             .Get<KonataAdapterConfig>();
         adapters.Add(new KonataAdapter(config ?? new KonataAdapterConfig()));

@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Adapters.Konata.Extensions</Title>
-        <PackageVersion>1.0.0</PackageVersion>
+        <PackageVersion>1.0.1</PackageVersion>
         <Authors>FlandreDevs,bsdayo</Authors>
         <Description>Flandre.Framework extensions for Flandre.Adapters.Konata.</Description>
         <PackageTags>bot;chatbot;flandre;adapter;konata;extensions</PackageTags>

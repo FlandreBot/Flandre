@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Adapters.OneBot.Extensions</Title>
-        <PackageVersion>1.0.0</PackageVersion>
+        <PackageVersion>1.0.1</PackageVersion>
         <Authors>FlandreDevs,bsdayo</Authors>
         <Description>Flandre.Framework extensions for Flandre.Adapters.OneBot.</Description>
         <PackageTags>bot;chatbot;flandre;adapter;onebot;extensions</PackageTags>

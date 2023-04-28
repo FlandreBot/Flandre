@@ -16,7 +16,7 @@ public static class AdapterCollectionExtensions
     {
         var config = adapters.Services
             .BuildServiceProvider()
-            .GetRequiredService<IConfigurationRoot>()
+            .GetRequiredService<IConfiguration>()
             .GetSection("Adapters:OneBot")
             .Get<OneBotAdapterConfig>();
         adapters.Add(new OneBotAdapter(config ?? new OneBotAdapterConfig()));
