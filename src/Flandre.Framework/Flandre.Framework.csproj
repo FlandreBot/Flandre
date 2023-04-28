@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Framework</Title>
-        <PackageVersion>1.0.0-rc.8</PackageVersion>
+        <PackageVersion>1.0.0-rc.7</PackageVersion>
         <Authors>FlandreDevs,bsdayo</Authors>
         <Description>现代化、跨平台的聊天机器人框架，一次编写，多处运行。</Description>
         <PackageTags>bot;chatbot;flandre;framework</PackageTags>
