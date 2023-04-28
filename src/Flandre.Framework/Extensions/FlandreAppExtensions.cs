@@ -8,6 +8,17 @@ namespace Flandre.Framework.Extensions;
 public static class FlandreAppExtensions
 {
     /// <summary>
+    /// 运行应用实例，并自动注册内置中间件
+    /// </summary>
+    public static Task StartWithDefaultsAsync(this FlandreApp app, CancellationToken cancellationToken = default)
+    {
+        app.UseCommandSession();
+        app.UseCommandParser();
+        app.UseCommandInvoker();
+        return app.StartAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// 设置群组代理 <see cref="Bot"/>（主 bot）
     /// </summary>
     /// <param name="app"><see cref="FlandreApp"/> 实例</param>

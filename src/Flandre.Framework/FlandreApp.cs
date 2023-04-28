@@ -198,7 +198,10 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
         return this;
     }
 
-    private async Task StartAsyncCore(bool withDefaults, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// 运行应用实例
+    /// </summary>
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         OnStarting?.Invoke(this, new AppStartingEvent());
         Logger.LogDebug("Starting app...");
@@ -207,13 +210,6 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
         SubscribeEvents();
 
         UsePluginMessageHandler();
-
-        if (withDefaults)
-        {
-            UseCommandSession();
-            UseCommandParser();
-            UseCommandInvoker();
-        }
 
         await Task.WhenAll(_adapters.Select(adapter => adapter.StartAsync()).ToArray());
         await _hostApp.StartAsync(cancellationToken);
@@ -227,22 +223,6 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
             _pluginTypes.Count, cmdService.RootCommandNode.CountCommands(),
             cmdService.StringShortcuts.Count, cmdService.RegexShortcuts.Count, _middleware.Count);
         OnReady?.Invoke(this, new AppReadyEvent());
-    }
-
-    /// <summary>
-    /// 运行应用实例
-    /// </summary>
-    public Task StartAsync(CancellationToken cancellationToken = default)
-    {
-        return StartAsyncCore(false, cancellationToken);
-    }
-
-    /// <summary>
-    /// 运行应用实例，并自动注册内置中间件
-    /// </summary>
-    public Task StartWithDefaultsAsync(CancellationToken cancellationToken = default)
-    {
-        return StartAsyncCore(true, cancellationToken);
     }
 
     /// <summary>
