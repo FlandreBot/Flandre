@@ -1,31 +1,34 @@
 ﻿using Flandre.Core.Utils;
 using Flandre.Framework.Common;
+using Flandre.Framework.Routing;
 
 namespace Flandre.Framework.Services;
 
 internal sealed class CommandService
 {
-    public CommandNode RootCommandNode { get; } = new("");
+    // Properties are initialized in Reset()
 
-    public Dictionary<StringShortcut, Command> StringShortcuts { get; } = new();
+    public CommandNode RootCommandNode { get; private set; } = null!;
 
-    public Dictionary<RegexShortcut, Command> RegexShortcuts { get; } = new();
+    public Dictionary<StringShortcut, Command> StringShortcuts { get; private set; } = null!;
 
-    public Dictionary<Type, TypeParserDelegate> TypeParsers { get; } = new();
+    public Dictionary<RegexShortcut, Command> RegexShortcuts { get; private set; } = null!;
 
-    public Dictionary<Type, string> TypeFriendlyNames { get; } = new();
+    public Dictionary<Type, TypeResolverDelegate> TypeResolvers { get; private set; } = null!;
+
+    public Dictionary<Type, string> TypeFriendlyNames { get; private set; } = null!;
 
     public CommandService()
     {
-        AddInternalTypeParsers();
+        Reset();
     }
 
-    public void AddTypeParser<T>(string? typeFriendlyName, TypeParserDelegate<T> parser)
+    public void MapTypeResolver<T>(string? typeFriendlyName, TypeResolverDelegate<T> resolver)
     {
         var type = typeof(T);
-        TypeParsers[type] = (string raw, out object? result) =>
+        TypeResolvers[type] = (string raw, out object? result) =>
         {
-            var suc = parser(raw, out var res);
+            var suc = resolver(raw, out var res);
             result = res;
             return suc;
         };
@@ -36,8 +39,8 @@ internal sealed class CommandService
 
     public bool TryParseArgumentValue(Type type, string raw, out object? result)
     {
-        if (TypeParsers.TryGetValue(type, out var typeParser))
-            return typeParser(raw, out result);
+        if (TypeResolvers.TryGetValue(type, out var typeResolver))
+            return typeResolver(raw, out result);
 
         result = null;
         return false;
@@ -50,30 +53,40 @@ internal sealed class CommandService
             : type.Name;
     }
 
+    public void Reset()
+    {
+        RootCommandNode = new CommandNode("");
+        StringShortcuts = new Dictionary<StringShortcut, Command>();
+        RegexShortcuts = new Dictionary<RegexShortcut, Command>();
+        TypeResolvers = new Dictionary<Type, TypeResolverDelegate>();
+        TypeFriendlyNames = new Dictionary<Type, string>();
+        AddInternalTypeResolvers();
+    }
+
     #region 初始化
 
-    private void AddInternalTypeParsers()
+    private void AddInternalTypeResolvers()
     {
-        AddTypeParser<int>("整数", int.TryParse);
-        AddTypeParser<long>("整数", long.TryParse);
-        AddTypeParser<byte>("整数", byte.TryParse);
-        AddTypeParser<sbyte>("整数", sbyte.TryParse);
-        AddTypeParser<short>("整数", short.TryParse);
+        MapTypeResolver<int>("整数", int.TryParse);
+        MapTypeResolver<long>("整数", long.TryParse);
+        MapTypeResolver<byte>("整数", byte.TryParse);
+        MapTypeResolver<sbyte>("整数", sbyte.TryParse);
+        MapTypeResolver<short>("整数", short.TryParse);
 
-        AddTypeParser<uint>("正整数", uint.TryParse);
-        AddTypeParser<ulong>("正整数", ulong.TryParse);
-        AddTypeParser<ushort>("正整数", ushort.TryParse);
+        MapTypeResolver<uint>("正整数", uint.TryParse);
+        MapTypeResolver<ulong>("正整数", ulong.TryParse);
+        MapTypeResolver<ushort>("正整数", ushort.TryParse);
 
-        AddTypeParser<double>("小数", double.TryParse);
-        AddTypeParser<float>("小数", float.TryParse);
-        AddTypeParser<decimal>("小数", decimal.TryParse);
+        MapTypeResolver<double>("小数", double.TryParse);
+        MapTypeResolver<float>("小数", float.TryParse);
+        MapTypeResolver<decimal>("小数", decimal.TryParse);
 
-        AddTypeParser<bool>("\"true\"或\"false\"", bool.TryParse);
+        MapTypeResolver<bool>("\"true\"或\"false\"", bool.TryParse);
 
-        AddTypeParser<char>("字符", char.TryParse);
+        MapTypeResolver<char>("字符", char.TryParse);
 
         // ReSharper disable once RedundantTypeArgumentsOfMethod
-        AddTypeParser<string>("不带空格的文本", (string raw, out string result) =>
+        MapTypeResolver<string>("不带空格的文本", (string raw, out string result) =>
         {
             result = new StringParser(raw).ReadQuoted();
             return true;

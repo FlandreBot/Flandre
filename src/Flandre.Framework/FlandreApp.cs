@@ -3,6 +3,7 @@ using Flandre.Core.Common;
 using Flandre.Core.Messaging;
 using Flandre.Framework.Common;
 using Flandre.Framework.Events;
+using Flandre.Framework.Routing;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,7 +15,7 @@ namespace Flandre.Framework;
 /// <summary>
 /// Flandre 应用
 /// </summary>
-public sealed partial class FlandreApp : IHost
+public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
 {
     private readonly IHost _hostApp;
     private readonly IOptionsMonitor<FlandreAppOptions> _appOptions;
@@ -22,6 +23,7 @@ public sealed partial class FlandreApp : IHost
     private readonly List<Type> _pluginTypes;
     private readonly List<Func<MiddlewareContext, Func<Task>, Task>> _middleware = new();
     private readonly List<Bot> _bots = new();
+    private bool _eventsSubscribedOnce;
 
     /// <summary>
     /// 所有机器人实例
@@ -38,12 +40,10 @@ public sealed partial class FlandreApp : IHost
     /// </summary>
     public ILogger<FlandreApp> Logger { get; }
 
-    private IDictionary<string, object?>? _properties;
-
     /// <summary>
     /// 应用属性，用于在中间件内传递消息
     /// </summary>
-    public IDictionary<string, object?> Properties => _properties ??= new Dictionary<string, object?>();
+    public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
 
     internal ConcurrentDictionary<string, string> GuildAssignees { get; } = new();
     internal ConcurrentDictionary<string, TaskCompletionSource<Message?>> CommandSessions { get; } = new();
@@ -75,16 +75,40 @@ public sealed partial class FlandreApp : IHost
             _bots.AddRange(adapter.Bots);
     }
 
-    #region 初始化步骤
-
-    internal void Initialize()
+    private async Task LoadAllPluginsAsync()
     {
-        SubscribeEvents();
-        LoadPlugins();
+        foreach (var pluginType in _pluginTypes)
+        {
+            using var scope = Services.CreateScope();
+            var loadCtx = new PluginLoadContext(pluginType, scope.ServiceProvider);
+            var plugin = (Plugin)scope.ServiceProvider.GetRequiredService(pluginType);
+
+            loadCtx.LoadFromAttributes();
+            // Fluent API can override attributes
+            await plugin.OnLoadingAsync();
+
+            loadCtx.LoadCommandAliases();
+            loadCtx.LoadCommandShortcuts();
+        }
+    }
+
+    private async Task UnloadAllPluginsAsync()
+    {
+        foreach (var pluginType in _pluginTypes)
+        {
+            using var scope = Services.CreateScope();
+            var plugin = (Plugin)scope.ServiceProvider.GetRequiredService(pluginType);
+            await plugin.OnUnloadingAsync();
+        }
+
+        Services.GetRequiredService<CommandService>().Reset();
     }
 
     private void SubscribeEvents()
     {
+        if (_eventsSubscribedOnce) return;
+        _eventsSubscribedOnce = true;
+
         void WithCatch(Type pluginType, Func<Plugin, Task> subscriber, string? eventName = null) => Task.Run(async () =>
         {
             try
@@ -144,25 +168,6 @@ public sealed partial class FlandreApp : IHost
         Logger.LogDebug("All bot events subscribed");
     }
 
-    private void LoadPlugins()
-    {
-        foreach (var pluginType in _pluginTypes)
-        {
-            using var scope = Services.CreateScope();
-            var loadCtx = new PluginLoadContext(pluginType, scope.ServiceProvider);
-            var plugin = (Plugin)scope.ServiceProvider.GetRequiredService(pluginType);
-
-            loadCtx.LoadFromAttributes();
-            // Fluent API can override attributes
-            plugin.OnLoadingAsync(loadCtx).GetAwaiter().GetResult();
-
-            loadCtx.LoadCommandAliases();
-            loadCtx.LoadCommandShortcuts();
-        }
-    }
-
-    #endregion
-
     /// <summary>
     /// 按顺序执行中间件，遵循洋葱模型
     /// </summary>
@@ -187,7 +192,7 @@ public sealed partial class FlandreApp : IHost
     /// 在最内层插入异步中间件
     /// </summary>
     /// <param name="middlewareAction">中间件方法</param>
-    public FlandreApp UseMiddleware(Func<MiddlewareContext, Func<Task>, Task> middlewareAction)
+    public FlandreApp Use(Func<MiddlewareContext, Func<Task>, Task> middlewareAction)
     {
         _middleware.Add(middlewareAction);
         return this;
@@ -197,6 +202,9 @@ public sealed partial class FlandreApp : IHost
     {
         OnStarting?.Invoke(this, new AppStartingEvent());
         Logger.LogDebug("Starting app...");
+
+        await LoadAllPluginsAsync();
+        SubscribeEvents();
 
         UsePluginMessageHandler();
 
@@ -242,6 +250,7 @@ public sealed partial class FlandreApp : IHost
     /// </summary>
     public async Task StopAsync(CancellationToken cancellationToken = default)
     {
+        await UnloadAllPluginsAsync();
         await Task.WhenAll(_adapters.Select(adapter => adapter.StopAsync()).ToArray());
         await _hostApp.StopAsync(cancellationToken);
         Logger.LogInformation("App stopped");

@@ -1,4 +1,6 @@
-namespace Flandre.Framework.Common;
+using Flandre.Framework.Common;
+
+namespace Flandre.Framework.Routing;
 
 internal sealed class CommandNode
 {
@@ -14,7 +16,7 @@ internal sealed class CommandNode
 
     public CommandNode(string fullName) => FullName = fullName;
 
-    public Command AddCommand(Type pluginType, string relativePath)
+    public Command MapCommand(Type? pluginType, string relativePath)
     {
         var segments = relativePath.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         var currentNode = this;

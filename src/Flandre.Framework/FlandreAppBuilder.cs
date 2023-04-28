@@ -66,7 +66,7 @@ public sealed class FlandreAppBuilder
     internal FlandreAppBuilder(HostApplicationBuilderSettings? settings)
     {
         _hostAppBuilder = new HostApplicationBuilder(settings);
-        _adapterCollection = new AdapterCollection();
+        _adapterCollection = new AdapterCollection(Services);
         _pluginCollection = new PluginCollection(Services);
         AddInfrastructure();
     }
@@ -133,7 +133,6 @@ public sealed class FlandreAppBuilder
         var app = new FlandreApp(_hostAppBuilder.Build(),
             _pluginCollection.PluginTypes,
             _adapterCollection.Adapters);
-        app.Initialize();
         return app;
     }
 }

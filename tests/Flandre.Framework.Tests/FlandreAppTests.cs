@@ -27,11 +27,13 @@ public class FlandreAppTests
     }
 
     [Fact]
-    public void TestAliases()
+    public async Task TestAliases()
     {
         var builder = FlandreApp.CreateBuilder();
         builder.Plugins.Add<TestPlugin>();
         using var app = builder.Build();
+
+        await app.StartWithDefaultsAsync();
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
@@ -45,18 +47,24 @@ public class FlandreAppTests
         Assert.NotNull(cmdService.RootCommandNode.FindSubNode("test111.11.45.14"));
         Assert.Equal(cmdService.RootCommandNode.FindSubNode("sssuuubbb")?.Command,
             cmdService.RootCommandNode.FindSubNode("sub.test")?.Command);
+
+        await app.StopAsync();
     }
 
     [Fact]
-    public void TestShortcutCount()
+    public async Task TestShortcutCount()
     {
         var builder = FlandreApp.CreateBuilder();
         builder.Plugins.Add<TestPlugin>();
         using var app = builder.Build();
 
+        await app.StartAsync();
+
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
         Assert.Equal(2, cmdService.StringShortcuts.Count);
         Assert.Single(cmdService.RegexShortcuts);
+
+        await app.StopAsync();
     }
 }

@@ -18,11 +18,13 @@ public class CommandNodeTests
     }
 
     [Fact]
-    public void TestNode()
+    public async Task TestNode()
     {
         var builder = FlandreApp.CreateBuilder();
         builder.Plugins.Add<TestPlugin>();
         using var app = builder.Build();
+
+        await app.StartWithDefaultsAsync();
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
@@ -31,5 +33,7 @@ public class CommandNodeTests
         Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-aaa..cmd-bbb")?.FullName);
         Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-aaa..cmd-bbb")?.Command?.FullName);
         Assert.Equal("cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-bbb . .")?.Command?.FullName);
+
+        await app.StopAsync();
     }
 }

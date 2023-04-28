@@ -28,7 +28,7 @@ public sealed partial class FlandreApp
         if (CheckMiddlewareUsed(nameof(UsePluginMessageHandler)))
             return this;
 
-        UseMiddleware(async (ctx, next) =>
+        Use(async (ctx, next) =>
         {
             _pluginTypes.ForEach(p =>
             {
@@ -49,7 +49,7 @@ public sealed partial class FlandreApp
         if (CheckMiddlewareUsed(nameof(UseAssigneeChecker)))
             return this;
 
-        UseMiddleware(async (ctx, next) =>
+        Use(async (ctx, next) =>
         {
             var segment = ctx.Message.Content.Segments.FirstOrDefault();
             if (segment is AtSegment ats)
@@ -81,7 +81,7 @@ public sealed partial class FlandreApp
         if (CheckMiddlewareUsed(nameof(UseCommandSession)))
             return this;
 
-        UseMiddleware(async (ctx, next) =>
+        Use(async (ctx, next) =>
         {
             var mark = ctx.GetUserMark();
             if (CommandSessions.TryGetValue(mark, out var tcs))
@@ -107,7 +107,7 @@ public sealed partial class FlandreApp
         if (CheckMiddlewareUsed(nameof(UseCommandParser)))
             return this;
 
-        UseMiddleware(async (ctx, next) =>
+        Use(async (ctx, next) =>
         {
             ctx.Command = ParseCommand(ctx);
             await next();
@@ -118,8 +118,8 @@ public sealed partial class FlandreApp
         Command? ParseCommand(MiddlewareContext ctx)
         {
             // 1. 检查 StringShortcut 中是否有匹配项
-            // 3. 检查 RegexShortcut 中是否有匹配项
-            // 4. 常规匹配指令
+            // 2. 检查 RegexShortcut 中是否有匹配项
+            // 3. 常规匹配指令
 
             var cmdService = Services.GetRequiredService<CommandService>();
 
@@ -199,7 +199,7 @@ public sealed partial class FlandreApp
         if (CheckMiddlewareUsed(nameof(UseCommandInvoker)))
             return this;
 
-        UseMiddleware(async (ctx, next) =>
+        Use(async (ctx, next) =>
         {
             ctx.Response = await InvokeCommand(ctx) ?? ctx.Response;
             await next();
@@ -218,8 +218,13 @@ public sealed partial class FlandreApp
                 return result.ErrorText!;
 
             // ctx.Service is a service scope
-            var plugin = (Plugin)ctx.Services.GetRequiredService(ctx.Command.PluginType);
-            var pluginLogger = (ILogger)Services.GetRequiredService(plugin.LoggerType);
+            // 如果 plugin 是 null，那么这个指令方法是个闭包
+            var plugin = ctx.Command.PluginType is not null
+                ? (Plugin)ctx.Services.GetRequiredService(ctx.Command.PluginType)
+                : null;
+            var logger = plugin is not null
+                ? (ILogger)Services.GetRequiredService(plugin.LoggerType)
+                : Logger;
 
             var invocationCancelled = false;
             if (OnCommandInvoking is not null)
@@ -237,12 +242,12 @@ public sealed partial class FlandreApp
             Exception? ex = null;
             try
             {
-                content = await ctx.Command.InvokeAsync(plugin, cmdCtx, result, pluginLogger);
+                content = await ctx.Command.InvokeAsync(plugin, cmdCtx, result, logger);
             }
             catch (Exception e)
             {
                 ex = e.InnerException ?? e;
-                pluginLogger.LogError(ex, "Error occurred in {CommandPath}", ctx.Command.FullName);
+                logger.LogError(ex, "Error occurred in {CommandPath}", ctx.Command.FullName);
             }
 
             OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ex, content));

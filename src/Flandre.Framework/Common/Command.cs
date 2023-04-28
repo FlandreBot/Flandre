@@ -1,7 +1,9 @@
+using System.ComponentModel;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Flandre.Core.Messaging;
 using Flandre.Framework.Attributes;
+using Flandre.Framework.Routing;
 using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
@@ -31,8 +33,17 @@ public sealed class Command
 
     internal List<CommandShortcut> Shortcuts { get; } = new();
 
+    /// <summary>
+    /// 调用指令方法的目标。如果不为 null 代表该方法是一个委托，否则为指令方法。
+    /// </summary>
+    internal object? InvokeTarget { get; private set; }
+
+    /// <summary>
+    /// 调用指令方法的目标。如果为 null 代表该方法是一个委托，否则为指令方法。
+    /// </summary>
+    internal Type? PluginType { get; }
+
     internal MethodInfo? InnerMethod { get; private set; }
-    internal Type PluginType { get; }
 
     internal bool IsObsolete { get; set; }
     internal string? ObsoleteMessage { get; set; }
@@ -40,12 +51,49 @@ public sealed class Command
 
     private readonly CommandNode _currentNode;
 
-    internal Command(CommandNode currentNode, Type pluginType, string name, string fullName)
+    internal Command(CommandNode currentNode, Type? pluginType, string name, string fullName)
     {
         _currentNode = currentNode;
         PluginType = pluginType;
         Name = name;
         FullName = fullName;
+    }
+
+    private void InferFromMethod(MethodBase method)
+    {
+        Options.Clear();
+        Parameters.Clear();
+
+        foreach (var param in method.GetParameters())
+        {
+            if (param.ParameterType.IsAssignableFrom(typeof(CommandContext)))
+                continue;
+
+            var description = param.GetCustomAttribute<DescriptionAttribute>()?.Description;
+
+            if (param.GetCustomAttribute<OptionAttribute>() is { } optAttr)
+            {
+                // option
+                var paramType = param.ParameterType;
+
+                Options.Add(new CommandOption(param.Name!, optAttr.ShortName, paramType,
+                    param.HasDefaultValue // 如果 option 定义了默认值
+                        ? param.DefaultValue! // 则使用定义的默认值
+                        // 否则使用 default(T)
+                        : param.ParameterType.IsValueType
+                            ? Activator.CreateInstance(paramType)
+                            : null) { Description = description });
+                continue;
+            }
+
+            // parameter
+            Parameters.Add(new CommandParameter(param.Name!, param.ParameterType,
+                param.HasDefaultValue ? param.DefaultValue : null,
+                param.ParameterType.IsArray && param.GetCustomAttribute<ParamArrayAttribute>() is not null)
+            {
+                Description = description
+            });
+        }
     }
 
     #region FluentAPI
@@ -79,15 +127,22 @@ public sealed class Command
         return this;
     }
 
+    internal Command WithAction(MethodInfo methodInfo, object? target = null)
+    {
+        InnerMethod = methodInfo;
+        InvokeTarget = target;
+        InferFromMethod(InnerMethod);
+        return this;
+    }
+
     /// <summary>
     /// 添加指令方法
     /// </summary>
-    /// <param name="methodInfo"></param>
+    /// <param name="commandDelegate"></param>
     /// <returns></returns>
-    public Command WithAction(MethodInfo methodInfo)
+    public Command WithAction(Delegate commandDelegate)
     {
-        InnerMethod = methodInfo;
-        return this;
+        return WithAction(commandDelegate.Method, commandDelegate.Target);
     }
 
     /// <summary>
@@ -97,12 +152,13 @@ public sealed class Command
     /// <returns></returns>
     public Command AddSubCommand(string path)
     {
-        return _currentNode.AddCommand(PluginType, path);
+        return _currentNode.MapCommand(PluginType, path);
     }
 
     #endregion
 
-    internal async Task<MessageContent?> InvokeAsync(Plugin plugin, CommandContext ctx,
+    internal async Task<MessageContent?> InvokeAsync(
+        Plugin? plugin, CommandContext ctx,
         CommandParser.CommandParseResult parsed, ILogger logger)
     {
         if (InnerMethod is null)
@@ -146,7 +202,14 @@ public sealed class Command
         //         plugin.GetType().Name, InnerMethod?.Name);
         // }
 
-        var cmdResult = InnerMethod?.Invoke(plugin, args.ToArray());
+        var target = plugin ?? InvokeTarget;
+        if (target is null)
+        {
+            logger.LogError("指令 {CommandFullName} 调用失败，非插件指令需要有调用目标。", FullName);
+            return null;
+        }
+
+        var cmdResult = InnerMethod?.Invoke(target, args.ToArray());
         var content = cmdResult switch
         {
             MessageContent mc => mc,

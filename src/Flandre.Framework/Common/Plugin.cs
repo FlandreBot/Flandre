@@ -27,9 +27,14 @@ public abstract class Plugin
     /// <summary>
     /// 加载插件时调用
     /// </summary>
-    /// <param name="ctx"></param>
     /// <returns></returns>
-    public virtual Task OnLoadingAsync(PluginLoadContext ctx) => Task.CompletedTask;
+    public virtual Task OnLoadingAsync() => Task.CompletedTask;
+
+    /// <summary>
+    /// 卸载插件时调用
+    /// </summary>
+    /// <returns></returns>
+    public virtual Task OnUnloadingAsync() => Task.CompletedTask;
 
     /// <summary>
     /// 处理消息事件

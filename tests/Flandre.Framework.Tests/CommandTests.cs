@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Text;
 using Flandre.Core.Common;
+using Flandre.Framework.Routing;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -88,9 +89,9 @@ public class CommandTests
 
         var service = app.Services.GetRequiredService<CommandService>();
 
-        Assert.Equal(7, service.RootCommandNode.CountCommands());
-
         await app.StartWithDefaultsAsync();
+
+        Assert.Equal(7, service.RootCommandNode.CountCommands()); 
 
         MessageContent? content;
 
@@ -142,6 +143,31 @@ public class CommandTests
     }
 
     [Fact]
+    public async Task TestMapCommand()
+    {
+        var adapter = new MockAdapter();
+        var client = adapter.GetFriendClient();
+
+        var builder = FlandreApp.CreateBuilder();
+        builder.Adapters.Add(adapter);
+
+        using var app = builder.Build();
+
+        app.MapCommand("test1", (int a, int b) => a + b);
+        app.MapCommand("test2.sub", (int x) => Math.Pow(x, 2));
+
+        await app.StartWithDefaultsAsync();
+
+        var content = await client.SendMessageForReply("test1 123 456");
+        Assert.Equal("579", content?.GetText());
+
+        content = await client.SendMessageForReply("test2 sub 12");
+        Assert.Equal("144", content?.GetText());
+
+        await app.StopAsync();
+    }
+
+    [Fact]
     public async Task TestArrayParameter()
     {
         var adapter = new MockAdapter();
@@ -161,11 +187,13 @@ public class CommandTests
     }
 
     [Fact]
-    public void TestInformalAttributes()
+    public async Task TestInformalAttributes()
     {
         var builder = FlandreApp.CreateBuilder();
         builder.Plugins.Add<TestPlugin>();
         using var app = builder.Build();
+
+        await app.StartWithDefaultsAsync();
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
@@ -175,5 +203,7 @@ public class CommandTests
         Assert.True(cmdService.RootCommandNode.FindSubNode("test2")?.Command?.IsObsolete);
         Assert.Equal("This command is obsoleted.",
             cmdService.RootCommandNode.FindSubNode("test2")?.Command?.ObsoleteMessage);
+
+        await app.StopAsync();
     }
 }
