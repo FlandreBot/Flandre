@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Title>Flandre.Adapters.OneBot.Extensions</Title>
+        <PackageVersion>1.0.0</PackageVersion>
+        <Authors>FlandreDevs,bsdayo</Authors>
+        <Description>Flandre.Framework extensions for Flandre.Adapters.OneBot.</Description>
+        <PackageTags>bot;chatbot;flandre;adapter;onebot;extensions</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>avatar.jpg</PackageIcon>
+
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <PackageProjectUrl>https://github.com/FlandreDevs/Flandre</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/FlandreDevs/Flandre.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Copyright>FlandreDevs (C) 2022-2023</Copyright>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Flandre.Adapters.OneBot\Flandre.Adapters.OneBot.csproj" />
+      <ProjectReference Include="..\Flandre.Framework\Flandre.Framework.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="../../assets/avatar.jpg" Pack="true" PackagePath="/"/>
+    </ItemGroup>
+    
+</Project>

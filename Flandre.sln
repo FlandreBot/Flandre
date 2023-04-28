@@ -36,6 +36,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Discord", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordAdapterTest", "temp\DiscordAdapterTest\DiscordAdapterTest.csproj", "{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Konata.Extensions", "src\Flandre.Adapters.Konata.Extensions\Flandre.Adapters.Konata.Extensions.csproj", "{3BEF4654-51CB-47FA-9197-698F3B8B23BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.OneBot.Extensions", "src\Flandre.Adapters.OneBot.Extensions\Flandre.Adapters.OneBot.Extensions.csproj", "{3F5443F7-2B58-42E7-A5D6-8E88594724E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +94,14 @@ Global
 		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BEF4654-51CB-47FA-9197-698F3B8B23BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BEF4654-51CB-47FA-9197-698F3B8B23BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BEF4654-51CB-47FA-9197-698F3B8B23BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BEF4654-51CB-47FA-9197-698F3B8B23BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F5443F7-2B58-42E7-A5D6-8E88594724E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F5443F7-2B58-42E7-A5D6-8E88594724E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F5443F7-2B58-42E7-A5D6-8E88594724E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F5443F7-2B58-42E7-A5D6-8E88594724E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

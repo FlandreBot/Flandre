@@ -85,6 +85,30 @@ jobs:
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
       
+      # ===== Adapter Extensions =====
+
+      - name: Publish Adapters.Konata.Extensions
+        id: publish-adapter-konata-extensions
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.Konata.Extensions/Flandre.Adapters.Konata.Extensions.csproj
+          PACKAGE_NAME: Flandre.Adapters.Konata.Extensions
+          VERSION_FILE_PATH: src/Flandre.Adapters.Konata.Extensions/Flandre.Adapters.Konata.Extensions.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+      - name: Publish Adapters.OneBot.Extensions
+        id: publish-adapter-onebot-extensions
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.OneBot.Extensions/Flandre.Adapters.OneBot.Extensions.csproj
+          PACKAGE_NAME: Flandre.Adapters.OneBot.Extensions
+          VERSION_FILE_PATH: src/Flandre.Adapters.OneBot.Extensions/Flandre.Adapters.OneBot.Extensions.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      
       # ===== Reactive Extensions =====
 
       - name: Publish Core.Reactive
