@@ -80,7 +80,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
         foreach (var pluginType in _pluginTypes)
         {
             using var scope = Services.CreateScope();
-            var loadCtx = new PluginLoadContext(pluginType, scope.ServiceProvider);
+            var loadCtx = new PluginCommandLoader(pluginType, scope.ServiceProvider);
             var plugin = (Plugin)scope.ServiceProvider.GetRequiredService(pluginType);
 
             loadCtx.LoadFromAttributes();
