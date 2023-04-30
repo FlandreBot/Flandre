@@ -11,29 +11,19 @@ namespace Flandre.Framework.Common;
 /// <summary>
 /// 读取指令的上下文
 /// </summary>
-internal sealed class PluginLoadContext
+internal sealed class PluginCommandLoader
 {
     private readonly CommandService _cmdService;
     private readonly Type _pluginType;
-    private readonly ILogger<PluginLoadContext> _logger;
+    private readonly ILogger<PluginCommandLoader> _logger;
 
     /// <param name="pluginType">如果为 null，代表将要加载一个闭包</param>
     /// <param name="services"></param>
-    internal PluginLoadContext(Type pluginType, IServiceProvider services)
+    internal PluginCommandLoader(Type pluginType, IServiceProvider services)
     {
         _pluginType = pluginType;
         _cmdService = services.GetRequiredService<CommandService>();
-        _logger = services.GetRequiredService<ILogger<PluginLoadContext>>();
-    }
-
-    /// <summary>
-    /// 添加指令
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public Command MapCommand(string path)
-    {
-        return _cmdService.RootCommandNode.MapCommand(_pluginType, path);
+        _logger = services.GetRequiredService<ILogger<PluginCommandLoader>>();
     }
 
     #region Internal Processing
@@ -47,7 +37,8 @@ internal sealed class PluginLoadContext
             if (cmdAttr is null)
                 continue;
 
-            var cmd = MapCommand(cmdAttr.FullName ?? method.Name).WithAction(method);
+            var cmd = _cmdService.RootCommandNode.MapCommand(_pluginType, cmdAttr.FullName ?? method.Name)
+                .WithAction(method);
 
             foreach (var alias in cmdAttr.Aliases)
                 cmd.AddAlias(alias);
