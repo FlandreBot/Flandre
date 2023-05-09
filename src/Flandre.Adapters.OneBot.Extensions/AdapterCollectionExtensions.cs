@@ -49,4 +49,3 @@ public static class AdapterCollectionExtensions
         adapters.Add(new OneBotAdapter(config));
     }
 }
-

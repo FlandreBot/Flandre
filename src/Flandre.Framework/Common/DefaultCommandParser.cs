@@ -7,12 +7,12 @@ namespace Flandre.Framework.Common;
 internal class DefaultCommandParser : ICommandParser
 {
     private readonly CommandService _service;
-    
+
     public DefaultCommandParser(CommandService service)
     {
         _service = service;
     }
-    
+
     /// <summary>
     /// 解析指令文本的参数及选项部分
     /// </summary>

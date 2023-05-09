@@ -1,6 +1,4 @@
-﻿using Flandre.Framework.Extensions;
-
-namespace Flandre.Framework.Tests;
+﻿namespace Flandre.Framework.Tests;
 
 public class SessionTests
 {

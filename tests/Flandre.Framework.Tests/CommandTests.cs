@@ -29,7 +29,8 @@ public class CommandTests
         [Command("test2", "..test111.11...45.14.")]
         [Obsolete("This command is obsoleted.")]
         public static string Test2(int arg1, float arg2, CommandContext ctx,
-            [Option] bool opt1 = true, [Option(ShortName = 'o')] bool opt2 = false)
+            [Option]
+            bool opt1 = true, [Option(ShortName = 'o')] bool opt2 = false)
         {
             return $"{arg1} {arg2} {opt1} {opt2}";
         }
@@ -91,7 +92,7 @@ public class CommandTests
 
         await app.StartWithDefaultsAsync();
 
-        Assert.Equal(7, service.RootCommandNode.CountCommands()); 
+        Assert.Equal(7, service.RootCommandNode.CountCommands());
 
         MessageContent? content;
 

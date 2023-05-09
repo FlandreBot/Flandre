@@ -9,7 +9,7 @@ public sealed class CommandParseResult
     /// 参数解析结果
     /// </summary>
     public List<object?> ParsedArguments { get; } = new();
-    
+
     /// <summary>
     /// 选项解析结果（选项名-值）
     /// </summary>
