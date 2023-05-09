@@ -1,5 +1,6 @@
 ﻿// ReSharper disable StringLiteralTypo
 
+using Flandre.Framework.Routing;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;
 

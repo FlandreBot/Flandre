@@ -2,21 +2,39 @@ using Flandre.Framework.Common;
 
 namespace Flandre.Framework.Routing;
 
-internal sealed class CommandNode
+/// <summary>
+/// 指令节点
+/// </summary>
+public sealed class CommandNode
 {
+    /// <summary>
+    /// 以 . 分割的指令完整路径
+    /// </summary>
     public string FullName { get; }
 
+    /// <summary>
+    /// 指令对象，如果该节点不包含指令则为 null
+    /// </summary>
     public Command? Command { get; internal set; }
 
+    /// <summary>
+    /// 子节点
+    /// </summary>
     public Dictionary<string, CommandNode> SubNodes { get; } = new();
 
+    /// <summary>
+    /// 当前节点包含指令
+    /// </summary>
     public bool HasCommand => Command is not null;
 
+    /// <summary>
+    /// 当前指令节点为某个指令的别名
+    /// </summary>
     public bool IsAlias { get; internal set; }
 
-    public CommandNode(string fullName) => FullName = fullName;
+    internal CommandNode(string fullName) => FullName = fullName;
 
-    public Command MapCommand(Type? pluginType, string relativePath)
+    internal Command MapCommand(Type? pluginType, string relativePath)
     {
         var segments = relativePath.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         var currentNode = this;
@@ -35,32 +53,13 @@ internal sealed class CommandNode
         return command;
     }
 
-    public CommandNode? FindSubNode(string relativePath)
+    /// <summary>
+    /// 移除本身节点所含指令，并清除所有子节点
+    /// </summary>
+    public void Clear()
     {
-        var node = this;
-        foreach (var name in relativePath.Split('.',
-                     StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            if (node.SubNodes.Keys.FirstOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase)) is { } key)
-                node = node.SubNodes[key];
-            else
-                return null;
-
-        return node;
-    }
-
-    public int CountCommands()
-    {
-        var count = 0;
-
-        void CountNodeCommands(CommandNode node)
-        {
-            if (node is { HasCommand: true, IsAlias: false })
-                count++;
-            foreach (var (_, subNode) in node.SubNodes)
-                CountNodeCommands(subNode);
-        }
-
-        CountNodeCommands(this);
-        return count;
+        Command = null;
+        IsAlias = false;
+        SubNodes.Clear();
     }
 }

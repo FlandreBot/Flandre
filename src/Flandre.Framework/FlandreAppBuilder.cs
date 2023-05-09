@@ -3,6 +3,7 @@ using Flandre.Framework.Common;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -73,7 +74,7 @@ public sealed class FlandreAppBuilder
 
     private void AddInfrastructure()
     {
-        Services.AddSingleton<CommandService>();
+        Services.AddSingleton(new CommandService());
     }
 
     /// <summary>
@@ -130,6 +131,7 @@ public sealed class FlandreAppBuilder
     /// </summary>
     public FlandreApp Build()
     {
+        Services.TryAddSingleton<ICommandParser, DefaultCommandParser>();
         var app = new FlandreApp(_hostAppBuilder.Build(),
             _pluginCollection.PluginTypes,
             _adapterCollection.Adapters);

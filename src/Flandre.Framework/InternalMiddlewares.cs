@@ -212,10 +212,12 @@ public sealed partial class FlandreApp
             if (ctx.Command is null || ctx.CommandStringParser is null)
                 return null;
 
-            var cmdService = Services.GetRequiredService<CommandService>();
+            var cmdParser = Services.GetRequiredService<ICommandParser>();
 
-            if (!ctx.Command.TryParse(ctx.CommandStringParser, cmdService, out var result))
-                return result.ErrorText!;
+            var parseResult = cmdParser.Parse(ctx.Command, ctx.CommandStringParser);
+
+            if (parseResult.ErrorMessage is not null)
+                return parseResult.ErrorMessage;
 
             // ctx.Service is a service scope
             // 如果 plugin 是 null，那么这个指令方法是个闭包
@@ -242,7 +244,7 @@ public sealed partial class FlandreApp
             Exception? ex = null;
             try
             {
-                content = await ctx.Command.InvokeAsync(plugin, cmdCtx, result, logger);
+                content = await ctx.Command.InvokeAsync(plugin, cmdCtx, parseResult, logger);
             }
             catch (Exception e)
             {

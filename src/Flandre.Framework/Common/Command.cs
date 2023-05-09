@@ -23,8 +23,8 @@ public sealed class Command
     /// </summary>
     public string FullName { get; }
 
-    internal List<CommandParameter> Parameters { get; set; } = new();
-    internal List<CommandOption> Options { get; set; } = new();
+    internal List<CommandParameter> Parameters { get; } = new();
+    internal List<CommandOption> Options { get; } = new();
 
     /// <summary>
     /// Contains alias command path
@@ -159,7 +159,7 @@ public sealed class Command
 
     internal async Task<MessageContent?> InvokeAsync(
         Plugin? plugin, CommandContext ctx,
-        CommandParser.CommandParseResult parsed, ILogger logger)
+        CommandParseResult parsed, ILogger logger)
     {
         if (InnerMethod is null)
             return null;

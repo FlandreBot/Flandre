@@ -6,21 +6,19 @@ namespace Flandre.Framework.Services;
 
 internal sealed class CommandService
 {
-    // Properties are initialized in Reset()
+    public CommandNode RootCommandNode { get; } = new("");
 
-    public CommandNode RootCommandNode { get; private set; } = null!;
+    public Dictionary<StringShortcut, Command> StringShortcuts { get; } = new();
 
-    public Dictionary<StringShortcut, Command> StringShortcuts { get; private set; } = null!;
+    public Dictionary<RegexShortcut, Command> RegexShortcuts { get; } = new();
 
-    public Dictionary<RegexShortcut, Command> RegexShortcuts { get; private set; } = null!;
+    internal Dictionary<Type, string> TypeFriendlyNames { get; } = new();
 
-    public Dictionary<Type, TypeResolverDelegate> TypeResolvers { get; private set; } = null!;
+    internal Dictionary<Type, TypeResolverDelegate> TypeResolvers { get; } = new();
 
-    public Dictionary<Type, string> TypeFriendlyNames { get; private set; } = null!;
-
-    public CommandService()
+    internal CommandService()
     {
-        Reset();
+        AddInternalTypeResolvers();
     }
 
     public void MapTypeResolver<T>(string? typeFriendlyName, TypeResolverDelegate<T> resolver)
@@ -53,13 +51,13 @@ internal sealed class CommandService
             : type.Name;
     }
 
-    public void Reset()
+    internal void Reset()
     {
-        RootCommandNode = new CommandNode("");
-        StringShortcuts = new Dictionary<StringShortcut, Command>();
-        RegexShortcuts = new Dictionary<RegexShortcut, Command>();
-        TypeResolvers = new Dictionary<Type, TypeResolverDelegate>();
-        TypeFriendlyNames = new Dictionary<Type, string>();
+        RootCommandNode.Clear();
+        StringShortcuts.Clear();
+        RegexShortcuts.Clear();
+        TypeFriendlyNames.Clear();
+        TypeResolvers.Clear();
         AddInternalTypeResolvers();
     }
 

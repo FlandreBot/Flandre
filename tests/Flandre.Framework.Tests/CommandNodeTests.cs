@@ -1,4 +1,5 @@
-﻿using Flandre.Framework.Services;
+﻿using Flandre.Framework.Routing;
+using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Flandre.Framework.Tests;

@@ -4,28 +4,24 @@ using Flandre.Framework.Services;
 
 namespace Flandre.Framework.Common;
 
-internal static class CommandParser
+internal class DefaultCommandParser : ICommandParser
 {
-    internal sealed class CommandParseResult
+    private readonly CommandService _service;
+    
+    public DefaultCommandParser(CommandService service)
     {
-        public List<object?> ParsedArguments { get; } = new();
-        public Dictionary<string, object?> ParsedOptions { get; } = new();
-
-        public string? ErrorText { get; internal set; }
+        _service = service;
     }
-
+    
     /// <summary>
     /// 解析指令文本的参数及选项部分
     /// </summary>
     /// <param name="command">解析目标指令</param>
-    /// <param name="parser">包含余下内容的 <see cref="StringParser"/></param>
-    /// <param name="service"></param>
-    /// <param name="result">消息解析内容</param>
-    /// <returns>解析是否成功完成</returns>
-    public static bool TryParse(this Command command, StringParser parser, CommandService service,
-        out CommandParseResult result)
+    /// <param name="parser">包含参数及选项部分的 <see cref="StringParser"/></param>
+    /// <returns>解析结果</returns>
+    public CommandParseResult Parse(Command command, StringParser parser)
     {
-        result = new CommandParseResult();
+        var result = new CommandParseResult();
 
         var argIndex = 0;
         var providedArgs = new List<string>();
@@ -52,8 +48,7 @@ internal static class CommandParser
                 var option = command.Options.FirstOrDefault(opt => opt.Name == optName);
                 if (option is null)
                 {
-                    result.ErrorText = $"未知选项：{optName}";
-                    return false;
+                    return result.SetError($"未知选项：{optName}");
                 }
 
                 if (option.Type == typeof(bool))
@@ -62,11 +57,11 @@ internal static class CommandParser
                 }
                 else
                 {
-                    if (service.TryParseArgumentValue(option.Type,
+                    if (_service.TryParseArgumentValue(option.Type,
                             parser.SkipWhiteSpaces().ReadToWhiteSpace(), out var obj))
                         result.ParsedOptions[option.Name] = obj;
                     else
-                        return TypeNotMatch(result, option, service);
+                        return result.SetError(TypeNotMatch(option, _service));
                 }
             }
             else if (peek.StartsWith('-')) // option (short)
@@ -82,8 +77,7 @@ internal static class CommandParser
                     var option = command.Options.FirstOrDefault(opt => opt.HasShortName && opt.ShortName == optName);
                     if (option is null)
                     {
-                        result.ErrorText = $"未知选项：{optName}";
-                        return false;
+                        return result.SetError($"未知选项：{optName}");
                     }
 
                     if (option.Type == typeof(bool))
@@ -92,16 +86,16 @@ internal static class CommandParser
                     {
                         // 由于只能赋值给最后一个短选项，前面的必须为 bool
                         if (i < opts.Length - 1)
-                            return TypeNotMatch(result, option, service);
+                            return result.SetError(TypeNotMatch(option, _service));
 
                         var nextArg = parser.ReadToWhiteSpace();
 
                         if (option.Type == typeof(string))
                             result.ParsedOptions[option.Name] = parser.ReadQuoted();
-                        else if (service.TryParseArgumentValue(option.Type, nextArg, out var obj))
+                        else if (_service.TryParseArgumentValue(option.Type, nextArg, out var obj))
                             result.ParsedOptions[option.Name] = obj;
                         else
-                            return TypeNotMatch(result, option, service);
+                            return result.SetError(TypeNotMatch(option, _service));
                     }
                 }
             }
@@ -109,8 +103,7 @@ internal static class CommandParser
             {
                 if (argIndex >= command.Parameters.Count)
                 {
-                    result.ErrorText = "参数过多，请检查指令格式。";
-                    return false;
+                    result.SetError("参数过多，请检查指令格式。");
                 }
 
                 var param = command.Parameters[argIndex];
@@ -121,7 +114,7 @@ internal static class CommandParser
                     var list = new ArrayList();
 
                     while (!parser.IsEnd &&
-                           service.TryParseArgumentValue(elemType,
+                           _service.TryParseArgumentValue(elemType,
                                elemType == typeof(string) ? parser.PeekQuoted() : parser.PeekToWhiteSpace(),
                                out var obj))
                     {
@@ -136,10 +129,10 @@ internal static class CommandParser
                 }
                 else if (param.Type == typeof(string))
                     result.ParsedArguments.Add(parser.ReadQuoted());
-                else if (service.TryParseArgumentValue(param.Type, parser.ReadToWhiteSpace(), out var obj))
+                else if (_service.TryParseArgumentValue(param.Type, parser.ReadToWhiteSpace(), out var obj))
                     result.ParsedArguments.Add(obj);
                 else
-                    return TypeNotMatch(result, param, service);
+                    return result.SetError(TypeNotMatch(param, _service));
 
                 providedArgs.Add(param.Name);
                 ++argIndex;
@@ -153,8 +146,7 @@ internal static class CommandParser
             var provided = providedArgs.Contains(param.Name);
             if (param.IsRequired && !provided)
             {
-                result.ErrorText = $"参数 {param.Name} 缺失。";
-                return false;
+                return result.SetError($"参数 {param.Name} 缺失。");
             }
 
             if (param.IsRequired || provided)
@@ -163,21 +155,18 @@ internal static class CommandParser
         }
 
         foreach (var opt in command.Options)
-            if (!result.ParsedOptions.ContainsKey(opt.Name))
-                result.ParsedOptions[opt.Name] = opt.DefaultValue;
+            result.ParsedOptions.TryAdd(opt.Name, opt.DefaultValue);
 
-        return true;
+        return result;
     }
 
-    private static bool TypeNotMatch(CommandParseResult res, CommandOption option, CommandService service)
+    private static string TypeNotMatch(CommandOption option, CommandService service)
     {
-        res.ErrorText = $"选项 {option.Name} 类型错误，应提供一个{service.GetTypeFriendlyName(option.Type)}。";
-        return false;
+        return $"选项 {option.Name} 类型错误，应提供一个{service.GetTypeFriendlyName(option.Type)}。";
     }
 
-    private static bool TypeNotMatch(CommandParseResult res, CommandParameter param, CommandService service)
+    private static string TypeNotMatch(CommandParameter param, CommandService service)
     {
-        res.ErrorText = $"参数 {param.Name} 类型错误，应提供一个{service.GetTypeFriendlyName(param.Type)}。";
-        return false;
+        return $"参数 {param.Name} 类型错误，应提供一个{service.GetTypeFriendlyName(param.Type)}。";
     }
 }
