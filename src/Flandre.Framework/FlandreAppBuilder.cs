@@ -68,7 +68,7 @@ public sealed class FlandreAppBuilder
     {
         _hostAppBuilder = new HostApplicationBuilder(settings);
         _adapterCollection = new AdapterCollection(Services);
-        _pluginCollection = new PluginCollection(Services);
+        _pluginCollection = new PluginCollection(Services, Configuration);
         AddInfrastructure();
     }
 
