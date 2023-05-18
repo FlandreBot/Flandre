@@ -241,18 +241,16 @@ public sealed partial class FlandreApp
 
             var cmdCtx = new CommandContext(ctx.App, ctx.Bot, ctx.Message);
             MessageContent? content = null;
-            Exception? ex = null;
             try
             {
                 content = await ctx.Command.InvokeAsync(plugin, cmdCtx, parseResult, logger);
             }
             catch (Exception e)
             {
-                ex = e.InnerException ?? e;
-                logger.LogError(ex, "Error occurred in {CommandPath}", ctx.Command.FullName);
+                ctx.Exception = e.InnerException ?? e;
             }
 
-            OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ex, content));
+            OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ctx.Exception, content));
             return content;
         }
     }

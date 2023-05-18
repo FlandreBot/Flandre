@@ -33,7 +33,7 @@ public sealed class MiddlewareContext : MessageContext
     public Command? Command { get; internal set; }
 
     /// <summary>
-    /// 触发指令时的错误。如果指令成功触发，则该项为 null
+    /// 执行指令产生的异常。如果指令成功执行，则该项为 null
     /// </summary>
     public Exception? Exception { get; internal set; }
 

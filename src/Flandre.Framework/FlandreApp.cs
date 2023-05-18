@@ -131,6 +131,9 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
                 var middlewareCtx = new MiddlewareContext(this, bot, e.Message, null);
                 await ExecuteMiddlewareAsync(middlewareCtx, 0); // Wait for all middleware's execution
                 middlewareCtx.ServiceScope.Dispose();
+                if (middlewareCtx.Exception is { } ex)
+                    Logger.LogError(ex, "Error occurred while invoking command {CommandName}",
+                        middlewareCtx.Command?.FullName);
                 if (middlewareCtx.Response is not null)
                     await bot.SendMessageAsync(e.Message, middlewareCtx.Response);
             });
