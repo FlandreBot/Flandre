@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Framework.Reactive</Title>
-        <PackageVersion>1.0.0-rc.2</PackageVersion>
+        <PackageVersion>1.0.0-rc.10</PackageVersion>
         <Authors>FlandreDevs,bsdayo</Authors>
         <Description>Reactive Extensions (Rx.NET) support for Flandre.Framework.</Description>
         <PackageTags>flandre;rx.net;reactive</PackageTags>

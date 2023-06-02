@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Core</Title>
-        <PackageVersion>1.0.0-rc.2</PackageVersion>
+        <PackageVersion>1.0.0-rc.3</PackageVersion>
         <Authors>FlandreDevs,bsdayo</Authors>
         <Description>跨平台聊天机器人框架核心，提供基本交互操作，容易嵌入到已有项目中。</Description>
         <PackageTags>bot;chatbot;flandre</PackageTags>

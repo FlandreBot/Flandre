@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Flandre.Adapters.Discord</Title>
-        <PackageVersion>0.1.0</PackageVersion>
+        <PackageVersion>0.1.1</PackageVersion>
         <Authors>FlandreDevs,bsdayo</Authors>
         <Description>Discord adapter for Flandre project, based on Discord.Net.</Description>
         <PackageTags>bot;chatbot;flandre;adapter;discord</PackageTags>
