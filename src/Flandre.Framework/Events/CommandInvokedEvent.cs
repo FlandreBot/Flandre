@@ -7,7 +7,7 @@ namespace Flandre.Framework.Events;
 /// <summary>
 /// 触发指令事件
 /// </summary>
-public class CommandInvokedEvent : BaseEvent
+public class CommandInvokedEvent : FlandreEvent
 {
     /// <summary>
     /// 将触发的指令

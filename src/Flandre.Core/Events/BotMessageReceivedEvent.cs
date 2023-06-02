@@ -5,7 +5,7 @@ namespace Flandre.Core.Events;
 /// <summary>
 /// 消息接收事件
 /// </summary>
-public class BotMessageReceivedEvent : BaseEvent
+public class BotMessageReceivedEvent : FlandreEvent
 {
     /// <summary>
     /// 接收到的消息

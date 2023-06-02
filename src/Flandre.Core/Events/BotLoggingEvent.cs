@@ -5,7 +5,7 @@ namespace Flandre.Core.Events;
 /// <summary>
 /// Bot 日志记录事件
 /// </summary>
-public class BotLoggingEvent : BaseEvent
+public class BotLoggingEvent : FlandreEvent
 {
     /// <summary>
     /// 日志等级

@@ -3,7 +3,7 @@
 /// <summary>
 /// bot 收到 Guild 邀请事件
 /// </summary>
-public class BotGuildInvitedEvent : BaseEvent
+public class BotGuildInvitedEvent : FlandreEvent
 {
     /// <summary>
     /// Guild 名称

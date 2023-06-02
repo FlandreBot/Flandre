@@ -35,16 +35,16 @@ public sealed class KonataBot : FlandreBot
     private readonly KonataBotConfig _config;
 
     /// <inheritdoc />
-    public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
+    public override event BotEventHandler<BotMessageReceivedEvent>? MessageReceived;
 
     /// <inheritdoc />
-    public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
+    public override event BotEventHandler<BotGuildInvitedEvent>? GuildInvited;
 
     /// <inheritdoc />
-    public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
+    public override event BotEventHandler<BotGuildJoinRequestedEvent>? GuildJoinRequested;
 
     /// <inheritdoc />
-    public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
+    public override event BotEventHandler<BotFriendRequestedEvent>? FriendRequested;
 
     internal KonataBot(KonataBotConfig config)
     {
@@ -232,32 +232,32 @@ public sealed class KonataBot : FlandreBot
 
     private void InternalOnFriendMessage(KonataInternalBot bot, FriendMessageEvent e)
     {
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage(Platform)));
+        MessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage(Platform)));
     }
 
     private void InternalOnGroupMessage(KonataInternalBot bot, GroupMessageEvent e)
     {
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage(Platform)));
+        MessageReceived?.Invoke(this, new BotMessageReceivedEvent(e.Message.ToFlandreMessage(Platform)));
     }
 
     private void InternalOnGroupInvite(KonataInternalBot bot, GroupInviteEvent e)
     {
-        OnGuildInvited?.Invoke(this, new BotGuildInvitedEvent(
+        GuildInvited?.Invoke(this, new BotGuildInvitedEvent(
             e.GroupName, e.GroupUin.ToString(),
-            e.InviterNick, e.InviterUin.ToString(), e.InviterIsAdmin) { EventMessage = e.Token });
+            e.InviterNick, e.InviterUin.ToString(), e.InviterIsAdmin) { EventPayload = e.Token });
     }
 
     private void InternalOnGroupRequestJoin(KonataInternalBot bot, GroupRequestJoinEvent e)
     {
-        OnGuildJoinRequested?.Invoke(this, new BotGuildJoinRequestedEvent(
+        GuildJoinRequested?.Invoke(this, new BotGuildJoinRequestedEvent(
             e.GroupName, e.GroupUin.ToString(),
-            e.ReqNick, e.ReqUin.ToString(), e.ReqComment) { EventMessage = e.Token });
+            e.ReqNick, e.ReqUin.ToString(), e.ReqComment) { EventPayload = e.Token });
     }
 
     private void InternalOnFriendRequest(KonataInternalBot bot, FriendRequestEvent e)
     {
-        OnFriendRequested?.Invoke(this, new BotFriendRequestedEvent(
-            e.ReqNick, e.ReqUin.ToString(), e.ReqComment) { EventMessage = e.Token });
+        FriendRequested?.Invoke(this, new BotFriendRequestedEvent(
+            e.ReqNick, e.ReqUin.ToString(), e.ReqComment) { EventPayload = e.Token });
     }
 
     private void InternalOnCaptcha(KonataInternalBot bot, CaptchaEvent e)
@@ -317,10 +317,10 @@ public sealed class KonataBot : FlandreBot
     {
         if (approve)
             await Internal.ApproveGroupInvitation(
-                uint.Parse(e.GuildId), uint.Parse(e.InviterId), (long)e.EventMessage!);
+                uint.Parse(e.GuildId), uint.Parse(e.InviterId), (long)e.EventPayload!);
         else
             await Internal.DeclineGroupInvitation(
-                uint.Parse(e.GuildId), uint.Parse(e.InviterId), (long)e.EventMessage!, comment ?? "");
+                uint.Parse(e.GuildId), uint.Parse(e.InviterId), (long)e.EventPayload!, comment ?? "");
     }
 
     /// <inheritdoc />
@@ -329,10 +329,10 @@ public sealed class KonataBot : FlandreBot
     {
         if (approve)
             await Internal.ApproveGroupRequestJoin(
-                uint.Parse(e.GuildId), uint.Parse(e.RequesterId), (long)e.EventMessage!);
+                uint.Parse(e.GuildId), uint.Parse(e.RequesterId), (long)e.EventPayload!);
         else
             await Internal.DeclineGroupRequestJoin(
-                uint.Parse(e.GuildId), uint.Parse(e.RequesterId), (long)e.EventMessage!, comment ?? "");
+                uint.Parse(e.GuildId), uint.Parse(e.RequesterId), (long)e.EventPayload!, comment ?? "");
     }
 
     /// <inheritdoc />
@@ -340,10 +340,10 @@ public sealed class KonataBot : FlandreBot
     {
         if (approve)
             await Internal.ApproveFriendRequest(
-                uint.Parse(e.RequesterId), (long)e.EventMessage!);
+                uint.Parse(e.RequesterId), (long)e.EventPayload!);
         else
             await Internal.DeclineFriendRequest(
-                uint.Parse(e.RequesterId), (long)e.EventMessage!);
+                uint.Parse(e.RequesterId), (long)e.EventPayload!);
     }
 
     #endregion

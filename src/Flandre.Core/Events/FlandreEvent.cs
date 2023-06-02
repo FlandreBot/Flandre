@@ -3,7 +3,7 @@
 /// <summary>
 /// 基础事件
 /// </summary>
-public class BaseEvent : EventArgs
+public abstract class FlandreEvent : EventArgs
 {
     /// <summary>
     /// 事件时间
@@ -11,11 +11,11 @@ public class BaseEvent : EventArgs
     public DateTime EventTime { get; init; }
 
     /// <summary>
-    /// 事件附带消息
+    /// 事件载荷
     /// </summary>
-    public object? EventMessage { get; init; }
+    public object? EventPayload { get; init; }
 
-    internal BaseEvent()
+    internal FlandreEvent()
     {
         EventTime = DateTime.Now;
     }

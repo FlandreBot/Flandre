@@ -126,7 +126,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
 
         foreach (var bot in _bots)
         {
-            bot.OnMessageReceived += (_, e) => Task.Run(async () =>
+            bot.MessageReceived += (_, e) => Task.Run(async () =>
             {
                 var middlewareCtx = new MiddlewareContext(this, bot, e.Message, null);
                 await ExecuteMiddlewareAsync(middlewareCtx, 0); // Wait for all middleware's execution
@@ -142,17 +142,17 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
 
             foreach (var pluginType in _pluginTypes)
             {
-                bot.OnGuildInvited += (_, e) => WithCatch(pluginType,
+                bot.GuildInvited += (_, e) => WithCatch(pluginType,
                     plugin => plugin.OnGuildInvitedAsync(ctx, e),
-                    nameof(bot.OnGuildInvited));
+                    nameof(bot.GuildInvited));
 
-                bot.OnGuildJoinRequested += (_, e) => WithCatch(pluginType,
+                bot.GuildJoinRequested += (_, e) => WithCatch(pluginType,
                     plugin => plugin.OnGuildJoinRequestedAsync(ctx, e),
-                    nameof(bot.OnFriendRequested));
+                    nameof(bot.FriendRequested));
 
-                bot.OnFriendRequested += (_, e) => WithCatch(pluginType,
+                bot.FriendRequested += (_, e) => WithCatch(pluginType,
                     plugin => plugin.OnFriendRequestedAsync(ctx, e),
-                    nameof(bot.OnFriendRequested));
+                    nameof(bot.FriendRequested));
             }
         }
 
@@ -161,7 +161,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
         {
             var adapterType = adapter.GetType();
             foreach (var bot in adapter.Bots)
-                bot.OnLogging += (_, e) =>
+                bot.Logging += (_, e) =>
                     Services.GetRequiredService<ILoggerFactory>()
                         .CreateLogger(adapterType.FullName ?? adapterType.Name)
                         // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
@@ -206,7 +206,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
     /// </summary>
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
-        OnStarting?.Invoke(this, new AppStartingEvent());
+        Starting?.Invoke(this, new AppStartingEvent());
         Logger.LogDebug("Starting app...");
 
         await LoadAllPluginsAsync();
@@ -225,7 +225,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
             "Total {PluginCount} plugins, {CommandCount} commands, {StringShortcutCount} string shortcuts, {RegexShortcutCount} regex shortcuts, {MiddlewareCount} middleware",
             _pluginTypes.Count, cmdService.RootCommandNode.CountCommands(),
             cmdService.StringShortcuts.Count, cmdService.RegexShortcuts.Count, _middleware.Count);
-        OnReady?.Invoke(this, new AppReadyEvent());
+        Ready?.Invoke(this, new AppReadyEvent());
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
         await Task.WhenAll(_adapters.Select(adapter => adapter.StopAsync()).ToArray());
         await _hostApp.StopAsync(cancellationToken);
         Logger.LogInformation("App stopped");
-        OnStopped?.Invoke(this, new AppStoppedEvent());
+        Stopped?.Invoke(this, new AppStoppedEvent());
     }
 
     /// <summary>

@@ -5,7 +5,7 @@ namespace Flandre.Framework.Events;
 /// <summary>
 /// 应用退出事件
 /// </summary>
-public sealed class AppStoppedEvent : BaseEvent
+public sealed class AppStoppedEvent : FlandreEvent
 {
     internal AppStoppedEvent()
     {

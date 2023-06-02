@@ -29,16 +29,16 @@ public sealed partial class DiscordBot : Bot
     private readonly DiscordBotConfig _config;
 
     /// <inheritdoc/>
-    public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
+    public override event BotEventHandler<BotMessageReceivedEvent>? MessageReceived;
 
     /// <inheritdoc/>
-    public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
+    public override event BotEventHandler<BotGuildInvitedEvent>? GuildInvited;
 
     /// <inheritdoc/>
-    public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
+    public override event BotEventHandler<BotGuildJoinRequestedEvent>? GuildJoinRequested;
 
     /// <inheritdoc/>
-    public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
+    public override event BotEventHandler<BotFriendRequestedEvent>? FriendRequested;
 
     internal DiscordBot(DiscordBotConfig config, string? proxy)
     {

@@ -186,20 +186,20 @@ public abstract class OneBotBot : Bot
     /// <inheritdoc />
     public override async Task HandleGuildInvitationAsync(BotGuildInvitedEvent e, bool approve, string? comment = null)
     {
-        await Internal.SetGroupAddRequest(e.EventMessage?.ToString()!, "invite", approve, comment ?? "");
+        await Internal.SetGroupAddRequest(e.EventPayload?.ToString()!, "invite", approve, comment ?? "");
     }
 
     /// <inheritdoc />
     public override async Task HandleGuildJoinRequestAsync(BotGuildJoinRequestedEvent e, bool approve,
         string? comment = null)
     {
-        await Internal.SetGroupAddRequest(e.EventMessage?.ToString()!, "add", approve, comment ?? "");
+        await Internal.SetGroupAddRequest(e.EventPayload?.ToString()!, "add", approve, comment ?? "");
     }
 
     /// <inheritdoc />
     public override async Task HandleFriendRequestAsync(BotFriendRequestedEvent e, bool approve, string? comment = null)
     {
-        await Internal.SetFriendAddRequest(e.EventMessage?.ToString()!, approve, comment ?? "");
+        await Internal.SetFriendAddRequest(e.EventPayload?.ToString()!, approve, comment ?? "");
     }
 
     #endregion

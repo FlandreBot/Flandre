@@ -22,12 +22,12 @@ public class MockBot : Bot
 
     internal void ReceiveMessage(Message message)
     {
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
+        MessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
     }
 
     internal void ReceiveMessageToReply(Message message)
     {
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
+        MessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
     }
 
     private void Send(MessageContent? content)
@@ -58,8 +58,8 @@ public class MockBot : Bot
         };
     }
 
-    public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
-    public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
-    public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
-    public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
+    public override event BotEventHandler<BotMessageReceivedEvent>? MessageReceived;
+    public override event BotEventHandler<BotGuildInvitedEvent>? GuildInvited;
+    public override event BotEventHandler<BotGuildJoinRequestedEvent>? GuildJoinRequested;
+    public override event BotEventHandler<BotFriendRequestedEvent>? FriendRequested;
 }

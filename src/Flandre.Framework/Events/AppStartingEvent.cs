@@ -5,7 +5,7 @@ namespace Flandre.Framework.Events;
 /// <summary>
 /// 应用正在启动事件
 /// </summary>
-public sealed class AppStartingEvent : BaseEvent
+public sealed class AppStartingEvent : FlandreEvent
 {
     internal AppStartingEvent()
     {

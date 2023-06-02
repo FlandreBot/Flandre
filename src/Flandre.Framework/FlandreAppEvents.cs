@@ -9,32 +9,32 @@ namespace Flandre.Framework;
 /// <typeparam name="TEvent"></typeparam>
 /// <param name="app"></param>
 /// <param name="e"></param>
-public delegate void AppEventHandler<in TEvent>(FlandreApp app, TEvent e) where TEvent : BaseEvent;
+public delegate void AppEventHandler<in TEvent>(FlandreApp app, TEvent e) where TEvent : FlandreEvent;
 
 public sealed partial class FlandreApp
 {
     /// <summary>
     /// 应用正在启动
     /// </summary>
-    public event AppEventHandler<AppStartingEvent>? OnStarting;
+    public event AppEventHandler<AppStartingEvent>? Starting;
 
     /// <summary>
     /// 应用就绪
     /// </summary>
-    public event AppEventHandler<AppReadyEvent>? OnReady;
+    public event AppEventHandler<AppReadyEvent>? Ready;
 
     /// <summary>
     /// 应用已经退出
     /// </summary>
-    public event AppEventHandler<AppStoppedEvent>? OnStopped;
+    public event AppEventHandler<AppStoppedEvent>? Stopped;
 
     /// <summary>
     /// 应用正在触发指令
     /// </summary>
-    public event AppEventHandler<CommandInvokingEvent>? OnCommandInvoking;
+    public event AppEventHandler<CommandInvokingEvent>? CommandInvoking;
 
     /// <summary>
     /// 应用触发了指令
     /// </summary>
-    public event AppEventHandler<CommandInvokedEvent>? OnCommandInvoked;
+    public event AppEventHandler<CommandInvokedEvent>? CommandInvoked;
 }

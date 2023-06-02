@@ -32,7 +32,7 @@ public sealed partial class DiscordBot
 
     private Task InternalOnMessageReceived(SocketMessage message)
     {
-        OnMessageReceived?.Invoke(this, new BotMessageReceivedEvent(new Message
+        MessageReceived?.Invoke(this, new BotMessageReceivedEvent(new Message
         {
             Time = message.Timestamp.DateTime,
             Platform = Platform,

@@ -24,16 +24,16 @@ public class AppEventsTests
         string? cmdName = null;
         Exception? ex = null;
 
-        app.OnStarting += (_, _) => count += 1;
-        app.OnReady += (_, _) =>
+        app.Starting += (_, _) => count += 1;
+        app.Ready += (_, _) =>
         {
             count += 10;
             client.SendMessage("throw-ex");
         };
-        app.OnStopped += (_, _) => count += 100;
+        app.Stopped += (_, _) => count += 100;
 
-        app.OnCommandInvoking += (_, e) => cmdName = e.Command.Name;
-        app.OnCommandInvoked += (_, e) => { ex = e.Exception; };
+        app.CommandInvoking += (_, e) => cmdName = e.Command.Name;
+        app.CommandInvoked += (_, e) => { ex = e.Exception; };
 
         await app.StartWithDefaultsAsync();
         await Task.Delay(TimeSpan.FromSeconds(1));

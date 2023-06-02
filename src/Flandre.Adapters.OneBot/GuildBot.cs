@@ -22,10 +22,10 @@ public class OneBotGuildBot : Bot
 
     public OneBotGuildInternalBot Internal { get; }
 
-    public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
-    public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
-    public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
-    public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
+    public override event BotEventHandler<BotMessageReceivedEvent>? MessageReceived;
+    public override event BotEventHandler<BotGuildInvitedEvent>? GuildInvited;
+    public override event BotEventHandler<BotGuildJoinRequestedEvent>? GuildJoinRequested;
+    public override event BotEventHandler<BotFriendRequestedEvent>? FriendRequested;
 
     internal OneBotGuildBot(OneBotBot mainBot)
     {
@@ -40,7 +40,7 @@ public class OneBotGuildBot : Bot
             _isSelfIdSet = true;
         }
 
-        OnMessageReceived?.Invoke(this,
+        MessageReceived?.Invoke(this,
             new BotMessageReceivedEvent(new Message
             {
                 Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,

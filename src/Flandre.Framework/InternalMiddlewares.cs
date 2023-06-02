@@ -229,10 +229,10 @@ public sealed partial class FlandreApp
                 : Logger;
 
             var invocationCancelled = false;
-            if (OnCommandInvoking is not null)
+            if (CommandInvoking is not null)
             {
                 var invokingEvent = new CommandInvokingEvent(ctx.Command, ctx.Message);
-                OnCommandInvoking.Invoke(this, invokingEvent);
+                CommandInvoking.Invoke(this, invokingEvent);
                 invocationCancelled = invokingEvent.IsCancelled;
             }
 
@@ -250,7 +250,7 @@ public sealed partial class FlandreApp
                 ctx.Exception = e.InnerException ?? e;
             }
 
-            OnCommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ctx.Exception, content));
+            CommandInvoked?.Invoke(this, new CommandInvokedEvent(ctx.Command, ctx.Message, ctx.Exception, content));
             return content;
         }
     }

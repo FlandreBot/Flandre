@@ -3,7 +3,7 @@
 /// <summary>
 /// 入群申请事件
 /// </summary>
-public class BotGuildJoinRequestedEvent : BaseEvent
+public class BotGuildJoinRequestedEvent : FlandreEvent
 {
     /// <summary>
     /// Guild 名称

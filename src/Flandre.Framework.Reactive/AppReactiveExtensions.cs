@@ -7,7 +7,7 @@ namespace Flandre.Framework.Reactive;
 public static class AppReactiveExtensions
 {
     private static IObservable<TEvent> ObserveAppEvent<TEvent>(
-        Action<AppEventHandler<TEvent>> add, Action<AppEventHandler<TEvent>> remove) where TEvent : BaseEvent
+        Action<AppEventHandler<TEvent>> add, Action<AppEventHandler<TEvent>> remove) where TEvent : FlandreEvent
     {
         return Observable.FromEventPattern<AppEventHandler<TEvent>, TEvent>(add, remove)
             .Select(pattern => pattern.EventArgs);
@@ -16,35 +16,35 @@ public static class AppReactiveExtensions
     public static IObservable<AppStartingEvent> ObserveStarting(this FlandreApp app)
     {
         return ObserveAppEvent<AppStartingEvent>(
-            add => app.OnStarting += add,
-            remove => app.OnStarting -= remove);
+            add => app.Starting += add,
+            remove => app.Starting -= remove);
     }
 
     public static IObservable<AppReadyEvent> ObserveReady(this FlandreApp app)
     {
         return ObserveAppEvent<AppReadyEvent>(
-            add => app.OnReady += add,
-            remove => app.OnReady -= remove);
+            add => app.Ready += add,
+            remove => app.Ready -= remove);
     }
 
     public static IObservable<AppStoppedEvent> ObserveStopped(this FlandreApp app)
     {
         return ObserveAppEvent<AppStoppedEvent>(
-            add => app.OnStopped += add,
-            remove => app.OnStopped -= remove);
+            add => app.Stopped += add,
+            remove => app.Stopped -= remove);
     }
 
     public static IObservable<CommandInvokingEvent> ObserveCommandInvoking(this FlandreApp app)
     {
         return ObserveAppEvent<CommandInvokingEvent>(
-            add => app.OnCommandInvoking += add,
-            remove => app.OnCommandInvoking -= remove);
+            add => app.CommandInvoking += add,
+            remove => app.CommandInvoking -= remove);
     }
 
     public static IObservable<CommandInvokedEvent> ObserveCommandInvoked(this FlandreApp app)
     {
         return ObserveAppEvent<CommandInvokedEvent>(
-            add => app.OnCommandInvoked += add,
-            remove => app.OnCommandInvoked -= remove);
+            add => app.CommandInvoked += add,
+            remove => app.CommandInvoked -= remove);
     }
 }

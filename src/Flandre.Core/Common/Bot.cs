@@ -26,7 +26,7 @@ public abstract partial class Bot
     /// <param name="message">日志消息</param>
     public void Log(BotLogLevel level, string message)
     {
-        OnLogging?.Invoke(this, new BotLoggingEvent(level, message));
+        Logging?.Invoke(this, new BotLoggingEvent(level, message));
     }
 
     /// <summary>

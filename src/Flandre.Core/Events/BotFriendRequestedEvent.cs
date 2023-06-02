@@ -3,7 +3,7 @@
 /// <summary>
 /// bot 好友申请事件
 /// </summary>
-public class BotFriendRequestedEvent : BaseEvent
+public class BotFriendRequestedEvent : FlandreEvent
 {
     /// <summary>
     /// 申请人名称

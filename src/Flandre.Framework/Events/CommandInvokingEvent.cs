@@ -4,7 +4,7 @@ using Flandre.Framework.Common;
 
 namespace Flandre.Framework.Events;
 
-public class CommandInvokingEvent : BaseEvent
+public class CommandInvokingEvent : FlandreEvent
 {
     public Command Command { get; }
 

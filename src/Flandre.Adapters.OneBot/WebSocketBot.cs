@@ -19,10 +19,10 @@ public sealed class OneBotWebSocketBot : OneBotBot
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonElement>> _apiTasks = new();
 
-    public override event BotEventHandler<BotMessageReceivedEvent>? OnMessageReceived;
-    public override event BotEventHandler<BotGuildInvitedEvent>? OnGuildInvited;
-    public override event BotEventHandler<BotGuildJoinRequestedEvent>? OnGuildJoinRequested;
-    public override event BotEventHandler<BotFriendRequestedEvent>? OnFriendRequested;
+    public override event BotEventHandler<BotMessageReceivedEvent>? MessageReceived;
+    public override event BotEventHandler<BotGuildInvitedEvent>? GuildInvited;
+    public override event BotEventHandler<BotGuildJoinRequestedEvent>? GuildJoinRequested;
+    public override event BotEventHandler<BotFriendRequestedEvent>? FriendRequested;
 
     internal OneBotWebSocketBot(OneBotBotConfig config) : base(config.SelfId)
     {
@@ -93,24 +93,24 @@ public sealed class OneBotWebSocketBot : OneBotBot
                     if (requestEvent.RequestType == "group")
                     {
                         if (requestEvent.SubType == "invite")
-                            OnGuildInvited?.Invoke(this, new BotGuildInvitedEvent(
+                            GuildInvited?.Invoke(this, new BotGuildInvitedEvent(
                                 requestEvent.GroupId?.ToString()!, requestEvent.GroupId?.ToString()!,
                                 requestEvent.UserId.ToString(), requestEvent.UserId.ToString(), true)
                             {
-                                EventMessage = requestEvent.Flag
+                                EventPayload = requestEvent.Flag
                             });
                         else if (requestEvent.SubType == "add")
-                            OnGuildJoinRequested?.Invoke(this, new BotGuildJoinRequestedEvent(
+                            GuildJoinRequested?.Invoke(this, new BotGuildJoinRequestedEvent(
                                 requestEvent.GroupId?.ToString()!, requestEvent.GroupId?.ToString()!,
                                 requestEvent.UserId.ToString(), requestEvent.UserId.ToString(),
-                                requestEvent.Comment) { EventMessage = requestEvent.Flag });
+                                requestEvent.Comment) { EventPayload = requestEvent.Flag });
                     }
                     else if (requestEvent.RequestType == "friend")
                     {
-                        OnFriendRequested?.Invoke(this, new BotFriendRequestedEvent(
+                        FriendRequested?.Invoke(this, new BotFriendRequestedEvent(
                             requestEvent.UserId.ToString(), requestEvent.UserId.ToString(), requestEvent.Comment)
                         {
-                            EventMessage = requestEvent.Flag
+                            EventPayload = requestEvent.Flag
                         });
                     }
 
@@ -135,7 +135,7 @@ public sealed class OneBotWebSocketBot : OneBotBot
 
     private void OnApiMessageEvent(OneBotApiMessageEvent e)
     {
-        OnMessageReceived?.Invoke(this,
+        MessageReceived?.Invoke(this,
             new BotMessageReceivedEvent(new Message
             {
                 Time = DateTimeOffset.FromUnixTimeSeconds(e.Time).DateTime,

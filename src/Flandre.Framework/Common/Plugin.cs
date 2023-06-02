@@ -1,6 +1,7 @@
 using Flandre.Core.Common;
 using Flandre.Core.Events;
 using Flandre.Core.Messaging;
+using Flandre.Framework.Routing;
 using Microsoft.Extensions.Logging;
 
 namespace Flandre.Framework.Common;
@@ -23,6 +24,12 @@ public abstract class Plugin
             return _loggerType;
         }
     }
+
+    /// <summary>
+    /// 映射指令时调用
+    /// </summary>
+    /// <returns></returns>
+    public virtual void OnCommandMapping(ICommandRouteBuilder builder) { }
 
     /// <summary>
     /// 加载插件时调用
