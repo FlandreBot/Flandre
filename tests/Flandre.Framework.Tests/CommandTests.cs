@@ -92,7 +92,7 @@ public class CommandTests
 
         await app.StartWithDefaultsAsync();
 
-        Assert.Equal(7, service.RootCommandNode.CountCommands());
+        Assert.Equal(7, service.RootNode.CountCommands());
 
         MessageContent? content;
 
@@ -199,11 +199,11 @@ public class CommandTests
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
         Assert.Equal("This is a test command.",
-            cmdService.RootCommandNode.FindSubNode("test1")?.Command?.Description);
+            cmdService.RootNode.FindSubNode("test1")?.Command?.Description);
 
-        Assert.True(cmdService.RootCommandNode.FindSubNode("test2")?.Command?.IsObsolete);
+        Assert.True(cmdService.RootNode.FindSubNode("test2")?.Command?.IsObsolete);
         Assert.Equal("This command is obsoleted.",
-            cmdService.RootCommandNode.FindSubNode("test2")?.Command?.ObsoleteMessage);
+            cmdService.RootNode.FindSubNode("test2")?.Command?.ObsoleteMessage);
 
         await app.StopAsync();
     }

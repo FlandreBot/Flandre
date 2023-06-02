@@ -37,7 +37,7 @@ internal sealed class PluginCommandLoader
             if (cmdAttr is null)
                 continue;
 
-            var cmd = _cmdService.RootCommandNode.MapCommand(_pluginType, cmdAttr.FullName ?? method.Name)
+            var cmd = _cmdService.RootNode.MapCommand(_pluginType, cmdAttr.FullName ?? method.Name)
                 .WithAction(method);
 
             foreach (var alias in cmdAttr.Aliases)
@@ -74,11 +74,11 @@ internal sealed class PluginCommandLoader
                 LoadNodeAliases(subNode);
         }
 
-        LoadNodeAliases(_cmdService.RootCommandNode);
+        LoadNodeAliases(_cmdService.RootNode);
 
         foreach (var (alias, cmd) in toBeAdded)
         {
-            var currentNode = _cmdService.RootCommandNode;
+            var currentNode = _cmdService.RootNode;
             var segments = alias.Split('.',
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             for (var i = 0; i < segments.Length; i++)
@@ -126,7 +126,7 @@ internal sealed class PluginCommandLoader
                 LoadNodeShortcuts(subNode);
         }
 
-        LoadNodeShortcuts(_cmdService.RootCommandNode);
+        LoadNodeShortcuts(_cmdService.RootNode);
     }
 
     #endregion

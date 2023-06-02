@@ -17,7 +17,7 @@ public static class CommandRouteBuilderExtensions
     public static void MapCommand(this ICommandRouteBuilder builder, string fullname, Delegate commandDelegate)
     {
         var cmdService = builder.Services.GetRequiredService<CommandService>();
-        cmdService.RootCommandNode.MapCommand(null, fullname)
+        cmdService.RootNode.MapCommand(null, fullname)
             .WithAction(commandDelegate);
     }
 }

@@ -6,7 +6,7 @@ namespace Flandre.Framework.Services;
 
 internal sealed class CommandService
 {
-    public CommandNode RootCommandNode { get; } = new("");
+    public CommandNode RootNode { get; } = new("");
 
     public Dictionary<StringShortcut, Command> StringShortcuts { get; } = new();
 
@@ -53,7 +53,7 @@ internal sealed class CommandService
 
     internal void Reset()
     {
-        RootCommandNode.Clear();
+        RootNode.Clear();
         StringShortcuts.Clear();
         RegexShortcuts.Clear();
         TypeFriendlyNames.Clear();

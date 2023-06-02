@@ -155,7 +155,7 @@ public sealed partial class FlandreApp
 
             var path = new List<string>();
             var current = root.TrimStart(commandPrefix);
-            var node = cmdService.RootCommandNode;
+            var node = cmdService.RootNode;
             var temp = false;
             parser.SkipWhiteSpaces();
 

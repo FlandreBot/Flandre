@@ -223,7 +223,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
         Logger.LogDebug("Total {AdapterCount} adapters, {BotCount} bots", _adapters.Count, _bots.Count);
         Logger.LogDebug(
             "Total {PluginCount} plugins, {CommandCount} commands, {StringShortcutCount} string shortcuts, {RegexShortcutCount} regex shortcuts, {MiddlewareCount} middleware",
-            _pluginTypes.Count, cmdService.RootCommandNode.CountCommands(),
+            _pluginTypes.Count, cmdService.RootNode.CountCommands(),
             cmdService.StringShortcuts.Count, cmdService.RegexShortcuts.Count, _middleware.Count);
         Ready?.Invoke(this, new AppReadyEvent());
     }

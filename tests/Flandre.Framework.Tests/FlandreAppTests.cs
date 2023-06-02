@@ -38,16 +38,16 @@ public class FlandreAppTests
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
-        Assert.Equal(3, cmdService.RootCommandNode.CountCommands());
+        Assert.Equal(3, cmdService.RootNode.CountCommands());
 
-        Assert.NotNull(cmdService.RootCommandNode.FindSubNode("test"));
-        Assert.NotNull(cmdService.RootCommandNode.FindSubNode("sub.test"));
-        Assert.NotNull(cmdService.RootCommandNode.FindSubNode("sub.sub.sub.test"));
+        Assert.NotNull(cmdService.RootNode.FindSubNode("test"));
+        Assert.NotNull(cmdService.RootNode.FindSubNode("sub.test"));
+        Assert.NotNull(cmdService.RootNode.FindSubNode("sub.sub.sub.test"));
 
         // alias
-        Assert.NotNull(cmdService.RootCommandNode.FindSubNode("test111.11.45.14"));
-        Assert.Equal(cmdService.RootCommandNode.FindSubNode("sssuuubbb")?.Command,
-            cmdService.RootCommandNode.FindSubNode("sub.test")?.Command);
+        Assert.NotNull(cmdService.RootNode.FindSubNode("test111.11.45.14"));
+        Assert.Equal(cmdService.RootNode.FindSubNode("sssuuubbb")?.Command,
+            cmdService.RootNode.FindSubNode("sub.test")?.Command);
 
         await app.StopAsync();
     }

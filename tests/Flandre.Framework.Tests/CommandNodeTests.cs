@@ -29,11 +29,11 @@ public class CommandNodeTests
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
-        Assert.Equal(3, cmdService.RootCommandNode.CountCommands());
-        Assert.Equal("cmd-xxx", cmdService.RootCommandNode.FindSubNode("cmd-xxx")?.FullName);
-        Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-aaa..cmd-bbb")?.FullName);
-        Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-aaa..cmd-bbb")?.Command?.FullName);
-        Assert.Equal("cmd-bbb", cmdService.RootCommandNode.FindSubNode("cmd-bbb . .")?.Command?.FullName);
+        Assert.Equal(3, cmdService.RootNode.CountCommands());
+        Assert.Equal("cmd-xxx", cmdService.RootNode.FindSubNode("cmd-xxx")?.FullName);
+        Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootNode.FindSubNode("cmd-aaa..cmd-bbb")?.FullName);
+        Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootNode.FindSubNode("cmd-aaa..cmd-bbb")?.Command?.FullName);
+        Assert.Equal("cmd-bbb", cmdService.RootNode.FindSubNode("cmd-bbb . .")?.Command?.FullName);
 
         await app.StopAsync();
     }
