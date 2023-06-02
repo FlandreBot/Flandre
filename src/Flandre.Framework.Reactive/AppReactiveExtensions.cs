@@ -6,44 +6,44 @@ namespace Flandre.Framework.Reactive;
 
 public static class AppReactiveExtensions
 {
-    private static IObservable<TEvent> ObserveAppEvent<TEvent>(
+    private static IObservable<TEvent> OnAppEvent<TEvent>(
         Action<AppEventHandler<TEvent>> add, Action<AppEventHandler<TEvent>> remove) where TEvent : FlandreEvent
     {
         return Observable.FromEventPattern<AppEventHandler<TEvent>, TEvent>(add, remove)
             .Select(pattern => pattern.EventArgs);
     }
 
-    public static IObservable<AppStartingEvent> ObserveStarting(this FlandreApp app)
+    public static IObservable<AppStartingEvent> OnStarting(this FlandreApp app)
     {
-        return ObserveAppEvent<AppStartingEvent>(
+        return OnAppEvent<AppStartingEvent>(
             add => app.Starting += add,
             remove => app.Starting -= remove);
     }
 
-    public static IObservable<AppReadyEvent> ObserveReady(this FlandreApp app)
+    public static IObservable<AppReadyEvent> OnReady(this FlandreApp app)
     {
-        return ObserveAppEvent<AppReadyEvent>(
+        return OnAppEvent<AppReadyEvent>(
             add => app.Ready += add,
             remove => app.Ready -= remove);
     }
 
-    public static IObservable<AppStoppedEvent> ObserveStopped(this FlandreApp app)
+    public static IObservable<AppStoppedEvent> OnStopped(this FlandreApp app)
     {
-        return ObserveAppEvent<AppStoppedEvent>(
+        return OnAppEvent<AppStoppedEvent>(
             add => app.Stopped += add,
             remove => app.Stopped -= remove);
     }
 
-    public static IObservable<CommandInvokingEvent> ObserveCommandInvoking(this FlandreApp app)
+    public static IObservable<CommandInvokingEvent> OnCommandInvoking(this FlandreApp app)
     {
-        return ObserveAppEvent<CommandInvokingEvent>(
+        return OnAppEvent<CommandInvokingEvent>(
             add => app.CommandInvoking += add,
             remove => app.CommandInvoking -= remove);
     }
 
-    public static IObservable<CommandInvokedEvent> ObserveCommandInvoked(this FlandreApp app)
+    public static IObservable<CommandInvokedEvent> OnCommandInvoked(this FlandreApp app)
     {
-        return ObserveAppEvent<CommandInvokedEvent>(
+        return OnAppEvent<CommandInvokedEvent>(
             add => app.CommandInvoked += add,
             remove => app.CommandInvoked -= remove);
     }

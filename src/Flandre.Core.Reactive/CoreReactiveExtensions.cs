@@ -6,44 +6,44 @@ namespace Flandre.Core.Reactive;
 
 public static class CoreReactiveExtensions
 {
-    private static IObservable<TEvent> ObserveBotEvent<TEvent>(
+    private static IObservable<TEvent> OnBotEvent<TEvent>(
         Action<BotEventHandler<TEvent>> add, Action<BotEventHandler<TEvent>> remove) where TEvent : FlandreEvent
     {
         return Observable.FromEventPattern<BotEventHandler<TEvent>, TEvent>(add, remove)
             .Select(pattern => pattern.EventArgs);
     }
 
-    public static IObservable<BotLoggingEvent> ObserveLogging(this Bot bot)
+    public static IObservable<BotLoggingEvent> OnLogging(this Bot bot)
     {
-        return ObserveBotEvent<BotLoggingEvent>(
+        return OnBotEvent<BotLoggingEvent>(
             add => bot.Logging += add,
             remove => bot.Logging -= remove);
     }
 
-    public static IObservable<BotMessageReceivedEvent> ObserveMessageReceived(this Bot bot)
+    public static IObservable<BotMessageReceivedEvent> OnMessageReceived(this Bot bot)
     {
-        return ObserveBotEvent<BotMessageReceivedEvent>(
+        return OnBotEvent<BotMessageReceivedEvent>(
             add => bot.MessageReceived += add,
             remove => bot.MessageReceived -= remove);
     }
 
-    public static IObservable<BotGuildInvitedEvent> ObserveGuildInvited(this Bot bot)
+    public static IObservable<BotGuildInvitedEvent> OnGuildInvited(this Bot bot)
     {
-        return ObserveBotEvent<BotGuildInvitedEvent>(
+        return OnBotEvent<BotGuildInvitedEvent>(
             add => bot.GuildInvited += add,
             remove => bot.GuildInvited -= remove);
     }
 
-    public static IObservable<BotGuildJoinRequestedEvent> ObserveGuildJoinRequested(this Bot bot)
+    public static IObservable<BotGuildJoinRequestedEvent> OnGuildJoinRequested(this Bot bot)
     {
-        return ObserveBotEvent<BotGuildJoinRequestedEvent>(
+        return OnBotEvent<BotGuildJoinRequestedEvent>(
             add => bot.GuildJoinRequested += add,
             remove => bot.GuildJoinRequested -= remove);
     }
 
-    public static IObservable<BotFriendRequestedEvent> ObserveFriendRequested(this Bot bot)
+    public static IObservable<BotFriendRequestedEvent> OnFriendRequested(this Bot bot)
     {
-        return ObserveBotEvent<BotFriendRequestedEvent>(
+        return OnBotEvent<BotFriendRequestedEvent>(
             add => bot.FriendRequested += add,
             remove => bot.FriendRequested -= remove);
     }

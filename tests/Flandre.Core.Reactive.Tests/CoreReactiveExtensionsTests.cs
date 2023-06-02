@@ -17,25 +17,25 @@ public class CoreReactiveExtensionsTests
         var messageCountFrom2 = 0;
         var allMessageReceived = 0;
 
-        bot.ObserveMessageReceived()
+        bot.OnMessageReceived()
             .OfUser("123")
             .Subscribe(_ => messageCountFrom1++);
 
-        bot.ObserveMessageReceived()
+        bot.OnMessageReceived()
             .Select(e => e.Message)
             .OfGuild("testG1")
             .Subscribe(_ => messageCountFrom1++);
 
-        bot.ObserveMessageReceived()
+        bot.OnMessageReceived()
             .Select(e => e.Message)
             .OfUser("456")
             .Subscribe(_ => messageCountFrom2++);
 
-        bot.ObserveMessageReceived()
+        bot.OnMessageReceived()
             .OfChannel("testC2")
             .Subscribe(_ => messageCountFrom2++);
 
-        bot.ObserveMessageReceived()
+        bot.OnMessageReceived()
             .Subscribe(_ => allMessageReceived++);
 
 
