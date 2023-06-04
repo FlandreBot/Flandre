@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Flandre.Framework.Attributes;
+namespace Flandre.Framework.Common;
 
 /// <summary>
 /// 为指令添加前缀式快捷方式

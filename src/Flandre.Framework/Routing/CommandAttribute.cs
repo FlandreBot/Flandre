@@ -1,6 +1,6 @@
 using Flandre.Core.Models;
 
-namespace Flandre.Framework.Attributes;
+namespace Flandre.Framework.Routing;
 
 /// <summary>
 /// 指令

@@ -2,7 +2,6 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Flandre.Core.Messaging;
-using Flandre.Framework.Attributes;
 using Flandre.Framework.Routing;
 using Microsoft.Extensions.Logging;
 

@@ -1,4 +1,4 @@
-namespace Flandre.Framework.Attributes;
+namespace Flandre.Framework.Common;
 
 /// <summary>
 /// 选项

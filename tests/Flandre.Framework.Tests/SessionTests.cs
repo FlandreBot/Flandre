@@ -1,4 +1,6 @@
-﻿namespace Flandre.Framework.Tests;
+﻿using Flandre.Framework.Routing;
+
+namespace Flandre.Framework.Tests;
 
 public class SessionTests
 {

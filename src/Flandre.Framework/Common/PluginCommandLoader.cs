@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Reflection;
-using Flandre.Framework.Attributes;
 using Flandre.Framework.Routing;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;

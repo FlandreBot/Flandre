@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Flandre.Core.Utils;
-using Flandre.Framework.Attributes;
 
 namespace Flandre.Framework.Common;
 
