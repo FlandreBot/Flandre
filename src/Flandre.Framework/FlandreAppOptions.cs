@@ -13,5 +13,5 @@ public sealed class FlandreAppOptions
     /// <summary>
     /// 在用户调用指令时，不进行“指令未找到”提示
     /// </summary>
-    public bool IgnoreWhenCallingUndefinedCommand { get; set; } = false;
+    public bool IgnoreUndefinedCommand { get; set; } = false;
 }

@@ -37,6 +37,9 @@ public sealed class MiddlewareContext : MessageContext
     /// </summary>
     public Exception? Exception { get; internal set; }
 
+    // TODO: 添加 IsFailed 和 FailReason 属性
+    // TODO: enum MiddlewareFailReason { None, Exception, MissingArgument, ... }
+
     private IDictionary<string, object?>? _properties;
 
     /// <summary>
