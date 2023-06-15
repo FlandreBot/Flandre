@@ -145,6 +145,9 @@ public class CommandTests
 
         var content = client.SendMessageForReply("test6 1.23 aaa bbb ccc  ");
         Assert.Equal("1.23 | aaa,bbb,ccc", content?.GetText());
+        
+        content = client.SendMessageForReply("test6 2.34");
+        Assert.Equal("2.34 | ", content?.GetText());
     }
 
     [Fact]
