@@ -6,7 +6,7 @@ on:
       - dev
 
 jobs:
-  test-publish:
+  test:
     name: Test and Publish
     runs-on: ubuntu-latest
     
@@ -27,3 +27,134 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           directory: ./code-coverage/
+  
+  
+  publish:
+    name: Publish NuGet Packages
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.x.x
+
+      - name: Publish Core
+        id: publish-core
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Core/Flandre.Core.csproj
+          PACKAGE_NAME: Flandre.Core
+          VERSION_FILE_PATH: src/Flandre.Core/Flandre.Core.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+      - name: Publish Framework
+        id: publish-fx
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Framework/Flandre.Framework.csproj
+          PACKAGE_NAME: Flandre.Framework
+          VERSION_FILE_PATH: src/Flandre.Framework/Flandre.Framework.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: true
+          TAG_FORMAT: v*
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      
+      # ===== Adapters =====
+
+      - name: Publish Adapters.Konata
+        id: publish-adapter-konata
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.Konata/Flandre.Adapters.Konata.csproj
+          PACKAGE_NAME: Flandre.Adapters.Konata
+          VERSION_FILE_PATH: src/Flandre.Adapters.Konata/Flandre.Adapters.Konata.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+      - name: Publish Adapters.OneBot
+        id: publish-adapter-onebot
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.OneBot/Flandre.Adapters.OneBot.csproj
+          PACKAGE_NAME: Flandre.Adapters.OneBot
+          VERSION_FILE_PATH: src/Flandre.Adapters.OneBot/Flandre.Adapters.OneBot.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+      - name: Publish Adapters.Discord
+        id: publish-adapter-discord
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.Discord/Flandre.Adapters.Discord.csproj
+          PACKAGE_NAME: Flandre.Adapters.Discord
+          VERSION_FILE_PATH: src/Flandre.Adapters.Discord/Flandre.Adapters.Discord.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+      - name: Publish Adapters.Mock
+        id: publish-adapter-mock
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.Mock/Flandre.Adapters.Mock.csproj
+          PACKAGE_NAME: Flandre.Adapters.Mock
+          VERSION_FILE_PATH: src/Flandre.Adapters.Mock/Flandre.Adapters.Mock.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      
+      # ===== Adapter Extensions =====
+
+      - name: Publish Adapters.Konata.Extensions
+        id: publish-adapter-konata-extensions
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.Konata.Extensions/Flandre.Adapters.Konata.Extensions.csproj
+          PACKAGE_NAME: Flandre.Adapters.Konata.Extensions
+          VERSION_FILE_PATH: src/Flandre.Adapters.Konata.Extensions/Flandre.Adapters.Konata.Extensions.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+      - name: Publish Adapters.OneBot.Extensions
+        id: publish-adapter-onebot-extensions
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Adapters.OneBot.Extensions/Flandre.Adapters.OneBot.Extensions.csproj
+          PACKAGE_NAME: Flandre.Adapters.OneBot.Extensions
+          VERSION_FILE_PATH: src/Flandre.Adapters.OneBot.Extensions/Flandre.Adapters.OneBot.Extensions.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      
+      # ===== Reactive Extensions =====
+
+      - name: Publish Core.Reactive
+        id: publish-core-rx
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Core.Reactive/Flandre.Core.Reactive.csproj
+          PACKAGE_NAME: Flandre.Core.Reactive
+          VERSION_FILE_PATH: src/Flandre.Core.Reactive/Flandre.Core.Reactive.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+      - name: Publish Framework.Reactive
+        id: publish-fx-rx
+        uses: alirezanet/publish-nuget@v3.0.4
+        with:
+          PROJECT_FILE_PATH: src/Flandre.Framework.Reactive/Flandre.Framework.Reactive.csproj
+          PACKAGE_NAME: Flandre.Framework.Reactive
+          VERSION_FILE_PATH: src/Flandre.Framework.Reactive/Flandre.Framework.Reactive.csproj
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          TAG_COMMIT: false
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
