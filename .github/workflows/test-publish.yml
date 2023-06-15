@@ -1,0 +1,29 @@
+﻿name: Test and Publish
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  test-publish:
+    name: Test and Publish
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.x.x
+
+      - name: Test Projects
+        run: |
+          dotnet test tests/Flandre.Core.Tests/ --collect "XPlat Code Coverage" -r code-coverage/
+          dotnet test tests/Flandre.Framework.Tests/ --collect "XPlat Code Coverage" -r code-coverage/
+
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./code-coverage/
