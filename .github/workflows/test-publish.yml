@@ -20,8 +20,12 @@ jobs:
 
       - name: Test Projects
         run: |
-          dotnet test tests/Flandre.Core.Tests/ --collect "XPlat Code Coverage" -r code-coverage/
-          dotnet test tests/Flandre.Framework.Tests/ --collect "XPlat Code Coverage" -r code-coverage/
+          dotnet test tests/Flandre.Core.Tests/ --collect "XPlat Code Coverage" --results-directory code-coverage/
+          dotnet test tests/Flandre.Framework.Tests/ --collect "XPlat Code Coverage" --results-directory code-coverage/
+          
+          for f in code-coverage/*; do
+              echo $f
+          done | awk -F / '{ cmd="cp "$0"/coverage.cobertura.xml code-coverage/"$2".xml"; system(cmd) }'
 
       - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v3
