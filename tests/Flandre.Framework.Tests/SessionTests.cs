@@ -4,7 +4,7 @@ namespace Flandre.Framework.Tests;
 
 public class SessionTests
 {
-    private class TestPlugin : Plugin
+    private sealed class TestPlugin : Plugin
     {
         [Command("start-session")]
         public static async Task<MessageContent?> OnStartSession(CommandContext ctx)
@@ -17,14 +17,7 @@ public class SessionTests
     [Fact]
     public async Task TestCommandSession()
     {
-        var adapter = new MockAdapter();
-        var client = adapter.GetChannelClient();
-        var builder = FlandreApp.CreateBuilder();
-        builder.Adapters.Add(adapter);
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
-
-        await app.StartWithDefaultsAsync();
+        using var app = Utils.StartTestApp<TestPlugin>(out var client);
 
         var task1 = client.SendMessageForReply("start-session");
         await Task.Delay(TimeSpan.FromSeconds(1));

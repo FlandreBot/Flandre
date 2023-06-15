@@ -21,11 +21,7 @@ public class CommandNodeTests
     [Fact]
     public async Task TestNode()
     {
-        var builder = FlandreApp.CreateBuilder();
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
-
-        await app.StartWithDefaultsAsync();
+        using var app = Utils.StartTestApp<TestPlugin>(out _);
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 

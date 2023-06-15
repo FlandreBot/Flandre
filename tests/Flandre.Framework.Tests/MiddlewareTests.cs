@@ -5,12 +5,7 @@ public class MiddlewareTests
     [Fact]
     public async Task TestMiddleware()
     {
-        var adapter = new MockAdapter();
-        var client = adapter.GetChannelClient();
-
-        var builder = FlandreApp.CreateBuilder();
-        builder.Adapters.Add(adapter);
-        using var app = builder.Build();
+        using var app = Utils.CreateTestApp(out var client);
 
         // Order Note
         //  1,2,3  ↓     ↑  2

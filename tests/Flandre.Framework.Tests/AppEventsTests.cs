@@ -7,20 +7,14 @@ public class AppEventsTests
     private class TestPlugin : Plugin
     {
         [Command("throw-ex")]
-        public static MessageContent? OnThrowEx(CommandContext ctx) =>
+        public static MessageContent OnThrowEx(CommandContext ctx) =>
             throw new Exception("Test Exception");
     }
 
     [Fact]
     public async Task TestEvents()
     {
-        var adapter = new MockAdapter();
-        var client = adapter.GetChannelClient();
-
-        var builder = FlandreApp.CreateBuilder();
-        builder.Adapters.Add(adapter);
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
+        using var app = Utils.CreateTestApp<TestPlugin>(out var client);
 
         var count = 0;
         string? cmdName = null;

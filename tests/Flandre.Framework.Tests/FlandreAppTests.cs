@@ -30,11 +30,7 @@ public class FlandreAppTests
     [Fact]
     public async Task TestAliases()
     {
-        var builder = FlandreApp.CreateBuilder();
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
-
-        await app.StartWithDefaultsAsync();
+        using var app = Utils.StartTestApp<TestPlugin>(out _);
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
@@ -55,11 +51,7 @@ public class FlandreAppTests
     [Fact]
     public async Task TestShortcutCount()
     {
-        var builder = FlandreApp.CreateBuilder();
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
-
-        await app.StartAsync();
+        using var app = Utils.StartTestApp<TestPlugin>(out _);
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 

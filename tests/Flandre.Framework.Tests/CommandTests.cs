@@ -5,11 +5,13 @@ using Flandre.Framework.Routing;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;
 
+// ReSharper disable UnusedMember.Local
+
 namespace Flandre.Framework.Tests;
 
 public class CommandTests
 {
-    public class TestPlugin : Plugin
+    private sealed class TestPlugin : Plugin
     {
         public override async Task OnMessageReceivedAsync(MessageContext ctx)
         {
@@ -29,8 +31,7 @@ public class CommandTests
         [Command("test2", "..test111.11...45.14.")]
         [Obsolete("This command is obsoleted.")]
         public static string Test2(int arg1, float arg2, CommandContext ctx,
-            [Option]
-            bool opt1 = true, [Option(ShortName = 'o')] bool opt2 = false)
+            [Option] bool opt1 = true, [Option(ShortName = 'o')] bool opt2 = false)
         {
             return $"{arg1} {arg2} {opt1} {opt2}";
         }
@@ -79,14 +80,7 @@ public class CommandTests
     [Fact]
     public async Task TestCommands()
     {
-        var adapter = new MockAdapter();
-        var channelClient = adapter.GetChannelClient();
-        var friendClient = adapter.GetFriendClient();
-
-        var builder = FlandreApp.CreateBuilder();
-        builder.Adapters.Add(adapter);
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
+        using var app = Utils.CreateTestApp<TestPlugin>(out var client);
 
         var service = app.Services.GetRequiredService<CommandService>();
 
@@ -96,18 +90,18 @@ public class CommandTests
 
         MessageContent? content;
 
-        content = await channelClient.SendMessageForReply("OMR:114514");
+        content = await client.SendMessageForReply("OMR:114514");
         Assert.Equal("OMR:114514", content?.GetText());
 
-        content = await friendClient.SendMessageForReply("test1 --opt 114.514 true");
+        content = await client.SendMessageForReply("test1 --opt 114.514 true");
         Assert.Equal("True 314.514", content?.GetText());
         //
-        content = await friendClient.SendMessageForReply("test2  -o 123 191.981  --no-opt1");
+        content = await client.SendMessageForReply("test2  -o 123 191.981  --no-opt1");
         Assert.Equal("123 191.981 False True",
             content?.GetText());
 
         // test async
-        content = await friendClient.SendMessageForReply("testasync");
+        content = await client.SendMessageForReply("testasync");
         Assert.Equal("ok!", content?.GetText());
 
         await app.StopAsync();
@@ -116,43 +110,29 @@ public class CommandTests
     [Fact]
     public async Task TestShortcuts()
     {
-        var adapter = new MockAdapter();
-        var channelClient = adapter.GetChannelClient();
-        var friendClient = adapter.GetFriendClient();
-
-        var builder = FlandreApp.CreateBuilder();
-        builder.Adapters.Add(adapter);
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
+        using var app = Utils.CreateTestApp<TestPlugin>(out var client);
 
         await app.StartWithDefaultsAsync();
 
         MessageContent? content;
 
-        content = await channelClient.SendMessageForReply("测3试");
+        content = await client.SendMessageForReply("测3试");
         Assert.Equal("3 someStr", content?.GetText());
 
-        content = await friendClient.SendMessageForReply("测试4");
+        content = await client.SendMessageForReply("测试4");
         Assert.Equal("123.456", content?.GetText());
 
-        content = await friendClient.SendMessageForReply("测试4 114.514", TimeSpan.FromSeconds(2));
+        content = await client.SendMessageForReply("测试4 114.514", TimeSpan.FromSeconds(2));
         Assert.Null(content?.GetText());
 
-        content = await friendClient.SendMessageForReply("测试5 333");
-        Assert.Equal("111.222 333 True",
-            content?.GetText());
+        content = await client.SendMessageForReply("测试5 333");
+        Assert.Equal("111.222 333 True", content?.GetText());
     }
 
     [Fact]
     public async Task TestMapCommand()
     {
-        var adapter = new MockAdapter();
-        var client = adapter.GetFriendClient();
-
-        var builder = FlandreApp.CreateBuilder();
-        builder.Adapters.Add(adapter);
-
-        using var app = builder.Build();
+        using var app = Utils.CreateTestApp(out var client);
 
         app.MapCommand("test1", (int a, int b) => a + b);
         app.MapCommand("test2.sub", (int x) => Math.Pow(x, 2));
@@ -171,15 +151,7 @@ public class CommandTests
     [Fact]
     public async Task TestArrayParameter()
     {
-        var adapter = new MockAdapter();
-        var client = adapter.GetFriendClient();
-
-        var builder = FlandreApp.CreateBuilder();
-        builder.Adapters.Add(adapter);
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
-
-        await app.StartWithDefaultsAsync();
+        using var app = Utils.StartTestApp<TestPlugin>(out var client);
 
         var content = await client.SendMessageForReply("test6 1.23 aaa bbb ccc  ");
         Assert.Equal("1.23 | aaa,bbb,ccc", content?.GetText());
@@ -190,11 +162,7 @@ public class CommandTests
     [Fact]
     public async Task TestInformalAttributes()
     {
-        var builder = FlandreApp.CreateBuilder();
-        builder.Plugins.Add<TestPlugin>();
-        using var app = builder.Build();
-
-        await app.StartWithDefaultsAsync();
+        using var app = Utils.StartTestApp<TestPlugin>(out _);
 
         var cmdService = app.Services.GetRequiredService<CommandService>();
 
