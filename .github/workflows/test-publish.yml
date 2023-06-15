@@ -7,9 +7,9 @@ on:
 
 jobs:
   test:
-    name: Test and Publish
+    name: Unit Test
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v2
 
@@ -27,8 +27,8 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           directory: ./code-coverage/
-  
-  
+
+
   publish:
     name: Publish NuGet Packages
     runs-on: ubuntu-latest
