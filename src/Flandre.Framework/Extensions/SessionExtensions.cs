@@ -2,7 +2,8 @@ using Flandre.Core.Messaging;
 using Flandre.Framework.Common;
 using Flandre.Framework.Utils;
 
-namespace Flandre.Framework.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Flandre.Framework.Common;
 
 /// <summary>
 /// 会话扩展方法

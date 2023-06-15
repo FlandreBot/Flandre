@@ -1,6 +1,7 @@
 using Flandre.Core.Common;
 
-namespace Flandre.Framework.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Flandre.Framework;
 
 /// <summary>
 /// <see cref="FlandreApp"/> 的扩展方法
