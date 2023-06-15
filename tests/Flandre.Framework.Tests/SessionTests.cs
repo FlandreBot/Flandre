@@ -17,14 +17,14 @@ public class SessionTests
     [Fact]
     public async Task TestCommandSession()
     {
-        using var app = Utils.StartTestApp<TestPlugin>(out var client);
+        await using var app = Utils.StartTestApp<TestPlugin>(out var client);
 
-        var task1 = client.SendMessageForReply("start-session");
+        var task1 = client.SendMessageForReplyAsync("start-session");
         await Task.Delay(TimeSpan.FromSeconds(1));
         client.SendMessage("return this");
         Assert.NotNull(await task1);
 
-        var task2 = client.SendMessageForReply("start-session");
+        var task2 = client.SendMessageForReplyAsync("start-session");
         await Task.Delay(TimeSpan.FromSeconds(3));
         client.SendMessage("timeout!");
         Assert.Null(await task2);

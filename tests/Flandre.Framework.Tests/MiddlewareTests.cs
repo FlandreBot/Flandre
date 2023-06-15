@@ -5,7 +5,7 @@ public class MiddlewareTests
     [Fact]
     public async Task TestMiddleware()
     {
-        using var app = Utils.CreateTestApp(out var client);
+        await using var app = Utils.CreateTestApp(out var client);
 
         // Order Note
         //  1,2,3  ↓     ↑  2
@@ -54,16 +54,14 @@ public class MiddlewareTests
 
         await app.StartAsync();
 
-        var content1 = await client.SendMessageForReply("test (1) short me at middleware #1");
+        var content1 = client.SendMessageForReply("test (1) short me at middleware #1");
         Assert.NotNull(content1);
 
-        var content2 = await client.SendMessageForReply("test (2) pass me through all middleware");
+        var content2 = client.SendMessageForReply("test (2) pass me through all middleware");
         Assert.NotNull(content2);
 
-        var content3 = await client.SendMessageForReply("test (3) don't pass me", TimeSpan.FromSeconds(2));
+        var content3 = client.SendMessageForReply("test (3) don't pass me", TimeSpan.FromSeconds(2));
         Assert.Null(content3);
-
-        await app.StopAsync();
 
         Assert.Equal(2, count1In);
         Assert.Equal(1, count2);

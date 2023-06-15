@@ -39,4 +39,11 @@ public static class Utils
         app.StartWithDefaultsAsync().Wait();
         return app;
     }
+
+    public static FlandreApp StartTestApp(out MockClient client, bool useFriendClient = false)
+    {
+        var app = CreateTestApp(out client, useFriendClient);
+        app.StartWithDefaultsAsync().Wait();
+        return app;
+    }
 }

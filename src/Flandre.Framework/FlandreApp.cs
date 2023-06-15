@@ -15,7 +15,7 @@ namespace Flandre.Framework;
 /// <summary>
 /// Flandre 应用
 /// </summary>
-public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
+public sealed partial class FlandreApp : IHost, ICommandRouteBuilder, IAsyncDisposable
 {
     private readonly IHost _hostApp;
     private readonly IOptionsMonitor<FlandreAppOptions> _appOptions;
@@ -24,6 +24,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
     private readonly List<Func<MiddlewareContext, Func<Task>, Task>> _middleware = new();
     private readonly List<Bot> _bots = new();
     private bool _eventsSubscribedOnce;
+    private bool _isStopped = true;
 
     /// <summary>
     /// 所有机器人实例
@@ -206,6 +207,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
     /// </summary>
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
+        _isStopped = false;
         Starting?.Invoke(this, new AppStartingEvent());
         Logger.LogDebug("Starting app...");
 
@@ -238,6 +240,7 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
         await _hostApp.StopAsync(cancellationToken);
         Logger.LogInformation("App stopped");
         Stopped?.Invoke(this, new AppStoppedEvent());
+        _isStopped = true;
     }
 
     /// <summary>
@@ -245,7 +248,18 @@ public sealed partial class FlandreApp : IHost, ICommandRouteBuilder
     /// </summary>
     public void Dispose()
     {
-        StopAsync().GetAwaiter().GetResult();
+        if (!_isStopped)
+            StopAsync().GetAwaiter().GetResult();
+        _hostApp.Dispose();
+    }
+
+    /// <summary>
+    /// 停止应用实例并释放资源
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        if (!_isStopped)
+            await StopAsync();
         _hostApp.Dispose();
     }
 }

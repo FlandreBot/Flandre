@@ -19,7 +19,7 @@ public class CommandNodeTests
     }
 
     [Fact]
-    public async Task TestNode()
+    public void TestNode()
     {
         using var app = Utils.StartTestApp<TestPlugin>(out _);
 
@@ -30,7 +30,5 @@ public class CommandNodeTests
         Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootNode.FindSubNode("cmd-aaa..cmd-bbb")?.FullName);
         Assert.Equal("cmd-aaa.cmd-bbb", cmdService.RootNode.FindSubNode("cmd-aaa..cmd-bbb")?.Command?.FullName);
         Assert.Equal("cmd-bbb", cmdService.RootNode.FindSubNode("cmd-bbb . .")?.Command?.FullName);
-
-        await app.StopAsync();
     }
 }

@@ -45,17 +45,19 @@ public class MockClient
         _adapter.Bot.ReceiveMessage(msg);
     }
 
-    public Task<MessageContent?> SendMessageForReply(string message) =>
-        SendMessageForReply(message, TimeSpan.FromSeconds(10));
+    public Task<MessageContent?> SendMessageForReplyAsync(string message)
+    {
+        return SendMessageForReplyAsync(message, TimeSpan.FromSeconds(10));
+    }
 
-    public Task<MessageContent?> SendMessageForReply(string message, TimeSpan timeout)
+    public Task<MessageContent?> SendMessageForReplyAsync(string message, TimeSpan timeout)
     {
         var tcs = new TaskCompletionSource<MessageContent?>();
 
         var msg = ConstructMessage(message);
 
         _adapter.Bot.ReplyTarget = (msg.MessageId, tcs);
-        _adapter.Bot.ReceiveMessageToReply(msg);
+        _adapter.Bot.ReceiveMessage(msg);
 
         Task.Run(async () =>
         {

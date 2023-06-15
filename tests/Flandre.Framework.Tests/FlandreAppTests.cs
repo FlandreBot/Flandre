@@ -28,7 +28,7 @@ public class FlandreAppTests
     }
 
     [Fact]
-    public async Task TestAliases()
+    public void TestAliases()
     {
         using var app = Utils.StartTestApp<TestPlugin>(out _);
 
@@ -44,12 +44,10 @@ public class FlandreAppTests
         Assert.NotNull(cmdService.RootNode.FindSubNode("test111.11.45.14"));
         Assert.Equal(cmdService.RootNode.FindSubNode("sssuuubbb")?.Command,
             cmdService.RootNode.FindSubNode("sub.test")?.Command);
-
-        await app.StopAsync();
     }
 
     [Fact]
-    public async Task TestShortcutCount()
+    public void TestShortcutCount()
     {
         using var app = Utils.StartTestApp<TestPlugin>(out _);
 
@@ -57,7 +55,5 @@ public class FlandreAppTests
 
         Assert.Equal(2, cmdService.StringShortcuts.Count);
         Assert.Single(cmdService.RegexShortcuts);
-
-        await app.StopAsync();
     }
 }

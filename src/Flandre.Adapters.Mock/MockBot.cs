@@ -25,11 +25,6 @@ public class MockBot : Bot
         MessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
     }
 
-    internal void ReceiveMessageToReply(Message message)
-    {
-        MessageReceived?.Invoke(this, new BotMessageReceivedEvent(message));
-    }
-
     private void Send(MessageContent? content)
     {
         ReplyTarget?.Tcs.TrySetResult(content);

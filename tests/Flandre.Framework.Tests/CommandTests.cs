@@ -78,89 +78,77 @@ public class CommandTests
     }
 
     [Fact]
-    public async Task TestCommands()
+    public void TestCommands()
     {
-        using var app = Utils.CreateTestApp<TestPlugin>(out var client);
+        using var app = Utils.StartTestApp<TestPlugin>(out var client);
 
         var service = app.Services.GetRequiredService<CommandService>();
-
-        await app.StartWithDefaultsAsync();
 
         Assert.Equal(7, service.RootNode.CountCommands());
 
         MessageContent? content;
 
-        content = await client.SendMessageForReply("OMR:114514");
+        content = client.SendMessageForReply("OMR:114514");
         Assert.Equal("OMR:114514", content?.GetText());
 
-        content = await client.SendMessageForReply("test1 --opt 114.514 true");
+        content = client.SendMessageForReply("test1 --opt 114.514 true");
         Assert.Equal("True 314.514", content?.GetText());
         //
-        content = await client.SendMessageForReply("test2  -o 123 191.981  --no-opt1");
+        content = client.SendMessageForReply("test2  -o 123 191.981  --no-opt1");
         Assert.Equal("123 191.981 False True",
             content?.GetText());
 
         // test async
-        content = await client.SendMessageForReply("testasync");
+        content = client.SendMessageForReply("testasync");
         Assert.Equal("ok!", content?.GetText());
-
-        await app.StopAsync();
     }
 
     [Fact]
-    public async Task TestShortcuts()
+    public void TestShortcuts()
     {
-        using var app = Utils.CreateTestApp<TestPlugin>(out var client);
-
-        await app.StartWithDefaultsAsync();
+        using var app = Utils.StartTestApp<TestPlugin>(out var client);
 
         MessageContent? content;
 
-        content = await client.SendMessageForReply("测3试");
+        content = client.SendMessageForReply("测3试");
         Assert.Equal("3 someStr", content?.GetText());
 
-        content = await client.SendMessageForReply("测试4");
+        content = client.SendMessageForReply("测试4");
         Assert.Equal("123.456", content?.GetText());
 
-        content = await client.SendMessageForReply("测试4 114.514", TimeSpan.FromSeconds(2));
+        content = client.SendMessageForReply("测试4 114.514", TimeSpan.FromSeconds(2));
         Assert.Null(content?.GetText());
 
-        content = await client.SendMessageForReply("测试5 333");
+        content = client.SendMessageForReply("测试5 333");
         Assert.Equal("111.222 333 True", content?.GetText());
     }
 
     [Fact]
-    public async Task TestMapCommand()
+    public void TestMapCommand()
     {
-        using var app = Utils.CreateTestApp(out var client);
+        using var app = Utils.StartTestApp(out var client);
 
         app.MapCommand("test1", (int a, int b) => a + b);
         app.MapCommand("test2.sub", (int x) => Math.Pow(x, 2));
 
-        await app.StartWithDefaultsAsync();
-
-        var content = await client.SendMessageForReply("test1 123 456");
+        var content = client.SendMessageForReply("test1 123 456");
         Assert.Equal("579", content?.GetText());
 
-        content = await client.SendMessageForReply("test2 sub 12");
+        content = client.SendMessageForReply("test2 sub 12");
         Assert.Equal("144", content?.GetText());
-
-        await app.StopAsync();
     }
 
     [Fact]
-    public async Task TestArrayParameter()
+    public void TestArrayParameter()
     {
         using var app = Utils.StartTestApp<TestPlugin>(out var client);
 
-        var content = await client.SendMessageForReply("test6 1.23 aaa bbb ccc  ");
+        var content = client.SendMessageForReply("test6 1.23 aaa bbb ccc  ");
         Assert.Equal("1.23 | aaa,bbb,ccc", content?.GetText());
-
-        await app.StopAsync();
     }
 
     [Fact]
-    public async Task TestInformalAttributes()
+    public void TestInformalAttributes()
     {
         using var app = Utils.StartTestApp<TestPlugin>(out _);
 
@@ -172,7 +160,5 @@ public class CommandTests
         Assert.True(cmdService.RootNode.FindSubNode("test2")?.Command?.IsObsolete);
         Assert.Equal("This command is obsoleted.",
             cmdService.RootNode.FindSubNode("test2")?.Command?.ObsoleteMessage);
-
-        await app.StopAsync();
     }
 }

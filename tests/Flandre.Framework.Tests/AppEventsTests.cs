@@ -14,7 +14,7 @@ public class AppEventsTests
     [Fact]
     public async Task TestEvents()
     {
-        using var app = Utils.CreateTestApp<TestPlugin>(out var client);
+        await using var app = Utils.CreateTestApp<TestPlugin>(out var client);
 
         var count = 0;
         string? cmdName = null;
