@@ -34,8 +34,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Discord", "src\Flandre.Adapters.Discord\Flandre.Adapters.Discord.csproj", "{CF294883-2C88-4AF9-BED6-8F766C664982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordAdapterTest", "temp\DiscordAdapterTest\DiscordAdapterTest.csproj", "{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.Konata.Extensions", "src\Flandre.Adapters.Konata.Extensions\Flandre.Adapters.Konata.Extensions.csproj", "{3BEF4654-51CB-47FA-9197-698F3B8B23BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flandre.Adapters.OneBot.Extensions", "src\Flandre.Adapters.OneBot.Extensions\Flandre.Adapters.OneBot.Extensions.csproj", "{3F5443F7-2B58-42E7-A5D6-8E88594724E4}"
@@ -90,10 +88,6 @@ Global
 		{CF294883-2C88-4AF9-BED6-8F766C664982}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF294883-2C88-4AF9-BED6-8F766C664982}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF294883-2C88-4AF9-BED6-8F766C664982}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3E22D1AE-4DBE-4C6B-ABDB-1A33ED54D3AF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3BEF4654-51CB-47FA-9197-698F3B8B23BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3BEF4654-51CB-47FA-9197-698F3B8B23BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BEF4654-51CB-47FA-9197-698F3B8B23BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
