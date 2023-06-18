@@ -157,10 +157,11 @@ public sealed class OneBotWebSocketBot : OneBotBot
 
     #endregion
 
-    public override async Task StartAsync()
+    public override Task StartAsync()
     {
-        await _wsClient.Start();
+        _ = _wsClient.Start();
         _clientStopped = false;
+        return Task.CompletedTask;
     }
 
     public override Task StopAsync()
