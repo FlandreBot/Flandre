@@ -86,9 +86,13 @@ public sealed class Command
             }
 
             // parameter
-            Parameters.Add(new CommandParameter(param.Name!, param.ParameterType,
-                param.HasDefaultValue ? param.DefaultValue : null,
-                param.ParameterType.IsArray && param.GetCustomAttribute<ParamArrayAttribute>() is not null)
+            Parameters.Add(new CommandParameter(
+                name: param.Name!,
+                type: param.ParameterType,
+                isRequired: !param.IsOptional,
+                defaultValue: param.HasDefaultValue ? param.DefaultValue : null,
+                isParamArray: param.ParameterType.IsArray &&
+                              param.GetCustomAttribute<ParamArrayAttribute>() is not null)
             {
                 Description = description
             });

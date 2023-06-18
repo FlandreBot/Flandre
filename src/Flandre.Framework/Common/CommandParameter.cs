@@ -33,12 +33,13 @@ public sealed class CommandParameter
     /// <summary>
     /// 是否为必须参数
     /// </summary>
-    public bool IsRequired => DefaultValue is null;
+    public bool IsRequired { get; }
 
-    internal CommandParameter(string name, Type type, object? defaultValue, bool isParamArray)
+    internal CommandParameter(string name, Type type, bool isRequired, object? defaultValue, bool isParamArray)
     {
         Name = name;
         Type = type;
+        IsRequired = isRequired;
         DefaultValue = isParamArray ? Array.CreateInstance(type.GetElementType()!, 0) : defaultValue;
         IsParamArray = isParamArray;
     }
