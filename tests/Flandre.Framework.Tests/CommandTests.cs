@@ -59,13 +59,9 @@ public class CommandTests
 
         // Array parameter
         [Command]
-        public static string Test6(double arg, params string[] strArr)
+        public string Test6(double arg, params string[] strArr)
         {
-            return new StringBuilder()
-                .Append(arg)
-                .Append(" | ")
-                .Append(string.Join(',', strArr))
-                .ToString();
+            return $"{arg} | {string.Join(',', strArr)} | {strArr.Length}";
         }
 
         [Command]
@@ -144,10 +140,10 @@ public class CommandTests
         using var app = Utils.StartTestApp<TestPlugin>(out var client);
 
         var content = client.SendMessageForReply("test6 1.23 aaa bbb ccc  ");
-        Assert.Equal("1.23 | aaa,bbb,ccc", content?.GetText());
-        
+        Assert.Equal("1.23 | aaa,bbb,ccc | 3", content?.GetText());
+
         content = client.SendMessageForReply("test6 2.34");
-        Assert.Equal("2.34 | ", content?.GetText());
+        Assert.Equal("2.34 |  | 0", content?.GetText());
     }
 
     [Fact]
