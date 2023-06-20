@@ -1,11 +1,12 @@
 using System.ComponentModel;
 using System.Reflection;
+using Flandre.Framework.Common;
 using Flandre.Framework.Routing;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Flandre.Framework.Common;
+namespace Flandre.Framework.Internal;
 
 /// <summary>
 /// 读取指令的上下文

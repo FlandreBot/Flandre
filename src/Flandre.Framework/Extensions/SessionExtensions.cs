@@ -1,5 +1,4 @@
 using Flandre.Core.Messaging;
-using Flandre.Framework.Common;
 using Flandre.Framework.Utils;
 
 // ReSharper disable once CheckNamespace

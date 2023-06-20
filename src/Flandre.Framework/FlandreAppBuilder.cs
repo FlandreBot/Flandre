@@ -1,5 +1,6 @@
 using Flandre.Core.Common;
 using Flandre.Framework.Common;
+using Flandre.Framework.Internal;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

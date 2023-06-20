@@ -3,6 +3,7 @@ using Flandre.Core.Common;
 using Flandre.Core.Messaging;
 using Flandre.Framework.Common;
 using Flandre.Framework.Events;
+using Flandre.Framework.Internal;
 using Flandre.Framework.Routing;
 using Flandre.Framework.Services;
 using Microsoft.Extensions.DependencyInjection;

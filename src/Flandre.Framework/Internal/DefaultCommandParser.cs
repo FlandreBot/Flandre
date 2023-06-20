@@ -1,8 +1,9 @@
 using System.Collections;
 using Flandre.Core.Utils;
+using Flandre.Framework.Common;
 using Flandre.Framework.Services;
 
-namespace Flandre.Framework.Common;
+namespace Flandre.Framework.Internal;
 
 internal class DefaultCommandParser : ICommandParser
 {
